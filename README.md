@@ -76,3 +76,24 @@ For now, we'll be using **SQlite**, which MacOS has installed by default. Howeve
 ```sh
 $ sudo apt-get install libxslt-dev libxml2-dev libsqlite3-dev
 ```
+
+### Pow or Prax ###
+If you are running on **MacOS**, you need to install **Pow** - replace */Work/estudent/* with the folder in which you have set up your application.
+```sh
+$ curl get.pow.cx | sh
+$ cd ~/.pow
+$ ln -s ~/Work/estudent/estudent_api/
+```
+At this point, you can access the application in your browser, by using this link: [http://estudent_api.dev](http://estudent_api.dev)
+
+For **Linux** users, you need **Prax**. If you have any trouble with this tool, please check out the [README](https://github.com/ysbaddaden/prax/blob/master/README.rdoc) file on the github repository.
+
+```sh
+$ sudo git clone git://github.com/ysbaddaden/prax.git /opt/prax
+$ cd /opt/prax/
+$ ./bin/prax install  
+$ cd ~/Work/estudent/estudent_api/
+$ prax link
+$ prax start
+```
+When using prax, you have to specify the port for the URL, in this case [http://estudent_api.dev:3000](http://estudent_api.dev:3000)
