@@ -97,3 +97,13 @@ $ prax link
 $ prax start
 ```
 When using prax, you have to specify the port for the URL, in this case [http://estudent_api.dev:3000](http://estudent_api.dev:3000)
+
+### Almost there ###
+Once you have this configuration set up, it is time to run:
+```sh
+$ bundle install
+Fetching source index for https://rubygems.org/
+.
+.
+.
+```
