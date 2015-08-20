@@ -23,13 +23,14 @@ describe Authenticable do
     before do
       @user = FactoryGirl.create :user
 
-      allow(authentication).to receive_messages(:current_user => nil)
-      allow(response).to receive_messages(:response_code => 401)
-      allow(response).to receive_messages({ "errors" => "Not authenticated" }.to_json)
-      allow(authentication).to receive_messages(:response => response)
+      authentication.stub(:current_user).and_return(nil)
+      response.stub(:response_code).and_return(401)
+      response.stub(:body).and_return({"errors" => "Not authenticated"}.to_json)
+      authentication.stub(:response).and_return(response)
     end
 
     it "render a json error message" do
+      response
       expect(json_response[:errors]).to eql "Not authenticated"
     end
 

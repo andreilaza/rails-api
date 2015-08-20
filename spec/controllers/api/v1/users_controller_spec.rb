@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe Api::V1::UsersController do  
+describe Api::V1::UsersController do  
 
   describe "GET #show" do
     before(:each) do
@@ -11,9 +11,8 @@ RSpec.describe Api::V1::UsersController do
     it "returns the information about the user in an json format" do
       user_response = json_response
       expect(user_response[:email]).to eql @user.email
-    end
-
-    it { should respond_with 200 }
+      expect(user_response.status).to eq(200)
+    end    
   end
 
   describe "POST #create" do
@@ -26,9 +25,8 @@ RSpec.describe Api::V1::UsersController do
       it "renders the json representation for the user record just created" do
         user_response = json_response
         expect(user_response[:email]).to eql @user_attributes[:email]
-      end
-
-      it { should respond_with 201 }
+        expect(json_response.status).to eq(201)
+      end      
     end
 
     context "when is not created" do
@@ -47,7 +45,9 @@ RSpec.describe Api::V1::UsersController do
         expect(user_response[:errors][:email]).to include "can't be blank"
       end
 
-      it { should respond_with 422 }
+      it "should respond with 422" do
+        expect(json_response.status).to eq(422)
+      end
     end
   end
 
@@ -55,8 +55,7 @@ RSpec.describe Api::V1::UsersController do
     context "when is successfully updated" do
       before(:each) do
         @user = FactoryGirl.create :user
-        patch :update, { id: @user.id,
-                         user: { email: "newmail@example.com" } }
+        request.headers['Authorization'] =  @user.auth_token
       end
 
       it "renders the json data of the updated user" do
@@ -64,14 +63,15 @@ RSpec.describe Api::V1::UsersController do
         expect(user_response[:email]).to eql "newmail@example.com"
       end
 
-      it { should respond_with 200 }
+      it "should respond with 200" do
+        expect(json_response.status).to eq(200)        
+      end
     end
 
     context "when is not created" do
       before(:each) do
         @user = FactoryGirl.create :user
-        patch :update, { id: @user.id,
-                         user: { email: "bademail.com" } }
+        request.headers['Authorization'] =  @user.auth_token
       end
 
       it "renders the json errors on why the user could not be updated" do
@@ -79,17 +79,22 @@ RSpec.describe Api::V1::UsersController do
         expect(user_response[:errors][:email]).to include "is invalid"
       end
 
-      it { should respond_with 422 }
+      it "should respond with 422" do
+        expect(json_response.status).to eq(422)
+      end
     end
   end
 
   describe "DELETE #destroy" do
     before(:each) do
       @user = FactoryGirl.create :user
+      api_authorization_header @user.auth_token
       delete :destroy, id: @user.id
     end
 
-    it { should respond_with 204 }
+    it "should respond with 204" do
+      expect(json_response.status).to eq(204)      
+    end
   end
 
 end
