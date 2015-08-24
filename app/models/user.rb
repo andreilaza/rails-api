@@ -12,4 +12,10 @@ class User < ActiveRecord::Base
       self.auth_token = Devise.friendly_token
     end while self.class.exists?(auth_token: auth_token)
   end
+
+  # Overwrite the to_json model to exclude the auth_token field
+  def to_json(options={})
+    options[:except] ||= [:auth_token]
+    super(options)
+  end
 end
