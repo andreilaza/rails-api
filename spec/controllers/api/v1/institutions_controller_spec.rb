@@ -42,7 +42,7 @@ describe Api::V1::InstitutionsController do
         post :create, { institution: @institution_attributes }
 
       end
-            
+
       it "renders an errors json" do
         institution_response = json_response        
         expect(institution_response).to have_key(:errors)
@@ -55,5 +55,35 @@ describe Api::V1::InstitutionsController do
 
       it { should respond_with 422 }
     end
+  end
+
+  describe "PUT/PATCH #update" do
+    context "successfully updated" do
+      before(:each) do
+        @institution = FactoryGirl.create :institution
+        put :update, {id: @institution.id, institution: { description: "New Description" }}
+      end
+
+      it "renders the json representation for the updated institution" do
+        institution_response = json_response
+        expect(institution_response[:description]).to eql "New Description"
+      end
+
+      it { should respond_with 200 }
+    end
+
+    context "not updated" do
+      # un-updatable scenario ??
+    end
+  end
+
+  describe "DELETE #destroy" do
+    before(:each) do
+      @institution = FactoryGirl.create :institution      
+      delete :destroy, { id: @institution.id }
+    end
+
+    it { should respond_with 204 }
+
   end
 end

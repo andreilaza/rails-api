@@ -16,6 +16,24 @@ class Api::V1::InstitutionsController < ApplicationController
     end
   end
 
+  def update
+    institution = Institution.find(params[:id])
+
+    if institution.update(institution_params)
+      render json: institution, status: 200, location: [:api, institution]
+    else
+      render json: { errors: institution.errors }, status: 422
+    end
+
+  end
+
+  def destroy
+    institution = Institution.find(params[:id])
+    institution.destroy
+
+    head 204    
+  end
+
   private
     def institution_params
       params.require(:institution).permit(:title, :description, :image)
