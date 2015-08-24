@@ -7,6 +7,9 @@ class User < ActiveRecord::Base
 
   before_create :generate_authentication_token!
 
+  has_many :institution_users
+  has_many :institutions, through: :institution_users
+
   def generate_authentication_token!
     begin
       self.auth_token = Devise.friendly_token
@@ -14,7 +17,7 @@ class User < ActiveRecord::Base
   end
 
   # Overwrite the to_json model to exclude the auth_token field
-  def to_json(options={})
+  def to_json(options = {})
     options[:except] ||= [:auth_token]
     super(options)
   end

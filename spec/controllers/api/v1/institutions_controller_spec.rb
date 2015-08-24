@@ -6,6 +6,20 @@ describe Api::V1::InstitutionsController do
     api_authorization_header @user.auth_token 
   end
 
+  describe "GET #index" do
+    before(:each) do
+      4.times { FactoryGirl.create :institution }
+      get :index
+
+      it "returns 4 institutions from the database" do
+        institutions_response = json_response
+        expect(products_response[:products]).to have(4).items
+      end
+
+      it { should respond_with 200 }
+    end
+  end
+
   describe "GET #show" do
     before(:each) do
       @institution = FactoryGirl.create :institution
@@ -85,5 +99,11 @@ describe Api::V1::InstitutionsController do
 
     it { should respond_with 204 }
 
+  end
+
+  ## Custom Actions ##
+  describe "POST #add_user" do
+    before(:each) do
+    end
   end
 end
