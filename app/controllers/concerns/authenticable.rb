@@ -3,6 +3,16 @@ module Authenticable
   # Devise methods overwrites
   def current_user
     @current_user ||= User.find_by(auth_token: request.headers['Authorization'])
+
+    @institution_id = nil
+
+    @current_user.institutions.each do | institution |
+      @institution_id = institution[:id]
+    end    
+
+    @current_user.institution_id = @institution_id
+
+    @current_user
   end
 
   def authenticate_with_token!

@@ -56,7 +56,7 @@ class Api::V1::InstitutionsController < ApplicationController
   def list_users
     institution = Institution.find(params[:id])
 
-    render json: institution.users.to_json(:except => [:auth_token]), status: 200, location: [:api, institution]
+    render json: institution.users.to_json(:except => [:auth_token]), status: 200, location: [:api, institution]    
   end
 
   private

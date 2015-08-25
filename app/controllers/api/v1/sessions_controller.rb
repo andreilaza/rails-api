@@ -12,6 +12,7 @@ class Api::V1::SessionsController < ApplicationController
       sign_in user, store: false
       user.generate_authentication_token!
       user.save
+      
       # convert user to json to add the auth token field to it      
       output = ActiveSupport::JSON.decode(user.to_json)
       output["auth_token"] = user[:auth_token]
