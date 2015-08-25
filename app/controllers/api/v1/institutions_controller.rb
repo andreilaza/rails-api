@@ -3,7 +3,7 @@ class Api::V1::InstitutionsController < ApplicationController
   respond_to :json
 
   def index
-    respond_with Institution.all
+    respond_with Institution.all.to_json
   end
 
   def show

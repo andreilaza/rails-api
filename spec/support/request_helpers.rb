@@ -1,7 +1,7 @@
 module Request
   module JsonHelpers
     def json_response
-      puts JSON.parse(response.body, symbolize_names: true)
+      # puts JSON.parse(response.body, symbolize_names: true)
       @json_response ||= JSON.parse(response.body, symbolize_names: true)
     end
   end

@@ -3,4 +3,6 @@ class Course < ActiveRecord::Base
   
   has_many :course_institution
   has_many :courses, through: :course_institution
+
+  has_many :chapters, dependent: :destroy
 end
