@@ -12,8 +12,15 @@ class Api::V1::CoursesController < ApplicationController
 
   def create
     course = Course.new(course_params)    
-    
+
     if course.save
+      course_institution = CourseInstitution.new
+
+      course_institution.course_id = course.id
+      course_institution.institution_id = current_user.institution_id
+
+      course_institution.save
+      
       render json: course, status: 201, location: [:api, course]
     else
       render json: { errors: course.errors }, status: 422
@@ -37,7 +44,6 @@ class Api::V1::CoursesController < ApplicationController
 
     head 204    
   end
-
 
   private
     def course_params
