@@ -59,6 +59,12 @@ class Api::V1::InstitutionsController < ApplicationController
     render json: institution.users.to_json(:except => [:auth_token]), status: 200, location: [:api, institution]    
   end
 
+  def list_courses
+    institution = Institution.find(params[:id])
+
+    render json: institution.courses.to_json, status: 200, location: [:api, institution]    
+  end
+
   private
     def institution_params
       params.require(:institution).permit(:title, :description, :image)

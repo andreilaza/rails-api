@@ -14,6 +14,7 @@ Rails.application.routes.draw do
 
       post '/institutions/:id/users', to: 'institutions#create_users'
       get '/institutions/:id/users', to: 'institutions#list_users'
+      get '/institutions/:id/courses', to: 'institutions#list_courses'
     end
   end
 end
