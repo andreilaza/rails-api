@@ -13,7 +13,7 @@ describe Api::V1::InstitutionsController do
 
       it "returns 4 institutions from the database" do
         institutions_response = json_response
-        expect(products_response[:products]).to have(4).items
+        expect(institutions_response[:institutions]).to have(4).items
       end
 
       it { should respond_with 200 }
