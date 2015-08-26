@@ -107,3 +107,12 @@ Fetching source index for https://rubygems.org/
 .
 .
 ```
+
+Then run the migration, and prepare the test db:
+```sh
+$ rake db:migrate
+```
+
+```sh
+$ rake db:test:prepare
+```
