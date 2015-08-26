@@ -26,8 +26,8 @@ describe Api::V1::ChaptersController do
       get :show, id: @chapter.id
     end
 
-    it "returns the information about an chapter" do
-      chapters_response = json_response
+    it "returns the information about a chapter" do
+      chapters_response = json_response[:chapter]
       expect(chapters_response[:title]).to eql @chapter.title
     end
 
