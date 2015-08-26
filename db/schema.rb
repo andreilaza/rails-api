@@ -67,13 +67,16 @@ ActiveRecord::Schema.define(version: 20150826113440) do
   add_index "institutions", ["title"], name: "index_institutions_on_title"
 
   create_table "sections", force: :cascade do |t|
-    t.string   "title"
-    t.string   "description"
+    t.string   "title",        default: ""
+    t.string   "description",  default: ""
     t.integer  "chapter_id"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
-    t.integer  "section_type", default: 0
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.integer  "section_type", default: 1
   end
+
+  add_index "sections", ["chapter_id"], name: "index_sections_on_chapter_id"
+  add_index "sections", ["title"], name: "index_sections_on_title"
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false
