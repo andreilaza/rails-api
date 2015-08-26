@@ -4,7 +4,7 @@ class ApiConstraints
     @default = options[:default]
   end
 
-  def matches?(req)
+  def matches?(req)    
     @default || req.headers['Accept'].include?("application/vnd.estudent_api.v#{@version}")
   end
 end

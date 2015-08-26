@@ -14,6 +14,10 @@ Rails.application.routes.draw do
       resources :chapters, :only => [:index, :show, :create, :update, :destroy]
       resources :sections, :only => [:index, :show, :create, :update, :destroy]
 
+      # Session Routes
+      post '/sessions/signup', to: 'sessions#signup'
+      
+      # User Routes
       post '/institutions/:id/users', to: 'institutions#create_users'
       get '/institutions/:id/users', to: 'institutions#list_users'
       get '/institutions/:id/courses', to: 'institutions#list_courses'

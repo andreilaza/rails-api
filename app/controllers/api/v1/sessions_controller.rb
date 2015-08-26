@@ -1,5 +1,15 @@
 class Api::V1::SessionsController < ApplicationController
 
+  def signup
+    user = User.new(user_params)
+
+    if user.save
+      render json: user, status: 201, location: [:api, user]      
+    else
+      render json: { errors: user.errors }, status: 422
+    end
+  end
+  
   def create
     user_email    = params[:session][:email]
     user_password = params[:session][:password]
@@ -29,4 +39,9 @@ class Api::V1::SessionsController < ApplicationController
     user.save
     head 204
   end
+
+  private
+    def user_params
+      params.require(:user).permit(:email, :password, :password_confirmation)
+    end
 end
