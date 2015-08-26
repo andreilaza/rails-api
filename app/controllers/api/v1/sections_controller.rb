@@ -13,7 +13,7 @@ class Api::V1::SectionsController < ApplicationController
   def update
     section = Section.find(params[:id])
 
-    if section.update(course_params)
+    if section.update(section_params)
       render json: section, status: 200, location: [:api, section]
     else
       render json: { errors: section.errors }, status: 422
@@ -30,6 +30,6 @@ class Api::V1::SectionsController < ApplicationController
 
   private
     def section_params
-      params.require(:section).permit(:title, :description, :image, :published)
+      params.require(:section).permit(:title, :description, :chapter_id, :section_type)
     end
 end

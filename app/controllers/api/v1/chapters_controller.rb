@@ -13,7 +13,7 @@ class Api::V1::ChaptersController < ApplicationController
   def update
     chapter = Chapter.find(params[:id])
 
-    if chapter.update(course_params)
+    if chapter.update(chapter_params)
       render json: chapter, status: 200, location: [:api, chapter]
     else
       render json: { errors: chapter.errors }, status: 422
@@ -53,6 +53,6 @@ class Api::V1::ChaptersController < ApplicationController
     end
 
     def section_params
-      params.require(:section).permit(:title, :description)
+      params.require(:section).permit(:title, :description, :chapter_id, :section_type)
     end
 end
