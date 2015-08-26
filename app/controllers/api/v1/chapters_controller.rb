@@ -10,6 +10,17 @@ class Api::V1::ChaptersController < ApplicationController
     respond_with Chapter.find(params[:id])
   end  
 
+  def update
+    chapter = Chapter.find(params[:id])
+
+    if chapter.update(course_params)
+      render json: chapter, status: 200, location: [:api, chapter]
+    else
+      render json: { errors: chapter.errors }, status: 422
+    end
+
+  end
+
   def destroy
     chapter = Chapter.find(params[:id])
     chapter.destroy
