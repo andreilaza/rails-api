@@ -28,8 +28,31 @@ class Api::V1::ChaptersController < ApplicationController
     head 204    
   end
 
+  ## Sections actions ##
+
+  def add_section
+    section = Section.new(section_params)
+    section.chapter_id = params[:id]
+
+    if section.save
+      render json: section, status: 201, location: [:api, section]
+    else
+      render json: { errors: section.errors }, status: 422
+    end
+  end
+
+  def list_sections
+    chapter = Chapter.find(params[:id])
+    
+    render json: chapter.sections.to_json, status: 201, location: [:api, chapter]
+  end
+
   private
     def chapter_params
-      params.require(:chapter).permit(:title, :description, :image, :published)
+      params.require(:chapter).permit(:title, :description, :image)
+    end
+
+    def section_params
+      params.require(:section).permit(:title, :description)
     end
 end

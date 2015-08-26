@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       resources :institutions, :only => [:index, :show, :create, :update, :destroy]
       resources :courses, :only => [:index, :show, :create, :update, :destroy]
       resources :chapters, :only => [:index, :show, :create, :update, :destroy]
+      resources :sections, :only => [:index, :show, :create, :update, :destroy]
 
       post '/institutions/:id/users', to: 'institutions#create_users'
       get '/institutions/:id/users', to: 'institutions#list_users'
@@ -20,6 +21,10 @@ Rails.application.routes.draw do
       # Course Routes
       post '/courses/:id/chapters', to: 'courses#add_chapter'
       get '/courses/:id/chapters', to: 'courses#list_chapters'
+
+      # Chapter Routes
+      post '/chapters/:id/sections', to: 'chapters#add_section'
+      get '/chapters/:id/sections', to: 'chapters#list_sections'
 
     end
   end

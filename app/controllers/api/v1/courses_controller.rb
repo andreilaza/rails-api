@@ -71,6 +71,6 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def chapter_params
-      params.require(:course).permit(:title, :description, :image)
+      params.require(:chapter).permit(:title, :description, :image)
     end
 end

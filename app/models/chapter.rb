@@ -3,4 +3,6 @@ class Chapter < ActiveRecord::Base
   validates :course_id, presence: true
 
   belongs_to :course
+
+  has_many :sections, dependent: :destroy
 end
