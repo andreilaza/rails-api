@@ -7,14 +7,20 @@ class Api::V1::QuestionsController < ApplicationController
   end
 
   def show
-    respond_with Question.find(params[:id])
+    question = Question.find(params[:id])
+
+    if question
+      render json: question, status: 200, location: [:api, question], root: false
+    else
+      render json: { errors: question.errors }, status: 404
+    end
   end  
 
   def update
     question = Question.find(params[:id])
 
     if question.update(question_params)
-      render json: question, status: 200, location: [:api, question]
+      render json: question, status: 200, location: [:api, question], root: false
     else
       render json: { errors: question.errors }, status: 422
     end

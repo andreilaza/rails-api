@@ -7,14 +7,20 @@ class Api::V1::SectionsController < ApplicationController
   end
 
   def show
-    respond_with Section.find(params[:id])
+    section = Section.find(params[:id])
+
+    if section
+      render json: section, status: 200, location: [:api, section], root: false
+    else
+      render json: { errors: section.errors }, status: 422
+    end
   end  
 
   def update
     section = Section.find(params[:id])
 
     if section.update(section_params)
-      render json: section, status: 200, location: [:api, section]
+      render json: section, status: 200, location: [:api, section], root: false
     else
       render json: { errors: section.errors }, status: 422
     end
@@ -35,7 +41,7 @@ class Api::V1::SectionsController < ApplicationController
     question.section_id = params[:id]
 
     if question.save
-      render json: question, status: 201, location: [:api, question]
+      render json: question, status: 201, location: [:api, question], root: false
     else
       render json: { errors: question.errors }, status: 422
     end
@@ -44,7 +50,7 @@ class Api::V1::SectionsController < ApplicationController
   def list_questions
     section = Section.find(params[:id])
     
-    render json: section.questions.to_json, status: 201, location: [:api, section]
+    render json: section.questions.to_json, status: 201, location: [:api, section], root: false
   end
 
   private

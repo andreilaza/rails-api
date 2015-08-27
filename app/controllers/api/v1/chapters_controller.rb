@@ -7,14 +7,20 @@ class Api::V1::ChaptersController < ApplicationController
   end
 
   def show
-    respond_with Chapter.find(params[:id])
+    chapter = Chapter.find(params[:id])
+
+    if chapter
+      render json: chapter, status: 200, location: [:api, chapter], root: false
+    else
+      render json: { errors: chapter.errors }, status: 404
+    end
   end  
 
   def update
     chapter = Chapter.find(params[:id])
 
     if chapter.update(chapter_params)
-      render json: chapter, status: 200, location: [:api, chapter]
+      render json: chapter, status: 200, location: [:api, chapter], root: false
     else
       render json: { errors: chapter.errors }, status: 422
     end
@@ -35,7 +41,7 @@ class Api::V1::ChaptersController < ApplicationController
     section.chapter_id = params[:id]
 
     if section.save
-      render json: section, status: 201, location: [:api, section]
+      render json: section, status: 201, location: [:api, section], root: false
     else
       render json: { errors: section.errors }, status: 422
     end
@@ -44,7 +50,7 @@ class Api::V1::ChaptersController < ApplicationController
   def list_sections
     chapter = Chapter.find(params[:id])
     
-    render json: chapter.sections.to_json, status: 201, location: [:api, chapter]
+    render json: chapter.sections.to_json, status: 201, location: [:api, chapter], root: false
   end
 
   private

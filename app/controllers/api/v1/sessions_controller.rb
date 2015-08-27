@@ -5,7 +5,7 @@ class Api::V1::SessionsController < ApplicationController
     user = User.new(user_params)
 
     if user.save
-      render json: user, status: 201, location: [:api, user]      
+      render json: user, status: 201, location: [:api, user], root: false  
     else
       render json: { errors: user.errors }, status: 422
     end
@@ -28,7 +28,7 @@ class Api::V1::SessionsController < ApplicationController
       output = ActiveSupport::JSON.decode(user.to_json)
       output["auth_token"] = user[:auth_token]
 
-      render json: output.to_json, status: 200, location: [:api, user]
+      render json: output.to_json, status: 200, location: [:api, user], root: false
     else
       render json: { errors: "Invalid email or password" }, status: 422
     end

@@ -7,7 +7,13 @@ class Api::V1::CoursesController < ApplicationController
   end
 
   def show
-    respond_with Course.find(params[:id])
+    course =  Course.find(params[:id])
+
+    if course
+      render json: course, status: 200, location: [:api, course], root: false
+    else
+      render json: { errors: course.errors }, status: 404
+    end
   end
 
   def create
@@ -22,7 +28,7 @@ class Api::V1::CoursesController < ApplicationController
 
       course_institution.save
       
-      render json: course, status: 201, location: [:api, course]
+      render json: course, status: 201, location: [:api, course], root: false
     else
       render json: { errors: course.errors }, status: 422
     end
@@ -32,7 +38,7 @@ class Api::V1::CoursesController < ApplicationController
     course = Course.find(params[:id])
 
     if course.update(course_params)
-      render json: course, status: 200, location: [:api, course]
+      render json: course, status: 200, location: [:api, course], root: false
     else
       render json: { errors: course.errors }, status: 422
     end
@@ -53,7 +59,7 @@ class Api::V1::CoursesController < ApplicationController
     chapter.course_id = params[:id]
 
     if chapter.save
-      render json: chapter, status: 201, location: [:api, chapter]
+      render json: chapter, status: 201, location: [:api, chapter], root: false
     else
       render json: { errors: chapter.errors }, status: 422
     end
@@ -62,7 +68,7 @@ class Api::V1::CoursesController < ApplicationController
   def list_chapters
     course = Course.find(params[:id])
     
-    render json: course.chapters.to_json, status: 201, location: [:api, course]
+    render json: course.chapters.to_json, status: 201, location: [:api, course], root: false
   end
 
   private
