@@ -36,6 +36,6 @@ class Api::V1::QuestionsController < ApplicationController
 
   private
     def question_params
-      params.require(:section).permit(:title, :section_id, :order, :score, :question_type)
+      params.require(:question).permit(:title, :section_id, :order, :score, :question_type)
     end
 end

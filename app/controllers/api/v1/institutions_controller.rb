@@ -77,6 +77,6 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     def user_params
-      params.require(:user).permit(:email, :password, :password_confirmation)
+      params.require(:institution).permit(:email, :password, :password_confirmation)
     end
 end
