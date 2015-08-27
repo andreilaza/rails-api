@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150826113440) do
+ActiveRecord::Schema.define(version: 20150827114725) do
 
   create_table "chapters", force: :cascade do |t|
     t.string   "title",       default: ""
@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 20150826113440) do
     t.integer  "course_id"
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
+    t.integer  "order"
   end
 
   add_index "chapters", ["course_id"], name: "index_chapters_on_course_id"
@@ -66,6 +67,19 @@ ActiveRecord::Schema.define(version: 20150826113440) do
 
   add_index "institutions", ["title"], name: "index_institutions_on_title"
 
+  create_table "questions", force: :cascade do |t|
+    t.string   "title",         default: ""
+    t.integer  "section_id"
+    t.integer  "order",         default: 0
+    t.integer  "question_type", default: 1
+    t.integer  "score",         default: 0
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
+  add_index "questions", ["section_id"], name: "index_questions_on_section_id"
+  add_index "questions", ["title"], name: "index_questions_on_title"
+
   create_table "sections", force: :cascade do |t|
     t.string   "title",        default: ""
     t.string   "description",  default: ""
@@ -73,6 +87,7 @@ ActiveRecord::Schema.define(version: 20150826113440) do
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
     t.integer  "section_type", default: 1
+    t.integer  "order"
   end
 
   add_index "sections", ["chapter_id"], name: "index_sections_on_chapter_id"

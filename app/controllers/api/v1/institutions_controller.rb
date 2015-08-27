@@ -7,14 +7,20 @@ class Api::V1::InstitutionsController < ApplicationController
   end
 
   def show
-    respond_with Institution.find(params[:id])    
+    institution = Institution.find(params[:id])
+
+    if institution
+      render json: institution, status: 201, location: [:api, institution], root: false
+    else
+      render json: { errors: institution.errors }, status: 422
+    end
   end
 
   def create
     institution = Institution.new(institution_params)    
     
     if institution.save
-      render json: institution, status: 201, location: [:api, institution]
+      render json: institution, status: 201, location: [:api, institution], root: false
     else
       render json: { errors: institution.errors }, status: 422
     end
@@ -24,7 +30,7 @@ class Api::V1::InstitutionsController < ApplicationController
     institution = Institution.find(params[:id])
 
     if institution.update(institution_params)
-      render json: institution, status: 200, location: [:api, institution]
+      render json: institution, status: 200, location: [:api, institution], root: false
     else
       render json: { errors: institution.errors }, status: 422
     end
@@ -49,20 +55,20 @@ class Api::V1::InstitutionsController < ApplicationController
     elsif !institution.save
       render json: { errors: institution.errors }, status: 422
     else
-      render json: institution, status: 200, location: [:api, institution]
+      render json: institution, status: 200, location: [:api, institution], root: false
     end
   end
 
   def list_users
     institution = Institution.find(params[:id])
 
-    render json: institution.users.to_json(:except => [:auth_token]), status: 200, location: [:api, institution]    
+    render json: institution.users.to_json(:except => [:auth_token]), status: 200, location: [:api, institution], root: false 
   end
 
   def list_courses
     institution = Institution.find(params[:id])
 
-    render json: institution.courses.to_json, status: 200, location: [:api, institution]    
+    render json: institution.courses.to_json, status: 200, location: [:api, institution], root: false   
   end
 
   private

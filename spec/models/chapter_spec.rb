@@ -7,4 +7,6 @@ describe Chapter, type: :model do
   it { should respond_to(:image) }
   it { should respond_to(:description) }
   it { should respond_to(:course_id) }
+  it { should respond_to(:order) }
+  
 end
