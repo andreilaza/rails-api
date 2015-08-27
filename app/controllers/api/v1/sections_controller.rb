@@ -28,8 +28,31 @@ class Api::V1::SectionsController < ApplicationController
     head 204    
   end  
 
+  ## Questions actions ##
+
+  def add_question
+    question = Question.new(question_params)
+    question.section_id = params[:id]
+
+    if question.save
+      render json: question, status: 201, location: [:api, question]
+    else
+      render json: { errors: question.errors }, status: 422
+    end
+  end
+
+  def list_questions
+    section = Section.find(params[:id])
+    
+    render json: section.questions.to_json, status: 201, location: [:api, section]
+  end
+
   private
     def section_params
       params.require(:section).permit(:title, :description, :chapter_id, :section_type)
+    end
+
+    def question_params
+      params.require(:section).permit(:title, :section_id, :order, :score, :question_type)
     end
 end

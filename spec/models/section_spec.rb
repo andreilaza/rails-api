@@ -6,4 +6,5 @@ describe Section, type: :model do
   it { should respond_to(:title) }  
   it { should respond_to(:description) }
   it { should respond_to(:chapter_id) }
+  it { should respond_to(:order) }
 end
