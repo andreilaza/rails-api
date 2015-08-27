@@ -53,10 +53,12 @@ class Api::V1::CoursesController < ApplicationController
   end
 
   ## Chapter actions ##
-
   def add_chapter
     chapter = Chapter.new(chapter_params)
     chapter.course_id = params[:id]
+
+    highest_order_chapter = Chapter.order(order: :desc).first
+    chapter.order = highest_order_chapter.order + 1
 
     if chapter.save
       render json: chapter, status: 201, location: [:api, chapter], root: false
@@ -68,7 +70,7 @@ class Api::V1::CoursesController < ApplicationController
   def list_chapters
     course = Course.find(params[:id])
     
-    render json: course.chapters.to_json, status: 201, location: [:api, course], root: false
+    render json: course.chapters.order(order: :desc).to_json, status: 201, location: [:api, course], root: false
   end
 
   private

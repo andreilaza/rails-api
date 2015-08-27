@@ -40,6 +40,9 @@ class Api::V1::SectionsController < ApplicationController
     question = Question.new(question_params)
     question.section_id = params[:id]
 
+    highest_order_question = Question.order(order: :desc).first
+    question.order = highest_order_question.order + 1
+
     if question.save
       render json: question, status: 201, location: [:api, question], root: false
     else
@@ -50,7 +53,7 @@ class Api::V1::SectionsController < ApplicationController
   def list_questions
     section = Section.find(params[:id])
     
-    render json: section.questions.to_json, status: 201, location: [:api, section], root: false
+    render json: section.questions.order(order: :desc).to_json, status: 201, location: [:api, section], root: false
   end
 
   private

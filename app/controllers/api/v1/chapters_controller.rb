@@ -40,6 +40,9 @@ class Api::V1::ChaptersController < ApplicationController
     section = Section.new(section_params)
     section.chapter_id = params[:id]
 
+    highest_order_section = Section.order(order: :desc).first
+    section.order = highest_order_section.order + 1
+
     if section.save
       render json: section, status: 201, location: [:api, section], root: false
     else
@@ -50,7 +53,7 @@ class Api::V1::ChaptersController < ApplicationController
   def list_sections
     chapter = Chapter.find(params[:id])
     
-    render json: chapter.sections.to_json, status: 201, location: [:api, chapter], root: false
+    render json: chapter.sections.order(order: :desc).to_json, status: 201, location: [:api, chapter], root: false
   end
 
   private
