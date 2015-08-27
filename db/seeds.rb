@@ -42,7 +42,7 @@ chapters = [
 ]
 
 chapters.each do |title, description, image, course_id, order|
-  Chapter.create(title: title, description: description, image: image, course_id: course_id, order)
+  Chapter.create(title: title, description: description, image: image, course_id: course_id, order: order)
 end
 
 sections = [
@@ -61,7 +61,7 @@ sections = [
   ["Section I", "First Section", 7, 1, 1], # id = 13
   ["Section II", "Second Section", 7, 1, 2], # id = 14
   ["Section I", "First Section", 8, 1, 1], # id = 15
-  ["Section II", "Second Section", 8, 1, 2], # id = 16
+  ["Section II", "Second Section", 8, 1, 2] # id = 16
 ]
 
 sections.each do |title, description, chapter_id, section_type, order|
@@ -100,7 +100,7 @@ questions = [
   ["What is the meaning of life?", 15, 1, 30, 1],
   ["What are you looking at?", 15, 2, 50, 2],
   ["What is the meaning of life?", 16, 1, 30, 1],
-  ["What are you looking at?", 16, 2, 50, 2],
+  ["What are you looking at?", 16, 2, 50, 2]
 ]
 
 questions.each do |title, section_id, order, score, question_type|
