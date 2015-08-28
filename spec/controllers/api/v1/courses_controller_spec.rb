@@ -27,7 +27,7 @@ describe Api::V1::CoursesController do
     end
 
     it "returns the information about an course" do
-      courses_response = json_response[:course]
+      courses_response = json_response
       expect(courses_response[:title]).to eql @course.title
     end
 
@@ -42,7 +42,7 @@ describe Api::V1::CoursesController do
       end
 
       it "renders the json representation for the course record just created" do
-        courses_response = json_response[:course]
+        courses_response = json_response
         expect(courses_response[:title]).to eql @course_attributes[:title]
       end
 
@@ -79,7 +79,7 @@ describe Api::V1::CoursesController do
       end
 
       it "renders the json representation for the updated course" do
-        courses_response = json_response[:course]
+        courses_response = json_response
         expect(courses_response[:description]).to eql "New Description"
       end
 

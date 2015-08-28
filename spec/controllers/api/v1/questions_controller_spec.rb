@@ -27,7 +27,7 @@ describe Api::V1::QuestionsController do
     end
 
     it "returns the information about a question" do
-      questions_response = json_response[:question]
+      questions_response = json_response
       expect(questions_response[:title]).to eql @question.title
     end
 

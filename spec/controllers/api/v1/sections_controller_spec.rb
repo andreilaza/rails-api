@@ -27,7 +27,7 @@ describe Api::V1::SectionsController do
     end
 
     it "returns the information about a section" do
-      sections_response = json_response[:section]
+      sections_response = json_response
       expect(sections_response[:title]).to eql @section.title
     end
 

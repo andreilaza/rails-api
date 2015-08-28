@@ -27,11 +27,11 @@ describe Api::V1::InstitutionsController do
     end
 
     it "returns the information about an institution" do
-      institution_response = json_response[:institution]
+      institution_response = json_response
       expect(institution_response[:title]).to eql @institution.title
     end
 
-    it { should respond_with 200 }
+    it { should respond_with 201 }
   end
 
   describe "POST #create" do
@@ -42,7 +42,7 @@ describe Api::V1::InstitutionsController do
       end
 
       it "renders the json representation for the institution record just created" do
-        institution_response = json_response[:institution]
+        institution_response = json_response
         expect(institution_response[:title]).to eql @institution_attributes[:title]
       end
 
@@ -79,7 +79,7 @@ describe Api::V1::InstitutionsController do
       end
 
       it "renders the json representation for the updated institution" do
-        institution_response = json_response[:institution]
+        institution_response = json_response
         expect(institution_response[:description]).to eql "New Description"
       end
 
