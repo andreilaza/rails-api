@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       resources :chapters, :only => [:index, :show, :create, :update, :destroy]
       resources :sections, :only => [:index, :show, :create, :update, :destroy]
       resources :questions, :only => [:index, :show, :create, :update, :destroy]
+      resources :answers, :only => [:index, :show, :create, :update, :destroy]
 
       # Session Routes
       post '/sessions/signup', to: 'sessions#signup'
@@ -34,6 +35,10 @@ Rails.application.routes.draw do
       # Section Routes
       post '/sections/:id/questions', to: 'sections#add_question'
       get '/sections/:id/questions', to: 'sections#list_questions'
+
+      # Question Routes
+      post '/questions/:id/answers', to: 'questions#add_answer'
+      get '/questions/:id/answers', to: 'questions#list_answers'
 
     end
   end

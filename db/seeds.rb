@@ -69,40 +69,73 @@ sections.each do |title, description, chapter_id, section_type, order|
 end
 
 questions = [
-  ["What is the meaning of life?", 1, 1, 30, 1],
-  ["What are you looking at?", 1, 2, 50, 2],
-  ["What is the meaning of life?", 2, 1, 30, 1],
-  ["What are you looking at?", 2, 2, 50, 2],
-  ["What is the meaning of life?", 3, 1, 30, 1],
-  ["What are you looking at?", 3, 2, 50, 2],
-  ["What is the meaning of life?", 4, 1, 30, 1],
-  ["What are you looking at?", 4, 2, 50, 2],
-  ["What is the meaning of life?", 5, 1, 30, 1],
-  ["What are you looking at?", 5, 2, 50, 2],
-  ["What is the meaning of life?", 6, 1, 30, 1],
-  ["What are you looking at?", 6, 2, 50, 2],
-  ["What is the meaning of life?", 7, 1, 30, 1],
-  ["What are you looking at?", 7, 2, 50, 2],
-  ["What is the meaning of life?", 8, 1, 30, 1],
-  ["What are you looking at?", 8, 2, 50, 2],
-  ["What is the meaning of life?", 9, 1, 30, 1],
-  ["What are you looking at?", 9, 2, 50, 2],
-  ["What is the meaning of life?", 10, 1, 30, 1],
-  ["What are you looking at?", 10, 2, 50, 2],
-  ["What is the meaning of life?", 11, 1, 30, 1],
-  ["What are you looking at?", 11, 2, 50, 2],
-  ["What is the meaning of life?", 12, 1, 30, 1],
-  ["What are you looking at?", 12, 2, 50, 2],
-  ["What is the meaning of life?", 13, 1, 30, 1],
-  ["What are you looking at?", 13, 2, 50, 2],
-  ["What is the meaning of life?", 14, 1, 30, 1],
-  ["What are you looking at?", 14, 2, 50, 2],
-  ["What is the meaning of life?", 15, 1, 30, 1],
-  ["What are you looking at?", 15, 2, 50, 2],
-  ["What is the meaning of life?", 16, 1, 30, 1],
-  ["What are you looking at?", 16, 2, 50, 2]
+  ["What is the meaning of life?", 1, 1, 30, 1], # id = 1
+  ["What are you looking at?", 1, 2, 50, 2], # id = 2
+  ["What is the meaning of life?", 2, 1, 30, 1], # id = 3
+  ["What are you looking at?", 2, 2, 50, 2], # id = 4
+  ["What is the meaning of life?", 3, 1, 30, 1], # id = 5
+  ["What are you looking at?", 3, 2, 50, 2], # id = 6
+  ["What is the meaning of life?", 4, 1, 30, 1], # id = 7
+  ["What are you looking at?", 4, 2, 50, 2], # id = 8
+  ["What is the meaning of life?", 5, 1, 30, 1], # id = 8
+  ["What are you looking at?", 5, 2, 50, 2], # id = 10
+  ["What is the meaning of life?", 6, 1, 30, 1], # id = 11
+  ["What are you looking at?", 6, 2, 50, 2], # id = 12
+  ["What is the meaning of life?", 7, 1, 30, 1], # id = 13
+  ["What are you looking at?", 7, 2, 50, 2], # id = 14
+  ["What is the meaning of life?", 8, 1, 30, 1], # id = 15
+  ["What are you looking at?", 8, 2, 50, 2], # id = 16
+  ["What is the meaning of life?", 9, 1, 30, 1], # id = 17
+  ["What are you looking at?", 9, 2, 50, 2], # id = 18
+  ["What is the meaning of life?", 10, 1, 30, 1], # id = 19
+  ["What are you looking at?", 10, 2, 50, 2], # id = 20
+  ["What is the meaning of life?", 11, 1, 30, 1], # id = 21
+  ["What are you looking at?", 11, 2, 50, 2], # id = 22
+  ["What is the meaning of life?", 12, 1, 30, 1], # id = 23
+  ["What are you looking at?", 12, 2, 50, 2], # id = 24
+  ["What is the meaning of life?", 13, 1, 30, 1], # id = 25
+  ["What are you looking at?", 13, 2, 50, 2], # id = 26
+  ["What is the meaning of life?", 14, 1, 30, 1], # id = 27
+  ["What are you looking at?", 14, 2, 50, 2], # id = 28
+  ["What is the meaning of life?", 15, 1, 30, 1], # id = 29
+  ["What are you looking at?", 15, 2, 50, 2], # id = 30
+  ["What is the meaning of life?", 16, 1, 30, 1], # id = 31
+  ["What are you looking at?", 16, 2, 50, 2] # id = 32
 ]
 
 questions.each do |title, section_id, order, score, question_type|
   Question.create(title: title, section_id: section_id, order: order, score: score, question_type: question_type)
 end
+
+# Adds 4 answers per question
+i = 1
+question_id = 1
+128.times do
+  if i % 4 == 1
+    Answer.create(title: "The meaning is meaningless", order: 1, question_id: question_id)
+  elsif i % 4 == 2
+    Answer.create(title: "I don't know", order: 2, question_id: question_id, correct: true)
+  elsif i % 4 == 3
+    Answer.create(title: "The meaning of life is to live forever", order: 3, question_id: question_id)
+  elsif i % 4 == 0
+    Answer.create(title: "Who knows?", order: 3, question_id: question_id)
+    question_id += 1
+  end
+
+  i += 1
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
