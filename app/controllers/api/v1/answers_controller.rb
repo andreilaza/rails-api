@@ -27,6 +27,10 @@ class Api::V1::AnswersController < ApplicationController
 
   end
 
+  def options
+    head 200
+  end
+  
   def destroy
     answer = Answer.find(params[:id])
     answer.destroy

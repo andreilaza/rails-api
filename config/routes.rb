@@ -16,6 +16,8 @@ Rails.application.routes.draw do
       resources :questions, :only => [:index, :show, :create, :update, :destroy]
       resources :answers, :only => [:index, :show, :create, :update, :destroy]
 
+      match '/answers(/:id)' => 'answers#options', via: [:options]
+
       # Session Routes
       post '/sessions/signup', to: 'sessions#signup'
       
