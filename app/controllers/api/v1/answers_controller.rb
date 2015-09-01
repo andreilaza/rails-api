@@ -36,6 +36,6 @@ class Api::V1::AnswersController < ApplicationController
 
   private
     def answer_params
-      params.require(:answer).permit(:title, :section_id, :order, :score, :answer_type)
+      params.require(:answer).permit(:title, :section_id, :order, :score, :correct, :answer_type)
     end
 end
