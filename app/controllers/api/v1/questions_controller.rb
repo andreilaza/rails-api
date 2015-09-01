@@ -67,6 +67,6 @@ class Api::V1::QuestionsController < ApplicationController
     end
 
     def answer_params
-      params.require(:question).permit(:title, :question_id, :order, :correct)
+      params.permit(:title, :question_id, :order, :correct)
     end
 end

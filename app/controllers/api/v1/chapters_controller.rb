@@ -62,6 +62,6 @@ class Api::V1::ChaptersController < ApplicationController
     end
 
     def section_params
-      params.require(:chapter).permit(:title, :description, :chapter_id, :section_type)
+      params.permit(:title, :description, :chapter_id, :section_type)
     end
 end

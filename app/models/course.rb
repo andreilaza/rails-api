@@ -5,4 +5,6 @@ class Course < ActiveRecord::Base
   has_many :courses, through: :course_institution
 
   has_many :chapters, dependent: :destroy
+
+  # mount_uploader :image, ImageUploader
 end

@@ -42,7 +42,7 @@ class Api::V1::SectionsController < ApplicationController
 
     highest_order_question = Question.order(order: :desc).first
     question.order = highest_order_question.order + 1
-
+    
     if question.save
       render json: question, status: 201, location: [:api, question], root: false
     else
@@ -62,6 +62,6 @@ class Api::V1::SectionsController < ApplicationController
     end
 
     def question_params
-      params.require(:section).permit(:title, :section_id, :order, :score, :question_type)
+      params.permit(:title, :section_id, :order, :score, :question_type)
     end
 end

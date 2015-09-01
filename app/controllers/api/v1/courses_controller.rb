@@ -37,6 +37,25 @@ class Api::V1::CoursesController < ApplicationController
   def update
     course = Course.find(params[:id])
 
+    if params[:image]
+      image = params[:image]
+
+      tempfile = Tempfile.new(['test', '.jpg'])
+      tempfile.binmode
+      tempfile.write(Base64.decode64(image[:file]))
+      tempfile.rewind
+
+      mime_type = Mime::Type.lookup_by_extension(File.extname(image[:original_filename])[1..-1]).to_s
+
+      uploaded_file = ActionDispatch::Http::UploadedFile.new(
+      :tempfile => tempfile,
+      :filename => image[:filename],
+      :content_type => mime_type) 
+
+      image = uploaded_file
+      course[:image] = image.path
+    end
+
     if course.update(course_params)
       render json: course, status: 200, location: [:api, course], root: false
     else
@@ -75,10 +94,10 @@ class Api::V1::CoursesController < ApplicationController
 
   private
     def course_params
-      params.require(:course).permit(:title, :description, :image, :published)
+      params.require(:course).permit(:title, :description, :image, :published, :file)
     end
 
     def chapter_params
-      params.require(:course).permit(:title, :description, :image)
+      params.permit(:title, :description, :image)
     end
 end
