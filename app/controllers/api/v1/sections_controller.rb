@@ -9,8 +9,17 @@ class Api::V1::SectionsController < ApplicationController
   def show
     section = Section.find(params[:id])
 
+    serializer = SectionSerializer.new(section).as_json    
+    serializer = serializer['section']
+    
+    assets = Asset.where('entity_id' => section[:id], 'entity_type' => 'section')
+
+    assets.each do |asset|
+      serializer[asset['definition']] = asset['path']
+    end
+
     if section
-      render json: section, status: 200, location: [:api, section], root: false
+      render json: serializer, status: 200, location: [:api, section], root: false
     else
       render json: { errors: section.errors }, status: 422
     end
@@ -20,7 +29,20 @@ class Api::V1::SectionsController < ApplicationController
     section = Section.find(params[:id])
 
     if section.update(section_params)
-      render json: section, status: 200, location: [:api, section], root: false
+      serializer = SectionSerializer.new(section).as_json
+      serializer = serializer['section']
+
+      if params[:content]
+        asset = {
+          'entity_id'   => section[:id],
+          'entity_type' => 'section',
+          'path'        => params[:content],
+          'definition'  => 'content'
+        }
+        add_asset(asset)
+        serializer['content'] = params[:content]
+      end
+      render json: serializer, status: 200, location: [:api, section], root: false
     else
       render json: { errors: section.errors }, status: 422
     end
@@ -58,7 +80,7 @@ class Api::V1::SectionsController < ApplicationController
 
   private
     def section_params
-      params.require(:section).permit(:title, :description, :chapter_id, :section_type)
+      params.permit(:title, :description, :chapter_id, :section_type)
     end
 
     def question_params

@@ -64,7 +64,7 @@ class Api::V1::CoursesController < ApplicationController
       serializer = CourseSerializer.new(course).as_json
       serializer = serializer['course']
 
-      if params[:cover_image]      
+      if params[:cover_image]
         asset = {
           'entity_id'   => course[:id],
           'entity_type' => 'course',
