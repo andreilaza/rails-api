@@ -1,4 +1,4 @@
-class Institution < ActiveRecord::Base
+class Institution < ApplicationModel
   validates :title, presence: true
   
   has_many :institution_users

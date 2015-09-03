@@ -1,4 +1,4 @@
-class Chapter < ActiveRecord::Base
+class Chapter < ApplicationModel
   validates :title, presence: true
   validates :course_id, presence: true
 

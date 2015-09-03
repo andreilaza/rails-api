@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150828073539) do
+ActiveRecord::Schema.define(version: 20150903085218) do
 
   create_table "answers", force: :cascade do |t|
     t.string   "title",       default: ""
@@ -23,6 +23,18 @@ ActiveRecord::Schema.define(version: 20150828073539) do
   end
 
   add_index "answers", ["question_id"], name: "index_answers_on_question_id"
+
+  create_table "assets", force: :cascade do |t|
+    t.integer  "entity_id",   default: 0
+    t.string   "entity_type", default: ""
+    t.string   "path",        default: ""
+    t.string   "definition",  default: ""
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "assets", ["entity_id"], name: "index_assets_on_entity_id"
+  add_index "assets", ["entity_type"], name: "index_assets_on_entity_type"
 
   create_table "chapters", force: :cascade do |t|
     t.string   "title",       default: ""
@@ -50,7 +62,6 @@ ActiveRecord::Schema.define(version: 20150828073539) do
   create_table "courses", force: :cascade do |t|
     t.string   "title",       default: ""
     t.string   "description", default: ""
-    t.string   "image",       default: ""
     t.boolean  "published",   default: false
     t.datetime "created_at"
     t.datetime "updated_at"

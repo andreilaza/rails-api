@@ -1,4 +1,4 @@
-class Question < ActiveRecord::Base
+class Question < ApplicationModel
   validates :title, presence: true
   validates :section_id, presence: true
 

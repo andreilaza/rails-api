@@ -5,13 +5,18 @@ class ApplicationController < ActionController::Base
   # before_filter :set_headers 
   include Authenticable
 
-  # private
-  #   # Set CORS
-  #   def set_headers
-  #     headers['Access-Control-Allow-Origin'] = '*'
-  #     headers['Access-Control-Expose-Headers'] = 'Etag'
-  #     headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD'
-  #     headers['Access-Control-Allow-Headers'] = '*, x-requested-with, Content-Type, If-Modified-Since, If-None-Match'
-  #     headers['Access-Control-Max-Age'] = '86400'
-  #   end
+  def add_asset(params)
+
+    asset = Asset.where(:entity_id => params['entity_id'], :entity_type => params['entity_type'], :definition => params['definition']).first
+
+    if asset      
+      asset['path'] = params['path']
+      asset.save
+    else      
+      asset = Asset.new(params)
+      asset.save
+    end
+
+    asset
+  end
 end

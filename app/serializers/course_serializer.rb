@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :image, :published
+  attributes :id, :title, :description, :published
 
-  has_many :chapters
+  has_many :chapters  
 end

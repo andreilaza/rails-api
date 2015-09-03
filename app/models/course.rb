@@ -1,4 +1,4 @@
-class Course < ActiveRecord::Base
+class Course < ApplicationModel
   validates :title, presence: true
   
   has_many :course_institution
@@ -6,5 +6,6 @@ class Course < ActiveRecord::Base
 
   has_many :chapters, dependent: :destroy
 
+  attr_accessor :isus  
   # mount_uploader :image, ImageUploader
 end

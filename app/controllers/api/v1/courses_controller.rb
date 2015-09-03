@@ -7,17 +7,26 @@ class Api::V1::CoursesController < ApplicationController
   end
 
   def show
-    course =  Course.find(params[:id])
+    course =  Course.find(params[:id])    
 
-    if course
-      render json: course, status: 200, location: [:api, course], root: false
+    serializer = CourseSerializer.new(course).as_json    
+    serializer = serializer['course']
+    
+    assets = Asset.where('entity_id' => course[:id], 'entity_type' => 'course')
+
+    assets.each do |asset|
+      serializer[asset['definition']] = asset['path']
+    end
+
+    if serializer
+      render json: serializer, status: 200, location: [:api, course], root: false
     else
       render json: { errors: course.errors }, status: 404
     end
   end
 
   def create
-    course = Course.new(course_params)
+    course = Course.new(course_params)          
 
     if course.save
       
@@ -27,37 +36,45 @@ class Api::V1::CoursesController < ApplicationController
       course_institution.institution_id = current_user.institution_id
 
       course_institution.save
-      
-      render json: course, status: 201, location: [:api, course], root: false
+
+      serializer = CourseSerializer.new(course).as_json
+      serializer = serializer['course']
+
+      if params[:cover_image]      
+        asset = {
+          'entity_id'   => course[:id],
+          'entity_type' => 'course',
+          'path'        => params[:cover_image],
+          'definition'  => 'cover_image'
+        }
+        add_asset(asset)
+        serializer['cover_image'] = params[:cover_image]
+      end      
+
+      render json: serializer, status: 201, location: [:api, course], root: false
     else
       render json: { errors: course.errors }, status: 422
     end
   end
 
   def update
-    course = Course.find(params[:id])
-
-    if params[:image]
-      image = params[:image]
-
-      tempfile = Tempfile.new(['test', '.jpg'])
-      tempfile.binmode
-      tempfile.write(Base64.decode64(image[:file]))
-      tempfile.rewind
-
-      mime_type = Mime::Type.lookup_by_extension(File.extname(image[:original_filename])[1..-1]).to_s
-
-      uploaded_file = ActionDispatch::Http::UploadedFile.new(
-      :tempfile => tempfile,
-      :filename => image[:filename],
-      :content_type => mime_type) 
-
-      image = uploaded_file
-      course[:image] = image.path
-    end
+    course = Course.find(params[:id])    
 
     if course.update(course_params)
-      render json: course, status: 200, location: [:api, course], root: false
+      serializer = CourseSerializer.new(course).as_json
+      serializer = serializer['course']
+
+      if params[:cover_image]      
+        asset = {
+          'entity_id'   => course[:id],
+          'entity_type' => 'course',
+          'path'        => params[:cover_image],
+          'definition'  => 'cover_image'
+        }
+        add_asset(asset)
+        serializer['cover_image'] = params[:cover_image]
+      end    
+      render json: serializer, status: 200, location: [:api, course], root: false
     else
       render json: { errors: course.errors }, status: 422
     end
@@ -94,7 +111,7 @@ class Api::V1::CoursesController < ApplicationController
 
   private
     def course_params
-      params.require(:course).permit(:title, :description, :image, :published, :file)
+      params.permit(:title, :description, :image, :published, :file)
     end
 
     def chapter_params

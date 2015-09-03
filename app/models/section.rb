@@ -1,4 +1,4 @@
-class Section < ActiveRecord::Base
+class Section < ApplicationModel
   validates :title, presence: true
   validates :chapter_id, presence: true
 
