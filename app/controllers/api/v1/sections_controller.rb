@@ -3,7 +3,24 @@ class Api::V1::SectionsController < ApplicationController
   respond_to :json
 
   def index
-    respond_with Section.all.to_json
+    sections = Section.all
+
+    response = []
+    
+    sections.each do |section|      
+      serializer = SectionSerializer.new(section).as_json
+      serializer = serializer['section']
+      
+      assets = Asset.where('entity_id' => section[:id], 'entity_type' => 'section')
+
+      assets.each do |asset|
+        serializer[asset['definition']] = asset['path']
+      end
+
+      response.push(serializer)
+    end
+
+    render json: response, status: 200, root: false
   end
 
   def show

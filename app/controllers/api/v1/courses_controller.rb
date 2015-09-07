@@ -3,13 +3,30 @@ class Api::V1::CoursesController < ApplicationController
   respond_to :json
 
   def index
-    respond_with Course.all.to_json
+    courses = Course.all
+
+    response = []
+    
+    courses.each do |course|      
+      serializer = CourseSerializer.new(course).as_json
+      serializer = serializer['course']
+      
+      assets = Asset.where('entity_id' => course[:id], 'entity_type' => 'course')
+
+      assets.each do |asset|
+        serializer[asset['definition']] = asset['path']
+      end
+
+      response.push(serializer)
+    end
+
+    render json: response, status: 200, root: false
   end
 
   def show
     course =  Course.find(params[:id])    
 
-    serializer = CourseSerializer.new(course).as_json    
+    serializer = CourseSerializer.new(course).as_json
     serializer = serializer['course']
     
     assets = Asset.where('entity_id' => course[:id], 'entity_type' => 'course')
