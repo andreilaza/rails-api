@@ -15,14 +15,14 @@ InstitutionUser.create({institution_id:1,user_id:1})
 InstitutionUser.create({institution_id:1,user_id:2})
 
 courses = [
-  ["Ctrl-D Comunicare Digitala", "Acesta este primul curs Estudent", "http://monkeydrives.com/images/london-12.jpg", false], # id = 1
-  ["Ctrl-D Design", "Ceva despre design", "http://monkeydrives.com/images/london-12.jpg", false], # id = 2
-  ["Web Development", "Primul curs tech de pe Estudent", "http://monkeydrives.com/images/london-12.jpg", false], # id = 3
-  ["Asistenta financiara", "Asistenta financiara? serios?", "http://monkeydrives.com/images/london-12.jpg", false] # id = 4
+  ["Ctrl-D Comunicare Digitala", "Acesta este primul curs Estudent", false], # id = 1
+  ["Ctrl-D Design", "Ceva despre design", false], # id = 2
+  ["Web Development", "Primul curs tech de pe Estudent", false], # id = 3
+  ["Asistenta financiara", "Asistenta financiara? serios?", false] # id = 4
 ]
 
-courses.each do |title, description, image, published|
-  Course.create(title: title, description: description, image: image, published: published)
+courses.each do |title, description, published|
+  Course.create(title: title, description: description, published: published)
 end
 
 CourseInstitution.create({course_id:1,institution_id:1})
