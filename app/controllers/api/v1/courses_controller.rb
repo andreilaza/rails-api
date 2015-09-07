@@ -111,10 +111,10 @@ class Api::V1::CoursesController < ApplicationController
 
   private
     def course_params
-      params.permit(:title, :description, :image, :published, :file)
+      params.permit(:title, :description, :published, :file)
     end
 
     def chapter_params
-      params.permit(:title, :description, :image)
+      params.permit(:title, :description)
     end
 end
