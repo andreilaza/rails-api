@@ -8,15 +8,7 @@ class Api::V1::CoursesController < ApplicationController
     response = []
     
     courses.each do |course|      
-      serializer = CourseSerializer.new(course).as_json
-      serializer = serializer['course']
-      
-      assets = Asset.where('entity_id' => course[:id], 'entity_type' => 'course')
-
-      assets.each do |asset|
-        serializer[asset['definition']] = asset['path']
-      end
-
+      serializer = serialize_course(course)
       response.push(serializer)
     end
 
@@ -26,17 +18,10 @@ class Api::V1::CoursesController < ApplicationController
   def show
     course =  Course.find(params[:id])    
 
-    serializer = CourseSerializer.new(course).as_json
-    serializer = serializer['course']
-    
-    assets = Asset.where('entity_id' => course[:id], 'entity_type' => 'course')
+    course = serialize_course(course)
 
-    assets.each do |asset|
-      serializer[asset['definition']] = asset['path']
-    end
-
-    if serializer
-      render json: serializer, status: 200, location: [:api, course], root: false
+    if course
+      render json: course, status: 200, location: [:api, course], root: false
     else
       render json: { errors: course.errors }, status: 404
     end
@@ -54,21 +39,13 @@ class Api::V1::CoursesController < ApplicationController
 
       course_institution.save
 
-      serializer = CourseSerializer.new(course).as_json
-      serializer = serializer['course']
+      if params[:cover_image]
+        append_asset(course)
+      end
 
-      if params[:cover_image]      
-        asset = {
-          'entity_id'   => course[:id],
-          'entity_type' => 'course',
-          'path'        => params[:cover_image],
-          'definition'  => 'cover_image'
-        }
-        add_asset(asset)
-        serializer['cover_image'] = params[:cover_image]
-      end      
+      course = serialize_course(course)
 
-      render json: serializer, status: 201, location: [:api, course], root: false
+      render json: course, status: 201, location: [:api, course], root: false
     else
       render json: { errors: course.errors }, status: 422
     end
@@ -78,20 +55,13 @@ class Api::V1::CoursesController < ApplicationController
     course = Course.find(params[:id])    
 
     if course.update(course_params)
-      serializer = CourseSerializer.new(course).as_json
-      serializer = serializer['course']
-
       if params[:cover_image]
-        asset = {
-          'entity_id'   => course[:id],
-          'entity_type' => 'course',
-          'path'        => params[:cover_image],
-          'definition'  => 'cover_image'
-        }
-        add_asset(asset)
-        serializer['cover_image'] = params[:cover_image]
-      end    
-      render json: serializer, status: 200, location: [:api, course], root: false
+        append_asset(course)
+      end
+
+      course = serialize_course(course)
+        
+      render json: course, status: 200, location: [:api, course], root: false
     else
       render json: { errors: course.errors }, status: 422
     end
@@ -133,5 +103,28 @@ class Api::V1::CoursesController < ApplicationController
 
     def chapter_params
       params.permit(:title, :description)
+    end
+
+    def append_asset(course)
+      asset = {
+        'entity_id'   => course[:id],
+        'entity_type' => 'course',
+        'path'        => params[:cover_image],
+        'definition'  => 'cover_image'
+      }
+      add_asset(asset)      
+    end
+
+    def serialize_course(course)
+      serializer = CourseSerializer.new(course).as_json
+      serializer = serializer['course']
+      
+      assets = Asset.where('entity_id' => course[:id], 'entity_type' => 'course')
+
+      assets.each do |asset|
+        serializer[asset['definition']] = asset['path']
+      end
+
+      serializer
     end
 end

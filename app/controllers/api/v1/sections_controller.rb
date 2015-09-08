@@ -8,15 +8,7 @@ class Api::V1::SectionsController < ApplicationController
     response = []
     
     sections.each do |section|      
-      serializer = SectionSerializer.new(section).as_json
-      serializer = serializer['section']
-      
-      assets = Asset.where('entity_id' => section[:id], 'entity_type' => 'section')
-
-      assets.each do |asset|
-        serializer[asset['definition']] = asset['path']
-      end
-
+      serializer = serialize_section(section)
       response.push(serializer)
     end
 
@@ -26,17 +18,10 @@ class Api::V1::SectionsController < ApplicationController
   def show
     section = Section.find(params[:id])
 
-    serializer = SectionSerializer.new(section).as_json    
-    serializer = serializer['section']
-    
-    assets = Asset.where('entity_id' => section[:id], 'entity_type' => 'section')
-
-    assets.each do |asset|
-      serializer[asset['definition']] = asset['path']
-    end
+    section = serialize_section(section)
 
     if section
-      render json: serializer, status: 200, location: [:api, section], root: false
+      render json: section, status: 200, location: [:api, section], root: false
     else
       render json: { errors: section.errors }, status: 422
     end
@@ -46,20 +31,13 @@ class Api::V1::SectionsController < ApplicationController
     section = Section.find(params[:id])
 
     if section.update(section_params)
-      serializer = SectionSerializer.new(section).as_json
-      serializer = serializer['section']
-
       if params[:content]
-        asset = {
-          'entity_id'   => section[:id],
-          'entity_type' => 'section',
-          'path'        => params[:content],
-          'definition'  => 'content'
-        }
-        add_asset(asset)
-        serializer['content'] = params[:content]
+        append_asset(section)
       end
-      render json: serializer, status: 200, location: [:api, section], root: false
+
+      section = serialize_section(section)
+
+      render json: section, status: 200, location: [:api, section], root: false
     else
       render json: { errors: section.errors }, status: 422
     end
@@ -102,5 +80,29 @@ class Api::V1::SectionsController < ApplicationController
 
     def question_params
       params.permit(:title, :section_id, :order, :score, :question_type)
+    end
+
+    def append_asset(section)
+      asset = {
+        'entity_id'   => section[:id],
+        'entity_type' => 'section',
+        'path'        => params[:content],
+        'definition'  => 'content'
+      }
+      add_asset(asset)
+      
+    end
+
+    def serialize_section(section)
+      serializer = SectionSerializer.new(section).as_json
+      serializer = serializer['section']
+      
+      assets = Asset.where('entity_id' => section[:id], 'entity_type' => 'section')
+
+      assets.each do |asset|
+        serializer[asset['definition']] = asset['path']
+      end
+
+      serializer
     end
 end
