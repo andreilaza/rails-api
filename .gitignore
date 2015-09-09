@@ -22,3 +22,4 @@ doc/
 *.swp
 *~
 .DS_Store
+secrets.json

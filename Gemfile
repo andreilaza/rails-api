@@ -40,6 +40,10 @@ gem 'rack-cors', :require => 'rack/cors'
 
 gem 'carrierwave'
 
+gem 'aws-sdk', '~> 2'
+
+gem 'aws-sdk-resources'
+
 group :development do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
