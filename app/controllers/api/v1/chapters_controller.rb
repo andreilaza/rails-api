@@ -10,21 +10,22 @@ class Api::V1::ChaptersController < ApplicationController
     chapter = Chapter.find(params[:id])
 
     if chapter
-      render json: chapter, status: 200, location: [:api, chapter], root: false
+      render json: chapter, status: 200, root: false
     else
       render json: { errors: chapter.errors }, status: 404
     end
   end  
 
-  def update
-    chapter = Chapter.find(params[:id])
-
-    if chapter.update(chapter_params)
-      render json: chapter, status: 200, location: [:api, chapter], root: false
+  def update    
+    if check_permission
+      if chapter.update(chapter_params)
+        render json: chapter, status: 200, root: false
+      else
+        render json: { errors: chapter.errors }, status: 422
+      end
     else
-      render json: { errors: chapter.errors }, status: 422
+      render json: { errors: 'Course not found' }, status: 404 
     end
-
   end
 
   def destroy
@@ -36,24 +37,28 @@ class Api::V1::ChaptersController < ApplicationController
 
   ## Sections actions ##
 
-  def add_section
-    section = Section.new(section_params)
-    section.chapter_id = params[:id]
+  def add_section    
+    if check_permission
+      section = Section.new(section_params)
+      section.chapter_id = params[:id]
 
-    highest_order_section = Section.order(order: :desc).first
-    section.order = highest_order_section.order + 1
+      highest_order_section = Section.order(order: :desc).first
+      section.order = highest_order_section.order + 1
 
-    if section.save
-      render json: section, status: 201, location: [:api, section], root: false
+      if section.save
+        render json: section, status: 201, root: false
+      else
+        render json: { errors: section.errors }, status: 422
+      end
     else
-      render json: { errors: section.errors }, status: 422
+      render json: { errors: 'Course not found' }, status: 404 
     end
   end
 
   def list_sections
     chapter = Chapter.find(params[:id])
     
-    render json: chapter.sections.order(order: :desc).to_json, status: 201, location: [:api, chapter], root: false
+    render json: chapter.sections.order(order: :desc).to_json, status: 201, root: false
   end
 
   private
@@ -63,5 +68,11 @@ class Api::V1::ChaptersController < ApplicationController
 
     def section_params
       params.permit(:title, :description, :chapter_id, :section_type)
-    end
+    end   
+
+    def check_permission
+      # Check if admin has permission to access this course
+      chapter = Chapter.find(params[:id])
+      course_permission = CourseInstitution.where(course_id: chapter.course_id, institution_id: current_user.institution_id).first
+    end 
 end

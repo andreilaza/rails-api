@@ -29,19 +29,21 @@ class Api::V1::SectionsController < ApplicationController
 
   def update
     section = Section.find(params[:id])
+    if check_permission
+      if section.update(section_params)
+        if params[:content]
+          append_asset(section)
+        end
 
-    if section.update(section_params)
-      if params[:content]
-        append_asset(section)
+        section = serialize_section(section)
+
+        render json: section, status: 200, location: [:api, section], root: false
+      else
+        render json: { errors: section.errors }, status: 422
       end
-
-      section = serialize_section(section)
-
-      render json: section, status: 200, location: [:api, section], root: false
     else
-      render json: { errors: section.errors }, status: 422
+      render json: { errors: 'Course not found' }, status: 404 
     end
-
   end
 
   def destroy
@@ -53,17 +55,21 @@ class Api::V1::SectionsController < ApplicationController
 
   ## Questions actions ##
 
-  def add_question
-    question = Question.new(question_params)
-    question.section_id = params[:id]
+  def add_question    
+    if check_permission
+      question = Question.new(question_params)
+      question.section_id = params[:id]
 
-    highest_order_question = Question.order(order: :desc).first
-    question.order = highest_order_question.order + 1
-    
-    if question.save
-      render json: question, status: 201, location: [:api, question], root: false
+      highest_order_question = Question.order(order: :desc).first
+      question.order = highest_order_question.order + 1
+      
+      if question.save
+        render json: question, status: 201, location: [:api, question], root: false
+      else
+        render json: { errors: question.errors }, status: 422
+      end
     else
-      render json: { errors: question.errors }, status: 422
+      render json: { errors: 'Course not found' }, status: 404 
     end
   end
 
@@ -105,4 +111,11 @@ class Api::V1::SectionsController < ApplicationController
 
       serializer
     end
+
+    def check_permission
+      # Check if admin has permission to access this course
+      section = Section.find(params[:id])
+      chapter = Chapter.find(section.chapter_id)
+      course_permission = CourseInstitution.where(course_id: chapter.course_id, institution_id: current_user.institution_id).first
+    end 
 end

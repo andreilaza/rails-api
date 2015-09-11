@@ -102,17 +102,25 @@ class Api::V1::CoursesController < ApplicationController
 
   ## Chapter actions ##
   def add_chapter
-    chapter = Chapter.new(chapter_params)
-    chapter.course_id = params[:id]
+    # Check if admin has permission to access this course
+    course_permission = CourseInstitution.where(course_id: params[:id], institution_id: current_user.institution_id).first
 
-    highest_order_chapter = Chapter.order(order: :desc).first
-    chapter.order = highest_order_chapter.order + 1
+    if course_permission
+      chapter = Chapter.new(chapter_params)
+      chapter.course_id = params[:id]      
 
-    if chapter.save
-      render json: chapter, status: 201, location: [:api, chapter], root: false
+      highest_order_chapter = Chapter.order(order: :desc).first
+      chapter.order = highest_order_chapter.order + 1
+
+      if chapter.save
+        render json: chapter, status: 201, location: [:api, chapter], root: false
+      else
+        render json: { errors: chapter.errors }, status: 422
+      end
     else
-      render json: { errors: chapter.errors }, status: 422
+      render json: { errors: 'Course not found' }, status: 404
     end
+
   end
 
   def list_chapters
