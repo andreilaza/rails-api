@@ -2,8 +2,8 @@ class Api::V1::CoursesController < ApplicationController
   before_action :authenticate_with_token!
   respond_to :json
 
-  def index
-    courses = Course.all
+  def admin_index
+    courses = Course.joins(:course_institution, :institutions).where('institutions.id' => current_user.institution_id).all
 
     response = []
     
@@ -15,8 +15,33 @@ class Api::V1::CoursesController < ApplicationController
     render json: response, status: 200, root: false
   end
 
-  def show
-    course =  Course.find(params[:id])    
+  def estudent_index
+    courses = Course.where(:published => true).all
+
+    response = []
+    
+    courses.each do |course|      
+      serializer = serialize_course(course)
+      response.push(serializer)
+    end
+
+    render json: response, status: 200, root: false
+  end
+  
+  def admin_show
+    course =  Course.joins(:course_institution, :institutions).where('institutions.id' => current_user.institution_id).find(params[:id])    
+
+    course = serialize_course(course)
+
+    if course
+      render json: course, status: 200, location: [:api, course], root: false
+    else
+      render json: { errors: course.errors }, status: 404
+    end
+  end
+
+  def estudent_show
+    course =  Course.where(:published => true).find(params[:id])    
 
     course = serialize_course(course)
 

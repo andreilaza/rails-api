@@ -13,7 +13,6 @@ module Authenticable
 
       @current_user.institution_id = @institution_id
     end
-
     @current_user
   end
 

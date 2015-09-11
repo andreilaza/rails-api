@@ -6,11 +6,18 @@ class User < ApplicationModel
   validates :auth_token, uniqueness: true
 
   attr_accessor :institution_id
+  attr_accessor :role_name
 
   before_create :generate_authentication_token!
 
   has_many :institution_users
   has_many :institutions, through: :institution_users  
+
+  ROLES = {
+    :owner => 0,
+    :admin => 1,
+    :estudent => 2    
+  }
 
   def generate_authentication_token!
     begin
