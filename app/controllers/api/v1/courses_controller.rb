@@ -77,7 +77,7 @@ class Api::V1::CoursesController < ApplicationController
   end
 
   def update
-    course = Course.find(params[:id])    
+    course = Course.joins(:course_institution, :institutions).where('institutions.id' => current_user.institution_id).find(params[:id])    
 
     if course.update(course_params)
       if params[:cover_image]
