@@ -5,7 +5,10 @@ class RoleRouteConstraint
 
   def matches?(request)
     @user ||= User.find_by(auth_token: request.headers['Authorization'])
-
-    @user.role == @role
+    if @user
+      @user.role == @role
+    else
+      false
+    end
   end
 end
