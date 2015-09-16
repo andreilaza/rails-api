@@ -50,7 +50,13 @@ class Api::V1::SectionsController < ApplicationController
     student_section = StudentsSection.where(user_id: current_user.id, section_id: params[:id]).first
     
     if student_section.update(student_section_params)
-      next_section = Section.where("id > ?", student_section.section_id).first
+      next_student_section = StudentsSection.where(user_id: current_user.id, completed: false).first
+
+      if next_student_section
+        next_section = Section.find(next_student_section.section_id)
+      else
+        next_section = nil
+      end
 
       if next_section
         #TO-DO add course progress ??

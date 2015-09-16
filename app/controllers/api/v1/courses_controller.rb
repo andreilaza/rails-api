@@ -193,10 +193,10 @@ class Api::V1::CoursesController < ApplicationController
 
       students_course.save
 
-      chapters = Chapter.where(course_id: course.id).all
+      chapters = Chapter.where(course_id: course.id).order(order: :asc).all
 
       chapters.each do |chapter|
-        sections = Section.where(chapter_id: chapter.id).all
+        sections = Section.where(chapter_id: chapter.id).order(order: :asc).all
         sections.each do |section|
           students_section = StudentsSection.new()
 

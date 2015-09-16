@@ -33,9 +33,10 @@ class Api::V1::QuestionsController < ApplicationController
   def estudent_update
     answer = Answer.find(params[:answer])
 
+    question = Question.find(params[:id])
+
     if answer.correct
-      course = Course.joins(chapters: [{ sections: :questions }]).where('questions.id' => params[:id]).first
-      question = Question.find(params[:id])
+      course = Course.joins(chapters: [{ sections: :questions }]).where('questions.id' => params[:id]).first      
 
       existing = StudentsQuestion.where(section_id: question.section_id, user_id: current_user.id, question_id: question.id).first
 
@@ -51,14 +52,10 @@ class Api::V1::QuestionsController < ApplicationController
       students_question.user_id = current_user.id
       students_question.completed = true      
 
-      existing = StudentsQuestion.where(section_id: question.section_id, user_id: current_user.id).order(:remaining).first
+      questions_count = Question.where(section_id: question.section_id).count
+      students_question_count = StudentsQuestion.where(section_id: question.section_id).count
 
-      if existing
-        students_question.remaining = existing.remaining - 1        
-      else
-        questions = Question.where('"questions"."id" != ? AND "questions"."section_id" = ?', question.id, question.section_id).count
-        students_question.remaining = questions
-      end
+      students_question.remaining = questions_count - students_question_count - 1
 
       students_question.save
 
@@ -66,27 +63,19 @@ class Api::V1::QuestionsController < ApplicationController
         # Next Section
         students_section = StudentsSection.where(user_id: current_user.id, section_id: students_question.section_id).first
         students_section.completed = true
-        students_section.save
+        students_section.save        
 
-        next_section = Section.where("id > ?", students_section.section_id).first
-
-        if next_section
-          #TO-DO add course progress ??
-          next_section = serialize_section(next_section)                
-        else
-          #Course completed
-        end
-
-        render json: next_section, status: 200, root: false
+        response = next_section(question)
+        render json: response, status: 200, root: false
       else
         # Next Question
         
-        next_question = Question.where('"questions"."order" > ? AND "questions"."section_id" = ?', question.order, question.section_id).first
-        render json: next_question, status: 200, root: false     
+        response = next_section(question)
+        render json: response, status: 200, root: false    
       end
     else
-      question = Question.find(params[:id])
-      render json: question, status: 200, root: false
+      response = next_section(question)
+      render json: response, status: 200, root: false
     end
   end
   ## Questions actions ##
@@ -142,5 +131,29 @@ class Api::V1::QuestionsController < ApplicationController
       section = Section.find(question.section_id)
       chapter = Chapter.find(section.chapter_id)
       course_permission = CourseInstitution.where(course_id: chapter.course_id, institution_id: current_user.institution_id).first
+    end
+
+    def next_section(question)
+      current_section = StudentsSection.find(question.section_id)      
+      if current_section && current_section.completed == false
+        next_student_section = current_section
+      else
+        next_student_section = StudentsSection.where(user_id: current_user.id, completed: false).first
+      end
+      
+      if next_student_section
+        next_section = Section.find(next_student_section.section_id)
+      else
+        next_section = nil
+      end
+        
+      if next_section
+        #TO-DO add course progress ??
+        next_section = serialize_section(next_section)                
+      else
+        nil
+      end
+
+      next_section
     end
 end

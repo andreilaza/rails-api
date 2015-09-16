@@ -6,12 +6,12 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-User.create({email:"andrei@estudent.ro", password:"password", password_confirmation:"password"})
+User.create({email:"andrei@estudent.ro", password:"password", password_confirmation:"password", role: 2})
 User.create({email:"stefi@estudent.ro", password:"password", password_confirmation:"password"})
 
 Institution.create({title:"Ctrl-D", image:"http://random.link", description:"Ctrl-D este o organizatie."})
 
-InstitutionUser.create({institution_id:1,user_id:1})
+# InstitutionUser.create({institution_id:1,user_id:1})
 InstitutionUser.create({institution_id:1,user_id:2})
 
 courses = [
