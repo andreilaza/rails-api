@@ -151,7 +151,7 @@ class Api::V1::QuestionsController < ApplicationController
         #TO-DO add course progress ??
         next_section = serialize_section(next_section)                
       else
-        nil
+        next_section = {'course_completed' => true}
       end
 
       next_section
