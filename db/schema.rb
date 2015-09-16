@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150911100907) do
+ActiveRecord::Schema.define(version: 20150915114838) do
 
   create_table "answers", force: :cascade do |t|
     t.string   "title",       default: ""
@@ -114,6 +114,47 @@ ActiveRecord::Schema.define(version: 20150911100907) do
 
   add_index "sections", ["chapter_id"], name: "index_sections_on_chapter_id"
   add_index "sections", ["title"], name: "index_sections_on_title"
+
+  create_table "students_courses", force: :cascade do |t|
+    t.integer  "course_id"
+    t.integer  "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "students_courses", ["course_id"], name: "index_students_courses_on_course_id"
+  add_index "students_courses", ["user_id"], name: "index_students_courses_on_user_id"
+
+  create_table "students_questions", force: :cascade do |t|
+    t.integer  "course_id"
+    t.integer  "user_id"
+    t.integer  "section_id"
+    t.integer  "question_id"
+    t.boolean  "completed",   default: false
+    t.integer  "remaining"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
+  add_index "students_questions", ["course_id"], name: "index_students_questions_on_course_id"
+  add_index "students_questions", ["question_id"], name: "index_students_questions_on_question_id"
+  add_index "students_questions", ["section_id"], name: "index_students_questions_on_section_id"
+  add_index "students_questions", ["user_id"], name: "index_students_questions_on_user_id"
+
+  create_table "students_sections", force: :cascade do |t|
+    t.integer  "course_id"
+    t.integer  "user_id"
+    t.integer  "chapter_id"
+    t.integer  "section_id"
+    t.boolean  "completed",  default: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
+  add_index "students_sections", ["chapter_id"], name: "index_students_sections_on_chapter_id"
+  add_index "students_sections", ["course_id"], name: "index_students_sections_on_course_id"
+  add_index "students_sections", ["section_id"], name: "index_students_sections_on_section_id"
+  add_index "students_sections", ["user_id"], name: "index_students_sections_on_user_id"
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false

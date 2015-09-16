@@ -16,7 +16,7 @@ class Api::V1::QuestionsController < ApplicationController
     end
   end  
 
-  def update
+  def admin_update
     if check_permission
       question = Question.find(params[:id])
 
@@ -30,6 +30,65 @@ class Api::V1::QuestionsController < ApplicationController
     end
   end
 
+  def estudent_update
+    answer = Answer.find(params[:answer])
+
+    if answer.correct
+      course = Course.joins(chapters: [{ sections: :questions }]).where('questions.id' => params[:id]).first
+      question = Question.find(params[:id])
+
+      existing = StudentsQuestion.where(section_id: question.section_id, user_id: current_user.id, question_id: question.id).first
+
+      if existing
+        students_question = existing
+      else
+        students_question = StudentsQuestion.new()
+      end
+
+      students_question.course_id = course.id
+      students_question.section_id = question.section_id
+      students_question.question_id = question.id
+      students_question.user_id = current_user.id
+      students_question.completed = true      
+
+      existing = StudentsQuestion.where(section_id: question.section_id, user_id: current_user.id).order(:remaining).first
+
+      if existing
+        students_question.remaining = existing.remaining - 1        
+      else
+        questions = Question.where('"questions"."id" != ? AND "questions"."section_id" = ?', question.id, question.section_id).count
+        students_question.remaining = questions
+      end
+
+      students_question.save
+
+      if students_question.remaining == 0
+        # Next Section
+        students_section = StudentsSection.where(user_id: current_user.id, section_id: students_question.section_id).first
+        students_section.completed = true
+        students_section.save
+
+        next_section = Section.where("id > ?", students_section.section_id).first
+
+        if next_section
+          #TO-DO add course progress ??
+          next_section = serialize_section(next_section)                
+        else
+          #Course completed
+        end
+
+        render json: next_section, status: 200, root: false
+      else
+        # Next Question
+        
+        next_question = Question.where('"questions"."order" > ? AND "questions"."section_id" = ?', question.order, question.section_id).first
+        render json: next_question, status: 200, root: false     
+      end
+    else
+      question = Question.find(params[:id])
+      render json: question, status: 200, root: false
+    end
+  end
   ## Questions actions ##
 
   def add_answer    

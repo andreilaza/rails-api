@@ -27,20 +27,37 @@ class Api::V1::SectionsController < ApplicationController
     end
   end  
 
-  def update
+  def admin_update
     section = Section.find(params[:id])
     if check_permission
       if section.update(section_params)
         if params[:content]
           append_asset(section)
         end
-
+        
         section = serialize_section(section)
 
         render json: section, status: 200, location: [:api, section], root: false
       else
         render json: { errors: section.errors }, status: 422
       end
+    else
+      render json: { errors: 'Course not found' }, status: 404 
+    end
+  end
+
+  def estudent_update
+    student_section = StudentsSection.where(user_id: current_user.id, section_id: params[:id]).first
+    
+    if student_section.update(student_section_params)
+      next_section = Section.where("id > ?", student_section.section_id).first
+
+      if next_section
+        #TO-DO add course progress ??
+        next_section = serialize_section(next_section)      
+      end
+
+      render json: next_section, status: 200, location: [:api, next_section], root: false    
     else
       render json: { errors: 'Course not found' }, status: 404 
     end
@@ -84,6 +101,10 @@ class Api::V1::SectionsController < ApplicationController
       params.permit(:title, :description, :chapter_id, :section_type)
     end
 
+    def student_section_params
+      params.permit(:completed)
+    end
+
     def question_params
       params.permit(:title, :section_id, :order, :score, :question_type)
     end
@@ -97,20 +118,7 @@ class Api::V1::SectionsController < ApplicationController
       }
       add_asset(asset)
       
-    end
-
-    def serialize_section(section)
-      serializer = SectionSerializer.new(section).as_json
-      serializer = serializer['section']
-      
-      assets = Asset.where('entity_id' => section[:id], 'entity_type' => 'section')
-
-      assets.each do |asset|
-        serializer[asset['definition']] = asset['path']
-      end
-
-      serializer
-    end
+    end    
 
     def check_permission
       # Check if admin has permission to access this course

@@ -20,8 +20,8 @@ class Api::V1::CoursesController < ApplicationController
 
     response = []
     
-    courses.each do |course|      
-      serializer = serialize_course(course)
+    courses.each do |course|     
+      serializer = serialize_course(course)      
       response.push(serializer)
     end
 
@@ -78,7 +78,7 @@ class Api::V1::CoursesController < ApplicationController
 
   def update
     course = Course.joins(:course_institution, :institutions).where('institutions.id' => current_user.institution_id).find(params[:id])    
-
+    
     if course.update(course_params)
       if params[:cover_image]
         append_asset(course)
@@ -100,6 +100,18 @@ class Api::V1::CoursesController < ApplicationController
     head 204    
   end
 
+  def start
+    course = Course.find(params[:id])
+
+    if course.published
+      create_snapshot(course)
+      course = serialize_course(course)
+      render json: course, status: 200, location: [:api, course], root: false
+    else
+      render json: { errors: 'Course not found' }, status: 404
+    end    
+  end
+
   ## Chapter actions ##
   def add_chapter
     # Check if admin has permission to access this course
@@ -110,7 +122,7 @@ class Api::V1::CoursesController < ApplicationController
       chapter.course_id = params[:id]      
 
       highest_order_chapter = Chapter.order(order: :desc).first
-      chapter.order = highest_order_chapter.order + 1
+      chapter.order         = highest_order_chapter.order + 1
 
       if chapter.save
         render json: chapter, status: 201, location: [:api, chapter], root: false
@@ -145,11 +157,11 @@ class Api::V1::CoursesController < ApplicationController
         'path'        => params[:cover_image],
         'definition'  => 'cover_image'
       }
-      add_asset(asset)      
+      add_asset(asset)
     end
 
     def serialize_course(course)
-      serializer = CourseSerializer.new(course).as_json
+      serializer = CourseSerializer.new(course, scope: serialization_scope).as_json
       serializer = serializer['course']
       
       assets = Asset.where('entity_id' => course[:id], 'entity_type' => 'course')
@@ -157,7 +169,44 @@ class Api::V1::CoursesController < ApplicationController
       assets.each do |asset|
         serializer[asset['definition']] = asset['path']
       end
+      
+      if current_user.role == User::ROLES[:estudent]
+        students_course = StudentsCourse.where(user_id: current_user.id, course_id: course.id).first
+
+        if students_course
+          serializer['started'] = true
+        else
+          serializer['started'] = false
+        end
+
+
+      end
 
       serializer
+    end
+
+    def create_snapshot(course)
+      students_course = StudentsCourse.new()
+
+      students_course.course_id = course.id
+      students_course.user_id = current_user.id
+
+      students_course.save
+
+      chapters = Chapter.where(course_id: course.id).all
+
+      chapters.each do |chapter|
+        sections = Section.where(chapter_id: chapter.id).all
+        sections.each do |section|
+          students_section = StudentsSection.new()
+
+          students_section.user_id = current_user.id
+          students_section.course_id = course.id
+          students_section.chapter_id = chapter.id
+          students_section.section_id = section.id
+
+          students_section.save
+        end
+      end
     end
 end

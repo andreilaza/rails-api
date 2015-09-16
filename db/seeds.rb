@@ -118,7 +118,7 @@ question_id = 1
   elsif i % 4 == 3
     Answer.create(title: "The meaning of life is to live forever", order: 3, question_id: question_id)
   elsif i % 4 == 0
-    Answer.create(title: "Who knows?", order: 3, question_id: question_id)
+    Answer.create(title: "Who knows?", order: 4, question_id: question_id)
     question_id += 1
   end
 
