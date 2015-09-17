@@ -61,6 +61,8 @@ class Api::V1::SectionsController < ApplicationController
       if next_section
         #TO-DO add course progress ??
         next_section = serialize_section(next_section)      
+      else
+        next_section = {'course_completed' => true}
       end
 
       render json: next_section, status: 200, location: [:api, next_section], root: false    
