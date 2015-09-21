@@ -44,6 +44,9 @@ gem 'aws-sdk', '~> 2'
 
 gem 'aws-sdk-resources'
 
+# This will prevent sqlite from being installed or required when you deploy your application to a server provider like Heroku.
+gem 'sqlite3'
+
 group :development do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
@@ -52,10 +55,7 @@ group :development do
   gem 'web-console', '~> 2.0'
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-  gem 'spring'
-
-  # This will prevent sqlite from being installed or required when you deploy your application to a server provider like Heroku.
-  gem 'sqlite3'
+  gem 'spring'  
 end
 
 group :test do
