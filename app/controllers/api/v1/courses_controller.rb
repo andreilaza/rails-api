@@ -125,7 +125,7 @@ class Api::V1::CoursesController < ApplicationController
       chapter.order         = highest_order_chapter.order + 1
 
       if chapter.save
-        render json: chapter, status: 201, location: [:api, chapter], root: false
+        render json: chapter, status: 201, root: false
       else
         render json: { errors: chapter.errors }, status: 422
       end
