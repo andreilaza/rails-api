@@ -22,7 +22,7 @@ module Request
 
     def include_default_accept_headers
       api_header
-      api_response_format
+      api_response_format      
     end
   end
 end

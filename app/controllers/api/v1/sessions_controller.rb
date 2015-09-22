@@ -26,6 +26,15 @@ class Api::V1::SessionsController < ApplicationController
       
       # convert user to json to add the auth token field to it      
       output = ActiveSupport::JSON.decode(user.to_json)
+
+      if output["role"] == 1
+        output["role"] = 'admin'
+      end
+
+      if output["role"] == 2
+        output["role"] = 'estudent'
+      end
+
       output["auth_token"] = user[:auth_token]
 
       render json: output.to_json, status: 200, location: [:api, user], root: false
