@@ -96,7 +96,7 @@ class Api::V1::SectionsController < ApplicationController
       question.order = highest_order_question.order + 1
       
       if question.save
-        render json: question, status: 201, location: [:api, question], root: false
+        render json: question, status: 201, root: false
       else
         render json: { errors: question.errors }, status: 422
       end

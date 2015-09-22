@@ -94,7 +94,7 @@ class Api::V1::QuestionsController < ApplicationController
       end
       
       if answer.save
-        render json: answer, status: 201, location: [:api, answer], root: false
+        render json: answer, status: 201, root: false
       else
         render json: { errors: answer.errors }, status: 422
       end
