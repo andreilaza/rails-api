@@ -6,7 +6,7 @@ class User < ApplicationModel
   validates :auth_token, uniqueness: true
 
   attr_accessor :institution_id
-  attr_accessor :role_name
+  attr_accessor :course_id
 
   before_create :generate_authentication_token!
 

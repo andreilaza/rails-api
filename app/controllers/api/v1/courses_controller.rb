@@ -17,7 +17,7 @@ class Api::V1::CoursesController < ApplicationController
 
   def estudent_index
     courses = Course.where(:published => true).all
-
+    
     response = []
     
     courses.each do |course|     

@@ -151,7 +151,15 @@ class Api::V1::QuestionsController < ApplicationController
         #TO-DO add course progress ??
         next_section = serialize_section(next_section)                
       else
+        chapter = Chapter.find(current_section.chapter_id)
+        course = Course.find(chapter.course_id)
+        
+        students_course = StudentsCourse.where(course_id: course.id, user_id: current_user.id).first
+        students_course.completed = true
+        students_course.save
+        
         next_section = {'course_completed' => true}
+        
       end
 
       next_section
