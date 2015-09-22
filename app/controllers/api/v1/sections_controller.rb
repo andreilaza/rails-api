@@ -21,7 +21,7 @@ class Api::V1::SectionsController < ApplicationController
     section = serialize_section(section)
 
     if section
-      render json: section, status: 200, location: [:api, section], root: false
+      render json: section, status: 200, root: false
     else
       render json: { errors: section.errors }, status: 422
     end
@@ -37,7 +37,7 @@ class Api::V1::SectionsController < ApplicationController
         
         section = serialize_section(section)
 
-        render json: section, status: 200, location: [:api, section], root: false
+        render json: section, status: 200, root: false
       else
         render json: { errors: section.errors }, status: 422
       end
@@ -108,7 +108,7 @@ class Api::V1::SectionsController < ApplicationController
   def list_questions
     section = Section.find(params[:id])
     
-    render json: section.questions.order(order: :desc).to_json, status: 201, location: [:api, section], root: false
+    render json: section.questions.order(order: :desc).to_json, status: 201, root: false
   end
 
   private

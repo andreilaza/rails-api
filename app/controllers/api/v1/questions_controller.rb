@@ -10,7 +10,7 @@ class Api::V1::QuestionsController < ApplicationController
     question = Question.find(params[:id])
 
     if question
-      render json: question, status: 200, location: [:api, question], root: false
+      render json: question, status: 200, root: false
     else
       render json: { errors: question.errors }, status: 404
     end
@@ -21,7 +21,7 @@ class Api::V1::QuestionsController < ApplicationController
       question = Question.find(params[:id])
 
       if question.update(question_params)
-        render json: question, status: 200, location: [:api, question], root: false
+        render json: question, status: 200, root: false
       else
         render json: { errors: question.errors }, status: 422
       end
@@ -106,7 +106,7 @@ class Api::V1::QuestionsController < ApplicationController
   def list_answers
     question = Question.find(params[:id])
     
-    render json: question.answers.order(order: :desc).to_json, status: 201, location: [:api, question], root: false
+    render json: question.answers.order(order: :desc).to_json, status: 201, root: false
   end
 
   def destroy

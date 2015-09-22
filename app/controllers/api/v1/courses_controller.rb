@@ -34,7 +34,7 @@ class Api::V1::CoursesController < ApplicationController
     course = serialize_course(course)
 
     if course
-      render json: course, status: 200, location: [:api, course], root: false
+      render json: course, status: 200, root: false
     else
       render json: { errors: course.errors }, status: 404
     end
@@ -46,7 +46,7 @@ class Api::V1::CoursesController < ApplicationController
     course = serialize_course(course)
 
     if course
-      render json: course, status: 200, location: [:api, course], root: false
+      render json: course, status: 200, root: false
     else
       render json: { errors: course.errors }, status: 404
     end
@@ -70,7 +70,7 @@ class Api::V1::CoursesController < ApplicationController
 
       course = serialize_course(course)
 
-      render json: course, status: 201, location: [:api, course], root: false
+      render json: course, status: 201, root: false
     else
       render json: { errors: course.errors }, status: 422
     end
@@ -86,7 +86,7 @@ class Api::V1::CoursesController < ApplicationController
 
       course = serialize_course(course)
         
-      render json: course, status: 200, location: [:api, course], root: false
+      render json: course, status: 200, root: false
     else
       render json: { errors: course.errors }, status: 422
     end
@@ -106,7 +106,7 @@ class Api::V1::CoursesController < ApplicationController
     if course.published
       create_snapshot(course)
       course = serialize_course(course)
-      render json: course, status: 200, location: [:api, course], root: false
+      render json: course, status: 200, root: false
     else
       render json: { errors: 'Course not found' }, status: 404
     end    
@@ -138,7 +138,7 @@ class Api::V1::CoursesController < ApplicationController
   def list_chapters
     course = Course.find(params[:id])
     
-    render json: course.chapters.order(order: :desc).to_json, status: 201, location: [:api, course], root: false
+    render json: course.chapters.order(order: :desc).to_json, status: 201, root: false
   end
 
   private

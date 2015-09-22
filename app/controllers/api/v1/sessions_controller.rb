@@ -5,7 +5,7 @@ class Api::V1::SessionsController < ApplicationController
     user = User.new(user_params)
 
     if user.save
-      render json: user, status: 201, location: [:api, user], root: false  
+      render json: user, status: 201, root: false  
     else
       render json: { errors: user.errors }, status: 422
     end
@@ -37,7 +37,7 @@ class Api::V1::SessionsController < ApplicationController
 
       output["auth_token"] = user[:auth_token]
 
-      render json: output.to_json, status: 200, location: [:api, user], root: false
+      render json: output.to_json, status: 200, root: false
     else
       render json: { errors: "Invalid email or password" }, status: 422
     end

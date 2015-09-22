@@ -10,7 +10,7 @@ class Api::V1::AnswersController < ApplicationController
     answer = Answer.find(params[:id])
 
     if answer
-      render json: answer, status: 200, location: [:api, answer], root: false
+      render json: answer, status: 200, root: false
     else
       render json: { errors: answer.errors }, status: 404
     end
@@ -20,7 +20,7 @@ class Api::V1::AnswersController < ApplicationController
     answer = Answer.find(params[:id])
 
     if answer.update(answer_params)
-      render json: answer, status: 200, location: [:api, answer], root: false
+      render json: answer, status: 200, root: false
     else
       render json: { errors: answer.errors }, status: 422
     end
