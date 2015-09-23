@@ -37,6 +37,14 @@ class Api::V1::SessionsController < ApplicationController
 
       output["auth_token"] = user[:auth_token]
 
+      asset = Asset.where('entity_id' => user.id, 'entity_type' => 'user', 'definition' => 'avatar').first
+      
+      if asset
+        output["avatar"] = asset.path
+      else
+        output["avatar"] = nil
+      end
+
       render json: output.to_json, status: 200, root: false
     else
       render json: { errors: "Invalid email or password" }, status: 422

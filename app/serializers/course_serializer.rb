@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :published, :completed
+  attributes :id, :title, :description, :published, :completed, :institution
 
   has_many :chapters
 
@@ -7,7 +7,7 @@ class CourseSerializer < ActiveModel::Serializer
     if scope.role == User::ROLES[:estudent]
       keys
     else
-      keys - [:completed]
+      keys - [:completed] - [:institution]
     end
   end
 
@@ -19,5 +19,9 @@ class CourseSerializer < ActiveModel::Serializer
     else
       false
     end
+  end
+
+  def institution
+    institution  = Institution.joins(:course_institution, :courses).where('courses.id' => object.id).first
   end
 end

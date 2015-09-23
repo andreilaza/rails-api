@@ -17,6 +17,11 @@ class Api::V1::UsersController < ApplicationController
     user = User.new(user_params)
 
     if user.save
+
+      if params[:avatar]
+        append_asset(user)
+      end
+
       render json: user, status: 201, root: false
     else
       render json: { errors: user.errors }, status: 422
@@ -27,6 +32,11 @@ class Api::V1::UsersController < ApplicationController
     user = current_user
 
     if user.update(user_params)
+
+      if params[:avatar]
+        append_asset(user)
+      end
+
       render json: user, status: 200, root: false
     else
       render json: { errors: user.errors }, status: 422
@@ -41,6 +51,16 @@ class Api::V1::UsersController < ApplicationController
 
   private
     def user_params
-      params.require(:user).permit(:email, :password, :password_confirmation)
+      params.permit(:email, :password, :password_confirmation, :first_name, :last_name)
+    end
+
+    def append_asset(user)
+      asset = {
+        'entity_id'   => user[:id],
+        'entity_type' => 'user',
+        'path'        => params[:avatar],
+        'definition'  => 'avatar'
+      }      
+      add_asset(asset)
     end
 end
