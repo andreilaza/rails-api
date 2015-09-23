@@ -50,6 +50,8 @@ class Api::V1::SectionsController < ApplicationController
     student_section = StudentsSection.where(user_id: current_user.id, section_id: params[:id]).first
     
     if student_section.update(student_section_params)
+      students_course = StudentsCourse.where(course_id: student_section.course_id, user_id: current_user.id).first
+      students_course.touch
       next_student_section = StudentsSection.where(user_id: current_user.id, completed: false).first
 
       if next_student_section
@@ -62,10 +64,6 @@ class Api::V1::SectionsController < ApplicationController
         #TO-DO add course progress ??
         next_section = serialize_section(next_section)      
       else
-        chapter = Chapter.find(student_section.chapter_id)
-        course = Course.find(chapter.course_id)
-        
-        students_course = StudentsCourse.where(course_id: course.id, user_id: current_user.id).first
         students_course.completed = true
         students_course.save
         

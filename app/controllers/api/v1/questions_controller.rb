@@ -65,18 +65,23 @@ class Api::V1::QuestionsController < ApplicationController
         students_section.completed = true
         students_section.save        
 
-        response = next_section(question)
-        render json: response, status: 200, root: false
+        response = next_section(question)        
       else
         # Next Question
         
-        response = next_section(question)
-        render json: response, status: 200, root: false    
+        response = next_section(question)        
       end
     else
-      response = next_section(question)
-      render json: response, status: 200, root: false
+      response = next_section(question)      
     end
+
+    # Update Students Cours
+    students_section = StudentsSection.where(user_id: current_user.id, section_id: question.section_id).first
+    if students_section
+      students_course = StudentsCourse.where(course_id: students_section.course_id, user_id: current_user.id).first
+      students_course.touch
+    end
+    render json: response, status: 200, root: false
   end
   ## Questions actions ##
 
@@ -134,7 +139,8 @@ class Api::V1::QuestionsController < ApplicationController
     end
 
     def next_section(question)
-      current_section = StudentsSection.find(question.section_id)      
+      current_section = StudentsSection.find(question.section_id)
+
       if current_section && current_section.completed == false
         next_student_section = current_section
       else
