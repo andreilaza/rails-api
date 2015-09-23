@@ -49,6 +49,18 @@ class Api::V1::UsersController < ApplicationController
     head 204    
   end
 
+  def latest_course
+    students_course = StudentsCourse.where('completed' => false).order('updated_at DESC').first
+
+    if students_course
+      latest_course = Course.find(students_course.course_id)
+    else
+      latest_course = {}
+    end
+
+    render json: latest_course, status: 200, root: false
+  end
+
   private
     def user_params
       params.permit(:email, :password, :password_confirmation, :first_name, :last_name)

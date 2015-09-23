@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     	resources :users, :only => [:show, :create, :update, :destroy] # owner
       resources :sessions, :only => [:create, :destroy] # all
       resources :institutions, :only => [:index, :show, :create, :update, :destroy] # owner
+
       admin_constraints = RoleRouteConstraint.new(User::ROLES[:admin])
       estudent_constraints = RoleRouteConstraint.new(User::ROLES[:estudent])
       # Course Routes
@@ -70,11 +71,13 @@ Rails.application.routes.draw do
       # Session Routes
       post '/sessions/signup', to: 'sessions#signup'
       
-      # User Routes
+      # Institution Routes
       post '/institutions/:id/users', to: 'institutions#create_users', constraints: admin_constraints
       get '/institutions/:id/users', to: 'institutions#list_users', constraints: admin_constraints
       get '/institutions/:id/courses', to: 'institutions#list_courses', constraints: admin_constraints
 
+      # User Routes
+      get '/users/:id/latest_course', to: 'users#latest_course', constraints: estudent_constraints
     end
   end
 end
