@@ -73,10 +73,10 @@ class Api::V1::InstitutionsController < ApplicationController
 
   private
     def institution_params
-      params.require(:institution).permit(:title, :description, :image)
+      params.permit(:title, :description, :image)
     end
 
     def user_params
-      params.require(:institution).permit(:email, :password, :password_confirmation)
+      params.permit(:email, :password, :password_confirmation)
     end
 end

@@ -78,6 +78,9 @@ Rails.application.routes.draw do
 
       # User Routes
       get '/users/:id/latest_course', to: 'users#latest_course', constraints: estudent_constraints
+
+      # Invitation Routes
+      post '/invitations', to: 'invitations#create', constraints: admin_constraints
     end
   end
 end

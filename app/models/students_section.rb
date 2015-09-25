@@ -1,2 +1,2 @@
-class StudentsSection < ActiveRecord::Base
+class StudentsSection < ApplicationModel
 end

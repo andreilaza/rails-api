@@ -2,9 +2,17 @@ class Api::V1::SessionsController < ApplicationController
   respond_to :json
 
   def signup
-    user = User.new(user_params)
+    user = User.new(user_params)    
+    user.role = User::ROLES[:estudent]
 
-    if user.save
+    invitation = Invitation.find_by(invitation: params[:invitation])
+    
+    if !invitation || invitation.expires < DateTime.now
+      render json: { errors: 'Invitation expired' }, status: 422
+    elsif user.save
+      if params[:avatar]
+        append_asset(user)
+      end
       render json: user, status: 201, root: false  
     else
       render json: { errors: user.errors }, status: 422
@@ -61,6 +69,16 @@ class Api::V1::SessionsController < ApplicationController
 
   private
     def user_params
-      params.permit(:email, :password, :password_confirmation, :role)
+      params.permit(:email, :password, :password_confirmation, :role, :first_name, :last_name)
+    end
+
+    def append_asset(user)
+      asset = {
+        'entity_id'   => user[:id],
+        'entity_type' => 'user',
+        'path'        => params[:avatar],
+        'definition'  => 'avatar'
+      }      
+      add_asset(asset)
     end
 end

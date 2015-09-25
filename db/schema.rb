@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150923131121) do
+ActiveRecord::Schema.define(version: 20150925083947) do
 
   create_table "answers", force: :cascade do |t|
     t.string   "title",       default: ""
@@ -88,6 +88,15 @@ ActiveRecord::Schema.define(version: 20150923131121) do
   end
 
   add_index "institutions", ["title"], name: "index_institutions_on_title"
+
+  create_table "invitations", force: :cascade do |t|
+    t.string   "email",      default: ""
+    t.string   "invitation", default: ""
+    t.integer  "sent",       default: 0
+    t.datetime "expires"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
 
   create_table "questions", force: :cascade do |t|
     t.string   "title",         default: ""

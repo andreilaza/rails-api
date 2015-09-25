@@ -1,2 +1,2 @@
-class StudentsQuestion < ActiveRecord::Base
+class StudentsQuestion < ApplicationModel
 end

@@ -31,11 +31,26 @@ class Api::V1::QuestionsController < ApplicationController
   end
 
   def estudent_update
-    answer = Answer.find(params[:answer])
+    answers = Answer.find(params[:answers])
 
     question = Question.find(params[:id])
 
-    if answer.correct
+    correct = []
+    ok = false 
+
+    if answers
+      answers.each do |answer|
+        if answer.correct == true
+          correct.push(answer.id)
+        end
+      end
+    end
+
+    if correct.length == answers.length
+      ok = true
+    end
+
+    if ok
       course = Course.joins(chapters: [{ sections: :questions }]).where('questions.id' => params[:id]).first      
 
       existing = StudentsQuestion.where(section_id: question.section_id, user_id: current_user.id, question_id: question.id).first
