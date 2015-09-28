@@ -50,7 +50,7 @@ class Api::V1::UsersController < ApplicationController
   end
 
   def latest_course
-    students_course = StudentsCourse.where('completed' => false).order('updated_at DESC').first
+    students_course = StudentsCourse.where('completed' => false, 'user_id' => params[:id]).order('updated_at DESC').first
 
     if students_course
       latest_course = Course.find(students_course.course_id)

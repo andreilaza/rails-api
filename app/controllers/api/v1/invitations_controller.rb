@@ -8,11 +8,9 @@ class Api::V1::InvitationsController < ApplicationController
     invitation.invitation = SecureRandom.hex(30)
     invitation.expires = DateTime.now + 2.days
 
-    # email sending
-
     invitation.sent = 1
-
-    InvitationsMailer.send_invitation(invitation_params[:email])
+    # email sending
+    InvitationsMailer.send_invitation(invitation_params[:email]).deliver
         
     if invitation.save
       render json: invitation, status: 201, root: false
