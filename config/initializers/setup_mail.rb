@@ -1,6 +1,6 @@
 ActionMailer::Base.smtp_settings = {
   :user_name => 'andreilaza',
-  :password => 'Alpareaz12',
+  :password => 'JkVSg3v)TX',
   :domain => 'estudent.ro',
   :address => 'smtp.sendgrid.net',
   :port => 587,
