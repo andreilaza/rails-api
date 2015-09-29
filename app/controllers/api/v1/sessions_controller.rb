@@ -13,7 +13,12 @@ class Api::V1::SessionsController < ApplicationController
       if params[:avatar]
         append_asset(user)
       end
-      render json: user, status: 201, root: false  
+
+      # convert user to json to add the auth token field to it      
+      output = ActiveSupport::JSON.decode(user.to_json)
+      output["auth_token"] = user[:auth_token]
+
+      render json: output.to_json, status: 201, root: false
     else
       render json: { errors: user.errors }, status: 422
     end
