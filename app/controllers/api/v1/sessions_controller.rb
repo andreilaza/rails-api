@@ -19,6 +19,14 @@ class Api::V1::SessionsController < ApplicationController
       output = ActiveSupport::JSON.decode(user.to_json)
       output["auth_token"] = user[:auth_token]
 
+      if output["role"] == User::ROLES[:admin]
+        output["role"] = 'admin'
+      end
+
+      if output["role"] == User::ROLES[:estudent]
+        output["role"] = 'estudent'
+      end
+
       render json: output.to_json, status: 201, root: false
     else
       render json: { errors: user.errors }, status: 422
@@ -41,11 +49,11 @@ class Api::V1::SessionsController < ApplicationController
       # convert user to json to add the auth token field to it      
       output = ActiveSupport::JSON.decode(user.to_json)
 
-      if output["role"] == 1
+      if output["role"] == User::ROLES[:admin]
         output["role"] = 'admin'
       end
 
-      if output["role"] == 2
+      if output["role"] == User::ROLES[:estudent]
         output["role"] = 'estudent'
       end
 
