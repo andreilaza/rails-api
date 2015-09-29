@@ -10,7 +10,7 @@ class Api::V1::InvitationsController < ApplicationController
 
     invitation.sent = 1
     # email sending
-    InvitationsMailer.send_invitation(invitation_params[:email]).deliver
+    InvitationsMailer.send_invitation(invitation_params[:email], invitation).deliver
         
     if invitation.save
       render json: invitation, status: 201, root: false

@@ -1,7 +1,13 @@
 require 'aws-sdk'
 require 'json'
 
-credentials = JSON.load(File.read('secrets.json'))
+# credentials = JSON.load(File.read('secrets.json'))
+credentials = {
+  'AccessKeyId' => ENV["AWS_ACCESS_KEY"],
+  'SecretAccessKey' => ENV["AWS_SECRET_KEY"],
+  'Bucket' => ENV["AWS_BUCKET"],
+  'SeedBucket' => ENV["AWS_SEED_BUCKET"]
+} 
 Aws.config[:region] = 'eu-central-1'
 Aws.config[:credentials] = Aws::Credentials.new(credentials['AccessKeyId'], credentials['SecretAccessKey'])
 

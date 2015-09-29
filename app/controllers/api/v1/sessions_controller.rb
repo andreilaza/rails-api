@@ -59,6 +59,11 @@ class Api::V1::SessionsController < ApplicationController
     end
   end
 
+  def reset_password
+    PasswordMailer.reset_password(user_params[:email], current_user).deliver
+    head 201
+  end
+
   def destroy
     user = User.find_by(auth_token: params[:id])
     

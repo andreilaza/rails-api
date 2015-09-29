@@ -70,6 +70,7 @@ Rails.application.routes.draw do
       
       # Session Routes
       post '/sessions/signup', to: 'sessions#signup'
+      post '/sessions/reset_password', to: 'sessions#reset_password', constraints: estudent_constraints
       
       # Institution Routes
       post '/institutions/:id/users', to: 'institutions#create_users', constraints: admin_constraints
