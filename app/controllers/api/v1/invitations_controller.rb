@@ -21,7 +21,10 @@ class Api::V1::InvitationsController < ApplicationController
 
   def check
     invitation = Invitation.find_by(invitation: params[:invitation])
-    if invitation.expires > DateTime.now
+
+    if !invitation
+      render json: {"error" => "Invitation not found"}, status: 404, root: false
+    elsif invitation.expires > DateTime.now
       render json: {"success" => "Invitation is valid"}, status: 200, root: false
     else
       render json: {"error" => "Invitation is invalid"}, status: 422, root: false
