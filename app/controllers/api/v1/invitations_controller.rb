@@ -19,6 +19,16 @@ class Api::V1::InvitationsController < ApplicationController
     end
   end
 
+  def check
+    invitation = Invitation.find_by(invitation: params[:invitation])
+    if invitation.expires > DateTime.now
+      render json: {"success" => "Invitation is valid"}, status: 200, root: false
+    else
+      render json: {"error" => "Invitation is invalid"}, status: 422, root: false
+    end
+    
+  end
+
   private
     def invitation_params
       params.permit(:email)

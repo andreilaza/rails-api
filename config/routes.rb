@@ -84,6 +84,7 @@ Rails.application.routes.draw do
 
       # Invitation Routes
       post '/invitations', to: 'invitations#create', constraints: admin_constraints
+      post '/invitations/check', to: 'invitations#check'
     end
   end
 end
