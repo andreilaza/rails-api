@@ -9,7 +9,7 @@ class UserSerializer < ActiveModel::Serializer
       'student'
     end
   end
-
+  
   def avatar
     asset = Asset.where('entity_id' => object.id, 'entity_type' => 'user', 'definition' => 'avatar').first
     

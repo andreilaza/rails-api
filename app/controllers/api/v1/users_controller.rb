@@ -28,7 +28,21 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 
-  def update
+  def student_update
+    user = current_user
+
+    if user.update(user_params)
+
+      if params[:avatar]
+        append_asset(user)
+      end      
+      render json: user, status: 200, root: false
+    else
+      render json: { errors: user.errors }, status: 422
+    end
+  end
+
+  def admin_update
     user = current_user
 
     if user.update(user_params)

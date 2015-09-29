@@ -9,7 +9,7 @@ Rails.application.routes.draw do
     scope module: :v1,
               constraints: ApiConstraints.new(version: 1, default: true) do
       
-    	resources :users, :only => [:show, :create, :update, :destroy] # owner
+    	resources :users, :only => [:show, :create, :destroy] # owner
       resources :sessions, :only => [:create, :destroy] # all
       resources :institutions, :only => [:index, :show, :create, :update, :destroy] # owner
 
@@ -79,6 +79,8 @@ Rails.application.routes.draw do
 
       # User Routes
       get '/users/:id/latest_course', to: 'users#latest_course', constraints: estudent_constraints
+      put '/users/:id', to: 'users#estudent_update', constraints: estudent_constraints
+      put '/users/:id', to: 'users#admin_update', constraints: admin_constraints
 
       # Invitation Routes
       post '/invitations', to: 'invitations#create', constraints: admin_constraints
