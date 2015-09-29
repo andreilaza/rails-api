@@ -1,4 +1,5 @@
 class Api::V1::SessionsController < ApplicationController
+  before_action :authenticate_with_token!, :except => [:signup, :create, :reset_password]
   respond_to :json
 
   def signup
@@ -65,8 +66,17 @@ class Api::V1::SessionsController < ApplicationController
   end
 
   def reset_password
-    PasswordMailer.reset_password(user_params[:email], current_user).deliver
-    head 201
+    user = User.find_by(:email =>  user_params[:email])
+    
+    if user
+      new_password = SecureRandom.hex(4)
+      user.password = new_password
+      user.save
+      PasswordMailer.reset_password(user_params[:email], new_password).deliver
+      head 201
+    else
+      render json: { errors: "Invalid email" }, status: 422
+    end
   end
 
   def destroy

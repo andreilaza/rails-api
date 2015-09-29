@@ -1,8 +1,8 @@
 class PasswordMailer < ApplicationMailer
-  def reset_password(email, user)
-    @user = user
+  def reset_password(email, new_password)
+    @new_password = new_password
     response = mail( :to => email,
-    :subject => 'Reseteaza-ti parola!' )
+    :subject => 'Parola noua pentru estudent.ro' )
 
     response
   end

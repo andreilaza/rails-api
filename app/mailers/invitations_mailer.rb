@@ -6,4 +6,9 @@ class InvitationsMailer < ApplicationMailer
 
     response
   end
+
+  def notify_staff
+    mail( :to => ENV["ESTUDENT_EMAIL"],
+    :subject => 'Devino si tu acum estudent!' )
+  end
 end
