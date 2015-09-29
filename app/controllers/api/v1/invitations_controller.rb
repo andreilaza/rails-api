@@ -1,5 +1,5 @@
 class Api::V1::InvitationsController < ApplicationController
-  before_action :authenticate_with_token!
+  before_action :authenticate_with_token!, except: :check
   respond_to :json
 
   def create
@@ -28,8 +28,7 @@ class Api::V1::InvitationsController < ApplicationController
       render json: {"success" => "Invitation is valid"}, status: 200, root: false
     else
       render json: {"error" => "Invitation is invalid"}, status: 422, root: false
-    end
-    
+    end    
   end
 
   private
