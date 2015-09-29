@@ -70,7 +70,7 @@ Rails.application.routes.draw do
       
       # Session Routes
       post '/sessions/signup', to: 'sessions#signup'
-      post '/sessions/reset_password', to: 'sessions#reset_password', constraints: estudent_constraints
+      post '/sessions/reset_password', to: 'sessions#reset_password'
       
       # Institution Routes
       post '/institutions/:id/users', to: 'institutions#create_users', constraints: admin_constraints
@@ -85,6 +85,9 @@ Rails.application.routes.draw do
       # Invitation Routes
       post '/invitations', to: 'invitations#create', constraints: admin_constraints
       post '/invitations/check', to: 'invitations#check'
+
+      # Waiting List Routes
+      post '/waiting-list', to: 'waiting_list#create'
     end
   end
 end

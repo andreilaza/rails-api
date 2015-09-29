@@ -7,8 +7,9 @@ class InvitationsMailer < ApplicationMailer
     response
   end
 
-  def notify_staff
+  def notify_staff(email)
+    @email = email
     mail( :to => ENV["ESTUDENT_EMAIL"],
-    :subject => 'Devino si tu acum estudent!' )
+    :subject => 'Waiting List Update' )
   end
 end
