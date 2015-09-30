@@ -18,12 +18,14 @@ Rails.application.routes.draw do
       # Course Routes
       get '/courses', to: 'courses#admin_index', constraints: admin_constraints
       get '/courses', to: 'courses#estudent_index', constraints: estudent_constraints
+      get '/courses/latest_course', to: 'users#latest_course', constraints: estudent_constraints
       get '/courses/:id', to: 'courses#admin_show', constraints: admin_constraints
       get '/courses/:id', to: 'courses#estudent_show', constraints: estudent_constraints
       post '/courses', to: 'courses#create', constraints: admin_constraints
       put '/courses/:id', to: 'courses#update', constraints: admin_constraints      
       delete '/courses/:id', to: 'courses#destroy', constraints: admin_constraints
       post '/courses/:id/start', to: 'courses#start', constraints: estudent_constraints
+
 
 
       post '/courses/:id/chapters', to: 'courses#add_chapter', constraints: admin_constraints
@@ -77,8 +79,7 @@ Rails.application.routes.draw do
       get '/institutions/:id/users', to: 'institutions#list_users', constraints: admin_constraints
       get '/institutions/:id/courses', to: 'institutions#list_courses', constraints: admin_constraints
 
-      # User Routes
-      get '/users/:id/latest_course', to: 'users#latest_course', constraints: estudent_constraints
+      # User Routes      
       put '/users/:id', to: 'users#estudent_update', constraints: estudent_constraints
       put '/users/:id', to: 'users#admin_update', constraints: admin_constraints
 
