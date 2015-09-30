@@ -3,35 +3,19 @@ class Api::V1::CoursesController < ApplicationController
   respond_to :json
 
   def admin_index
-    courses = Course.joins(:course_institution, :institutions).where('institutions.id' => current_user.institution_id).all
+    courses = Course.joins(:course_institution, :institutions).where('institutions.id' => current_user.institution_id).all    
 
-    response = []
-    
-    courses.each do |course|      
-      serializer = serialize_course(course)
-      response.push(serializer)
-    end
-
-    render json: response, status: 200, root: false
+    render json: courses, status: 200, root: false
   end
 
   def estudent_index
     courses = Course.where(:published => true).all
     
-    response = []
-    
-    courses.each do |course|     
-      serializer = serialize_course(course)      
-      response.push(serializer)
-    end
-
-    render json: response, status: 200, root: false
+    render json: courses, status: 200, root: false
   end
   
   def admin_show
-    course =  Course.joins(:course_institution, :institutions).where('institutions.id' => current_user.institution_id).find(params[:id])    
-
-    course = serialize_course(course)
+    course =  Course.joins(:course_institution, :institutions).where('institutions.id' => current_user.institution_id).find(params[:id])
 
     if course
       render json: course, status: 200, root: false
@@ -43,7 +27,7 @@ class Api::V1::CoursesController < ApplicationController
   def estudent_show
     course =  Course.where(:published => true).find(params[:id])    
 
-    course = serialize_course(course)
+    # course = serialize_course(course)
 
     if course
       render json: course, status: 200, root: false
@@ -68,8 +52,6 @@ class Api::V1::CoursesController < ApplicationController
         append_asset(course)
       end
 
-      course = serialize_course(course)
-
       render json: course, status: 201, root: false
     else
       render json: { errors: course.errors }, status: 422
@@ -82,9 +64,7 @@ class Api::V1::CoursesController < ApplicationController
     if course.update(course_params)
       if params[:cover_image]
         append_asset(course)
-      end
-
-      course = serialize_course(course)
+      end      
         
       render json: course, status: 200, root: false
     else
@@ -104,8 +84,7 @@ class Api::V1::CoursesController < ApplicationController
     course = Course.find(params[:id])
 
     if course.published
-      create_snapshot(course)
-      course = serialize_course(course)
+      create_snapshot(course)      
       render json: course, status: 200, root: false
     else
       render json: { errors: 'Course not found' }, status: 404
@@ -158,31 +137,6 @@ class Api::V1::CoursesController < ApplicationController
         'definition'  => 'cover_image'
       }
       add_asset(asset)
-    end
-
-    def serialize_course(course)
-      serializer = CourseSerializer.new(course, scope: serialization_scope).as_json
-      serializer = serializer['course']
-      
-      assets = Asset.where('entity_id' => course[:id], 'entity_type' => 'course')
-
-      assets.each do |asset|
-        serializer[asset['definition']] = asset['path']
-      end
-      
-      if current_user.role == User::ROLES[:estudent]
-        students_course = StudentsCourse.where(user_id: current_user.id, course_id: course.id).first
-
-        if students_course
-          serializer['started'] = true
-        else
-          serializer['started'] = false
-        end
-
-
-      end
-
-      serializer
     end
 
     def create_snapshot(course)

@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :published, :progress, :completed, :institution
+  attributes :id, :title, :description, :published, :started, :progress, :completed, :institution, :cover_image
 
   has_many :chapters
 
@@ -7,7 +7,7 @@ class CourseSerializer < ActiveModel::Serializer
     if scope.role == User::ROLES[:estudent]
       keys
     else
-      keys - [:completed] - [:institution] - [:progress]
+      keys - [:completed] - [:institution] - [:progress] - [:started]
     end
   end
 
@@ -16,6 +16,16 @@ class CourseSerializer < ActiveModel::Serializer
 
     if students_course
       students_course.completed
+    else
+      false
+    end
+  end
+
+  def started
+    students_course = StudentsCourse.where(user_id: scope.id, course_id: object.id).first
+
+    if students_course
+      true
     else
       false
     end
@@ -33,6 +43,16 @@ class CourseSerializer < ActiveModel::Serializer
       progress = completed * 100 / students_sections
     else
       0
+    end
+  end
+
+  def cover_image
+    asset = Asset.where('entity_id' => object.id, 'entity_type' => 'course', 'definition' => 'cover_image').first
+    
+    if asset
+      asset.path
+    else
+      nil
     end
   end
 end
