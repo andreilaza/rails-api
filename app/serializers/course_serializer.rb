@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :published, :completed, :institution
+  attributes :id, :title, :description, :published, :progress, :completed, :institution
 
   has_many :chapters
 
@@ -7,7 +7,7 @@ class CourseSerializer < ActiveModel::Serializer
     if scope.role == User::ROLES[:estudent]
       keys
     else
-      keys - [:completed] - [:institution]
+      keys - [:completed] - [:institution] - [:progress]
     end
   end
 
@@ -23,5 +23,16 @@ class CourseSerializer < ActiveModel::Serializer
 
   def institution
     institution  = Institution.joins(:course_institution, :courses).where('courses.id' => object.id).first
+  end
+
+  def progress
+    students_sections = StudentsSection.where(user_id: scope.id, course_id: object.id).count
+    completed = StudentsSection.where(user_id: scope.id, course_id: object.id, completed: true).count
+
+    if students_sections > 0
+      progress = completed * 100 / students_sections
+    else
+      0
+    end
   end
 end
