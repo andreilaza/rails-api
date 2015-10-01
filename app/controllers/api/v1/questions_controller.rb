@@ -31,8 +31,8 @@ class Api::V1::QuestionsController < ApplicationController
   end
 
   def estudent_update
-    answers = Answer.find(params[:answers])
-
+    answers = Answer.where(:question_id => params[:id]).all
+    
     question = Question.find(params[:id])
 
     correct = []
@@ -46,10 +46,10 @@ class Api::V1::QuestionsController < ApplicationController
       end
     end
 
-    if correct.length == answers.length
+    if correct.length == params[:answers].length
       ok = true
     end
-
+    
     if ok
       course = Course.joins(chapters: [{ sections: :questions }]).where('questions.id' => params[:id]).first      
 
@@ -90,11 +90,20 @@ class Api::V1::QuestionsController < ApplicationController
       response = next_section(question)      
     end
 
-    # Update Students Cours
+    # Update Students Course
     students_section = StudentsSection.where(user_id: current_user.id, section_id: question.section_id).first
     if students_section
       students_course = StudentsCourse.where(course_id: students_section.course_id, user_id: current_user.id).first
       students_course.touch
+    end
+
+    if !response.has_key?("course_completed")
+      response = {
+        'data' => {
+          'correct' => ok,
+          'section' => response
+        }
+      }
     end
     render json: response, status: 200, root: false
   end
