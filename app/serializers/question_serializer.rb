@@ -1,6 +1,6 @@
 class QuestionSerializer < ActiveModel::Serializer
   attributes :id, :title, :section_id, :order, :score, :question_type, :completed
-
+  
   has_many :answers
 
   def filter(keys)

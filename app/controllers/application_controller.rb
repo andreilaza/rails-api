@@ -22,15 +22,6 @@ class ApplicationController < ActionController::Base
   end
 
   def serialize_section(section)
-    serializer = SectionSerializer.new(section, scope: serialization_scope).as_json
-    serializer = serializer['section']
-    
-    assets = Asset.where('entity_id' => section[:id], 'entity_type' => 'section')
-
-    assets.each do |asset|
-      serializer[asset['definition']] = asset['path']
-    end
-
-    serializer
+    serializer = CustomSectionSerializer.new(section, scope: serialization_scope).as_json    
   end
 end

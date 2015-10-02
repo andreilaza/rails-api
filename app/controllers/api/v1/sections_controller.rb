@@ -3,25 +3,16 @@ class Api::V1::SectionsController < ApplicationController
   respond_to :json
 
   def index
-    sections = Section.all
+    sections = Section.all    
 
-    response = []
-    
-    sections.each do |section|      
-      serializer = serialize_section(section)
-      response.push(serializer)
-    end
-
-    render json: response, status: 200, root: false
+    render json: sections, status: 200, root: false
   end
 
   def show
     section = Section.find(params[:id])
-
-    section = serialize_section(section)
-
+        
     if section
-      render json: section, status: 200, root: false
+      render json: section, serializer: CustomSectionSerializer, status: 200, root: false
     else
       render json: { errors: section.errors }, status: 422
     end
@@ -33,11 +24,9 @@ class Api::V1::SectionsController < ApplicationController
       if section.update(section_params)
         if params[:content]
           append_asset(section)
-        end
-        
-        section = serialize_section(section)
+        end        
 
-        render json: section, status: 200, root: false
+        render json: section, serializer: CustomSectionSerializer, status: 200, root: false
       else
         render json: { errors: section.errors }, status: 422
       end
@@ -61,8 +50,7 @@ class Api::V1::SectionsController < ApplicationController
       end
 
       if next_section
-        #TO-DO add course progress ??
-        next_section = serialize_section(next_section)      
+        #TO-DO add course progress ??        
       else
         students_course.completed = true
         students_course.save
@@ -70,7 +58,7 @@ class Api::V1::SectionsController < ApplicationController
         next_section = {'course_completed' => true}
       end
 
-      render json: next_section, status: 200, location: [:api, next_section], root: false    
+      render json: next_section, serializer: CustomSectionSerializer, status: 200, root: false    
     else
       render json: { errors: 'Course not found' }, status: 404 
     end
