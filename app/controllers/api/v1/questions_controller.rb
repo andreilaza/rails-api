@@ -163,7 +163,7 @@ class Api::V1::QuestionsController < ApplicationController
     end
 
     def next_section(question)
-      current_section = StudentsSection.where(user_id: current_user.id, section_id: question.section_id)
+      current_section = StudentsSection.where(user_id: current_user.id, section_id: question.section_id).first
 
       if current_section && current_section.completed == false
         next_student_section = current_section
