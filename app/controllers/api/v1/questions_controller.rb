@@ -31,25 +31,17 @@ class Api::V1::QuestionsController < ApplicationController
   end
 
   def estudent_update
-    answers = Answer.where(:question_id => params[:id]).all
-    
+    correct_answers = Answer.where(:question_id => params[:id], :correct => true).all
+    payload_answers = Answer.where(:question_id => params[:id], :correct => true, :id => params[:answers]).all
+
     question = Question.find(params[:id])
 
-    correct = []
-    ok = false 
+    ok = false    
 
-    if answers
-      answers.each do |answer|
-        if answer.correct == true
-          correct.push(answer.id)
-        end
-      end
-    end
-
-    if correct.length == params[:answers].length
+    if correct_answers.length == payload_answers.length && correct_answers.length == params[:answers].length
       ok = true
     end
-    
+
     if ok
       course = Course.joins(chapters: [{ sections: :questions }]).where('questions.id' => params[:id]).first      
 
