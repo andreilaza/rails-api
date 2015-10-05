@@ -25,10 +25,8 @@ class Api::V1::CoursesController < ApplicationController
   end
 
   def estudent_show
-    course =  Course.where(:published => true).find(params[:id])    
-
-    # course = serialize_course(course)
-
+    course =  Course.where(:published => true).find(params[:id])
+    
     if course
       render json: course, status: 200, root: false
     else
@@ -89,6 +87,20 @@ class Api::V1::CoursesController < ApplicationController
     else
       render json: { errors: 'Course not found' }, status: 404
     end    
+  end
+
+  def reset
+    StudentsQuestion.destroy_all(user_id: current_user.id, course_id: params[:id])
+    StudentsSection.destroy_all(user_id: current_user.id, course_id: params[:id])
+    StudentsCourse.destroy_all(user_id: current_user.id, course_id: params[:id])
+
+    course =  Course.where(:published => true).find(params[:id])
+    
+    if course
+      render json: course, status: 200, root: false
+    else
+      render json: { errors: course.errors }, status: 404
+    end
   end
 
   ## Chapter actions ##
