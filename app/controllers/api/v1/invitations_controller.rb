@@ -31,6 +31,12 @@ class Api::V1::InvitationsController < ApplicationController
     end    
   end
 
+  def index
+    invitations = Invitation.all
+
+    render json: invitations, status: 200, root: false
+  end
+
   private
     def invitation_params
       params.permit(:email)

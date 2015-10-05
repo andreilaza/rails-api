@@ -87,6 +87,7 @@ Rails.application.routes.draw do
       # Invitation Routes
       post '/invitations', to: 'invitations#create', constraints: admin_constraints
       post '/invitations/check', to: 'invitations#check'
+      get '/invitations', to: 'invitations#index'
 
       # Waiting List Routes
       post '/waiting-list', to: 'waiting_list#create'

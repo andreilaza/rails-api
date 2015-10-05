@@ -1,3 +1,5 @@
+require 'aws-sdk'
+
 class Api::V1::SessionsController < ApplicationController
   before_action :authenticate_with_token!, :except => [:signup, :create, :reset_password]
   respond_to :json
@@ -12,7 +14,7 @@ class Api::V1::SessionsController < ApplicationController
       render json: { errors: 'Invitation expired' }, status: 422
     elsif user.save
       if params[:avatar]
-        append_asset(user)
+        append_asset(user, params[:avatar])
       end
 
       # convert user to json to add the auth token field to it      
@@ -25,6 +27,29 @@ class Api::V1::SessionsController < ApplicationController
 
       if output["role"] == User::ROLES[:estudent]
         output["role"] = 'estudent'
+      end
+
+      # credentials = JSON.load(File.read('secrets.json'))
+      credentials = {
+        'AccessKeyId' => ENV["AWS_ACCESS_KEY"],
+        'SecretAccessKey' => ENV["AWS_SECRET_KEY"],
+        'Bucket' => ENV["AWS_BUCKET"],
+        'SeedBucket' => ENV["AWS_SEED_BUCKET"]
+      } 
+      Aws.config[:region] = 'eu-central-1'
+      Aws.config[:credentials] = Aws::Credentials.new(credentials['AccessKeyId'], credentials['SecretAccessKey'])
+
+      s3 = Aws::S3::Client.new
+      hex = SecureRandom.hex(4)
+      user_avatar = "users/user_#{hex}"
+
+      bucket = Aws::S3::Bucket.new(credentials['Bucket'], client: s3)
+      avatar = Aws::S3::Object.new(credentials['Bucket'], user_avatar)      
+
+      # from an IO object
+      File.open('john_doe.jpeg', 'rb') do |file|
+        avatar.put(body:file)
+        append_asset(user, user_avatar)
       end
 
       render json: output.to_json, status: 201, root: false
@@ -100,11 +125,11 @@ class Api::V1::SessionsController < ApplicationController
       params.permit(:email, :password, :password_confirmation, :role, :first_name, :last_name)
     end
 
-    def append_asset(user)
+    def append_asset(user, avatar)
       asset = {
         'entity_id'   => user[:id],
         'entity_type' => 'user',
-        'path'        => params[:avatar],
+        'path'        => avatar,
         'definition'  => 'avatar'
       }      
       add_asset(asset)
