@@ -94,6 +94,8 @@ class Api::V1::QuestionsController < ApplicationController
           'correct' => ok,
           'section' => response        
       }
+    else
+      response["correct"] = ok
     end
 
     render json: response, status: 200, root: false
