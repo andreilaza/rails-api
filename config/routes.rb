@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       get '/courses', to: 'courses#admin_index', constraints: admin_constraints
       get '/courses', to: 'courses#estudent_index', constraints: estudent_constraints
       get '/courses/latest_course', to: 'users#latest_course', constraints: estudent_constraints
+      get '/courses/reset_course', to: 'courses#reset_course', constraints: estudent_constraints
       get '/courses/:id', to: 'courses#admin_show', constraints: admin_constraints
       get '/courses/:id', to: 'courses#estudent_show', constraints: estudent_constraints
       post '/courses', to: 'courses#create', constraints: admin_constraints

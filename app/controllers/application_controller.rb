@@ -22,6 +22,6 @@ class ApplicationController < ActionController::Base
   end
 
   def serialize_section(section)
-    serializer = CustomSectionSerializer.new(section, scope: serialization_scope).as_json    
+    serializer = CustomSectionSerializer.new(section, scope: serialization_scope, root: false).as_json
   end
 end

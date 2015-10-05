@@ -90,13 +90,12 @@ class Api::V1::QuestionsController < ApplicationController
     end
 
     if !response.has_key?("course_completed")
-      response = {
-        'data' => {
+      response = {        
           'correct' => ok,
-          'section' => response
-        }
+          'section' => response        
       }
     end
+
     render json: response, status: 200, root: false
   end
   ## Questions actions ##
@@ -171,7 +170,7 @@ class Api::V1::QuestionsController < ApplicationController
         
       if next_section
         #TO-DO add course progress ??
-        next_section = serialize_section(next_section)                
+        next_section = serialize_section(next_section)
       else
         chapter = Chapter.find(current_section.chapter_id)
         course = Course.find(chapter.course_id)

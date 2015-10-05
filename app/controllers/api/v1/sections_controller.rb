@@ -44,7 +44,7 @@ class Api::V1::SectionsController < ApplicationController
       next_student_section = StudentsSection.where(user_id: current_user.id, completed: false).first
 
       if next_student_section
-        next_section = Section.find(next_student_section.section_id)
+        next_section = Section.find(next_student_section.section_id)        
       else
         next_section = nil
       end
@@ -58,7 +58,13 @@ class Api::V1::SectionsController < ApplicationController
         next_section = {'course_completed' => true}
       end
 
-      render json: next_section, serializer: CustomSectionSerializer, status: 200, root: false    
+      if next_section.is_a?(ActiveRecord::Base)
+        next_section = {              
+            'section' => serialize_section(next_section)
+        }
+      end
+
+      render json: next_section, status: 200, root: false    
     else
       render json: { errors: 'Course not found' }, status: 404 
     end
