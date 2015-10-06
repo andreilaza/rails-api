@@ -83,6 +83,7 @@ Rails.application.routes.draw do
       # User Routes      
       put '/users/:id', to: 'users#estudent_update', constraints: estudent_constraints
       put '/users/:id', to: 'users#admin_update', constraints: admin_constraints
+      post '/users/change_password', to: 'users#change_password', constraints: estudent_constraints
 
       # Invitation Routes
       post '/invitations', to: 'invitations#create', constraints: admin_constraints

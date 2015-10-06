@@ -66,7 +66,7 @@ class Api::V1::SessionsController < ApplicationController
 
     if user.nil?
       render json: { errors: "Invalid email or password" }, status: 422
-    elsif user.valid_password? user_password 
+    elsif user.valid_password? user_password
       sign_in user
       user.generate_authentication_token!
       user.save

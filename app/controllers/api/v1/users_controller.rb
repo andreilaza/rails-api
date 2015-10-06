@@ -57,6 +57,41 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 
+  def change_password
+    user = current_user
+    
+    if user.valid_password? params[:old_password] || params[:password] == params[:password_confirmation]
+      user.password = params[:password]
+      user.generate_authentication_token!
+      user.save
+
+      # convert user to json to add the auth token field to it      
+      output = ActiveSupport::JSON.decode(user.to_json)
+
+      if output["role"] == User::ROLES[:admin]
+        output["role"] = 'admin'
+      end
+
+      if output["role"] == User::ROLES[:estudent]
+        output["role"] = 'estudent'
+      end
+
+      output["auth_token"] = user[:auth_token]
+
+      asset = Asset.where('entity_id' => user.id, 'entity_type' => 'user', 'definition' => 'avatar').first
+      
+      if asset
+        output["avatar"] = asset.path
+      else
+        output["avatar"] = nil
+      end
+
+      render json: output.to_json, status: 200, root: false      
+    else
+      render json: { errors: "Invalid password" }, status: 200, root: false
+    end
+  end
+
   def destroy
     current_user.destroy
 
