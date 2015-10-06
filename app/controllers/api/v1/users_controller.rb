@@ -28,7 +28,7 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 
-  def student_update
+  def estudent_update
     user = current_user
 
     if user.update(user_params)
