@@ -24,4 +24,16 @@ class ApplicationController < ActionController::Base
   def serialize_section(section)
     serializer = CustomSectionSerializer.new(section, scope: serialization_scope, root: false).as_json
   end
+
+  def set_aws_credentials()
+    credentials = {
+      'AccessKeyId' => ENV["AWS_ACCESS_KEY"],
+      'SecretAccessKey' => ENV["AWS_SECRET_KEY"],
+      'Bucket' => ENV["AWS_BUCKET"],
+      'SeedBucket' => ENV["AWS_SEED_BUCKET"]
+    } 
+
+    Aws.config[:region] = 'eu-central-1'
+    Aws.config[:credentials] = Aws::Credentials.new(credentials['AccessKeyId'], credentials['SecretAccessKey'])
+  end
 end

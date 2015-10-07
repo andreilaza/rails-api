@@ -15,6 +15,7 @@ Rails.application.routes.draw do
 
       admin_constraints = RoleRouteConstraint.new(User::ROLES[:admin])
       estudent_constraints = RoleRouteConstraint.new(User::ROLES[:estudent])
+      
       # Course Routes
       get '/courses', to: 'courses#admin_index', constraints: admin_constraints
       get '/courses', to: 'courses#estudent_index', constraints: estudent_constraints
@@ -26,9 +27,6 @@ Rails.application.routes.draw do
       put '/courses/:id', to: 'courses#update', constraints: admin_constraints      
       delete '/courses/:id', to: 'courses#destroy', constraints: admin_constraints
       post '/courses/:id/start', to: 'courses#start', constraints: estudent_constraints
-
-
-
       post '/courses/:id/chapters', to: 'courses#add_chapter', constraints: admin_constraints
       get '/courses/:id/chapters', to: 'courses#list_chapters', constraints: admin_constraints
 
@@ -92,6 +90,9 @@ Rails.application.routes.draw do
 
       # Waiting List Routes
       post '/waiting-list', to: 'waiting_list#create'
+
+      # Image Routes
+      post '/images/process_image', to: 'images#process_image'
     end
   end
 end
