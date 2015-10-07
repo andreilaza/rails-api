@@ -21,6 +21,7 @@ $ sudo apt-get install git
 We're using imagemagick to process images.
 ```sh
 $ brew install imagemagick
+```
 
 ### Ruby ###
 
