@@ -36,7 +36,7 @@ class Api::V1::ImagesController < ApplicationController
 
       avatar.put(body:file, acl: acl)
     end    
-    render json: avatar.presigned_url(:get, expires_in: 90.seconds), status: 201, root: false
+    render json: { url: avatar.presigned_url(:get, expires_in: 90.seconds)}, status: 201, root: false
   end
 
   private
