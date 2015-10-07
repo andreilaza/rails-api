@@ -17,6 +17,12 @@ In case you're using Linux:
 $ sudo apt-get install git
 ```
 
+### ImageMagick ###
+We're using imagemagick to process images.
+```sh
+$ brew install imagemagick
+```
+
 ### Ruby ###
 
 **Mac OS**:
