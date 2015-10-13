@@ -77,7 +77,7 @@ class Api::V1::SectionsController < ApplicationController
     head 204    
   end  
 
-  def delete_video
+  def content_asset
     asset = Asset.find(params[:id])
     asset.destroy
 

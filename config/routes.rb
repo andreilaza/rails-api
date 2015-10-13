@@ -95,7 +95,7 @@ Rails.application.routes.draw do
       post '/images/process_image', to: 'images#process_image'
 
       # Delete video
-      delete '/content_asset/:id', to: 'sections#delete_video'
+      delete '/content_asset/:id', to: 'sections#content_asset'
       
     end
   end
