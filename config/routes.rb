@@ -95,8 +95,8 @@ Rails.application.routes.draw do
       post '/images/process_image', to: 'images#process_image'
 
       # Delete video
-      delete '/content_asset/:id', to: 'sections#content_asset', constraints: admin_constraints
-      
+      delete '/content_assets/:id', to: 'sections#content_asset', constraints: admin_constraints
+
     end
   end
 end
