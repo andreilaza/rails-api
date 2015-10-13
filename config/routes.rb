@@ -86,13 +86,17 @@ Rails.application.routes.draw do
       # Invitation Routes
       post '/invitations', to: 'invitations#create', constraints: admin_constraints
       post '/invitations/check', to: 'invitations#check'
-      get '/invitations', to: 'invitations#index'
+      get '/invitations', to: 'invitations#index'      
 
       # Waiting List Routes
       post '/waiting-list', to: 'waiting_list#create'
 
       # Image Routes
       post '/images/process_image', to: 'images#process_image'
+
+      # Delete video
+      delete '/video/:id', to: 'sections#delete_video'
+      
     end
   end
 end

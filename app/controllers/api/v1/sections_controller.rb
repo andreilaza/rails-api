@@ -77,6 +77,12 @@ class Api::V1::SectionsController < ApplicationController
     head 204    
   end  
 
+  def delete_video
+    asset = Asset.find(params[:id])
+    asset.destroy
+
+    head 204
+  end
   ## Questions actions ##
 
   def add_question    
@@ -120,7 +126,8 @@ class Api::V1::SectionsController < ApplicationController
       asset = {
         'entity_id'   => section[:id],
         'entity_type' => 'section',
-        'path'        => params[:content],
+        'path'        => params[:content][:path],
+        'metadata'    => params[:content][:metadata],
         'definition'  => 'content'
       }
       add_asset(asset)
