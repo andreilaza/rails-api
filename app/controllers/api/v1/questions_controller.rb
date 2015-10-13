@@ -161,7 +161,7 @@ class Api::V1::QuestionsController < ApplicationController
       if current_section && current_section.completed == false
         next_student_section = current_section
       else
-        next_student_section = StudentsSection.where(user_id: current_user.id, completed: false).first
+        next_student_section = StudentsSection.where(user_id: current_user.id, completed: false, course_id: current_section.course_id).first
       end
       
       if next_student_section

@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
 
     asset = Asset.where(:entity_id => params['entity_id'], :entity_type => params['entity_type'], :definition => params['definition']).first
 
-    if asset      
+    if asset && asset.entity_type != 'section' && asset.definition != 'content'
       asset['path'] = params['path']
       asset.save
     else      

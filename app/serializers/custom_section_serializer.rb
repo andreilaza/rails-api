@@ -21,10 +21,18 @@ class CustomSectionSerializer < ActiveModel::Serializer # Used for requests at t
   end
 
   def content
-    asset = Asset.where('entity_id' => object.id, 'entity_type' => 'section', 'definition' => 'content').first
+    assets = Asset.where('entity_id' => object.id, 'entity_type' => 'section', 'definition' => 'content').all
     
-    if asset
-      asset.path
+    if assets
+      response = []
+      assets.each do |asset|
+        response.push({
+          "id" => asset.id,
+          "path" => asset.path,
+          "metadata" => asset.metadata
+        })      
+      end
+      response
     else
       nil
     end
