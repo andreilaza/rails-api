@@ -31,8 +31,8 @@ class Api::V1::SessionsController < ApplicationController
 
       # credentials = JSON.load(File.read('secrets.json'))
       credentials = {
-        'AccessKeyId' => ENV["AWS_ACCESS_KEY"],
-        'SecretAccessKey' => ENV["AWS_SECRET_KEY"],
+        'AccessKeyId' => ENV["ADMIN_AWS_KEY_ID"],
+        'SecretAccessKey' => ENV["ADMIN_ADMIN_AWS_KEY_ID"],
         'Bucket' => ENV["AWS_BUCKET"],
         'SeedBucket' => ENV["AWS_SEED_BUCKET"]
       } 
