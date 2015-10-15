@@ -111,7 +111,7 @@ class Api::V1::SectionsController < ApplicationController
 
   private
     def section_params
-      params.permit(:title, :description, :chapter_id, :section_type)
+      params.permit(:title, :description, :chapter_id, :section_type, :duration)
     end
 
     def student_section_params
