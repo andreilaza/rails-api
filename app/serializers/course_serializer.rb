@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :published, :started, :progress, :completed, :institution, :cover_image
+  attributes :id, :title, :description, :published, :started, :progress, :completed, :duration, :institution, :cover_image
 
   has_many :chapters
 
@@ -53,6 +53,17 @@ class CourseSerializer < ActiveModel::Serializer
       asset.path
     else
       nil
+    end
+  end
+
+  def duration
+    chapters = Chapter.where(course_id: object.id).select(:id)
+    duration = Section.where(chapter_id: chapters).sum(:duration)
+
+    if duration
+      duration
+    else
+      0
     end
   end
 end

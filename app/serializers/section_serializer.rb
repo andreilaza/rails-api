@@ -1,7 +1,5 @@
 class SectionSerializer < ActiveModel::Serializer # Used for requests at the course and chapter level.
-  attributes :id, :title, :description, :chapter_id, :section_type, :order, :completed, :content
-
-  # has_many :questions
+  attributes :id, :title, :description, :chapter_id, :section_type, :order, :completed, :duration, :content  
 
   def filter(keys)
     if scope.role == User::ROLES[:estudent]
