@@ -13,6 +13,13 @@ class Api::V1::InvitationsController < ApplicationController
     InvitationsMailer.send_invitation(invitation_params[:email], invitation).deliver
         
     if invitation.save
+      waiting_list_entry = WaitingList.where(email: invitation_params[:email]).first
+
+      if waiting_list_entry
+        waiting_list_entry.sent = 1
+        waiting_list_entry.save
+      end
+
       render json: invitation, status: 201, root: false
     else
       render json: { errors: invitation.errors }, status: 422
