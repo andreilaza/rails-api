@@ -13,7 +13,7 @@ Institution.create({title:"Ctrl-D", image:"http://random.link", description:"Ctr
 
 # InstitutionUser.create({institution_id:1,user_id:1})
 InstitutionUser.create({institution_id:1,user_id:2})
-
+=begin
 courses = [
   ["Ctrl-D Comunicare Digitala", "Acesta este primul curs Estudent", false], # id = 1
   ["Ctrl-D Design", "Ceva despre design", false], # id = 2
@@ -124,3 +124,4 @@ question_id = 1
 
   i += 1
 end
+=end

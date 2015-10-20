@@ -4,8 +4,7 @@ class UserSerializer < ActiveModel::Serializer
   def role    
     if object.role == 1
       'admin'
-    end
-    if object.role == 2
+    elsif object.role == 2
       'student'
     end
   end

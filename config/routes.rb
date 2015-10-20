@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   devise_for :users
   # API definition
   namespace :api, defaults: { format: :json },
-                              constraints: { subdomain: 'api' }, path: '/' do
+                              constraints: { subdomain: 'staging-api' }, path: '/' do
     scope module: :v1,
               constraints: ApiConstraints.new(version: 1, default: true) do
       
@@ -15,7 +15,7 @@ Rails.application.routes.draw do
 
       admin_constraints = RoleRouteConstraint.new(User::ROLES[:admin])
       estudent_constraints = RoleRouteConstraint.new(User::ROLES[:estudent])
-      
+
       # Course Routes
       get '/courses', to: 'courses#admin_index', constraints: admin_constraints
       get '/courses', to: 'courses#estudent_index', constraints: estudent_constraints
@@ -29,7 +29,7 @@ Rails.application.routes.draw do
       post '/courses/:id/start', to: 'courses#start', constraints: estudent_constraints
       post '/courses/:id/chapters', to: 'courses#add_chapter', constraints: admin_constraints
       get '/courses/:id/chapters', to: 'courses#list_chapters', constraints: admin_constraints
-
+      
       # Chapter Routes
       get '/chapters', to: 'chapters#index'
       get '/chapters/:id', to: 'chapters#show'
