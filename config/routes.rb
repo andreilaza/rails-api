@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   devise_for :users
   # API definition
   namespace :api, defaults: { format: :json },
-                              constraints: { subdomain: 'staging-api' }, path: '/' do
+                              constraints: { subdomain: 'api' }, path: '/' do
     scope module: :v1,
               constraints: ApiConstraints.new(version: 1, default: true) do
       
@@ -89,6 +89,7 @@ Rails.application.routes.draw do
       get '/invitations', to: 'invitations#index'      
 
       # Waiting List Routes
+      get '/waiting-list', to: 'waiting_list#index', constraints: admin_constraints
       post '/waiting-list', to: 'waiting_list#create'
 
       # Image Routes

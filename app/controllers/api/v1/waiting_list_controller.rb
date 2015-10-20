@@ -1,6 +1,13 @@
 class Api::V1::WaitingListController < ApplicationController
   before_action :authenticate_with_token!, :except => [:create]
   respond_to :json
+
+  def index
+    waiting_list = WaitingList.all    
+
+    render json: waiting_list, status: 200, root: false
+  end
+
   def create
     waiting_list_entry = WaitingList.new(waiting_list_params)
 
