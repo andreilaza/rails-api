@@ -46,8 +46,7 @@ gem 'aws-sdk-resources'
 
 gem 'mini_magick'
 
-# This will prevent sqlite from being installed or required when you deploy your application to a server provider like Heroku.
-gem 'sqlite3'
+gem 'mysql2', '~> 0.3.18'
 
 group :development do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
