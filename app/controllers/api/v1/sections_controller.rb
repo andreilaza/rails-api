@@ -91,7 +91,12 @@ class Api::V1::SectionsController < ApplicationController
       question.section_id = params[:id]
 
       highest_order_question = Question.order(order: :desc).first
-      question.order = highest_order_question.order + 1
+      
+      if highest_order_question
+        question.order = highest_order_question.order + 1
+      else
+        question.order = 1
+      end
       
       if question.save
         render json: question, status: 201, root: false

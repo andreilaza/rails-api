@@ -43,7 +43,12 @@ class Api::V1::ChaptersController < ApplicationController
       section.chapter_id = params[:id]
 
       highest_order_section = Section.order(order: :desc).first
-      section.order = highest_order_section.order + 1
+
+      if highest_order_section
+        section.order = highest_order_section.order + 1
+      else
+        section.order = 1
+      end
 
       if section.save
         render json: section, status: 201, root: false
