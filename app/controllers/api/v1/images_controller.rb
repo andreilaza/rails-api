@@ -11,7 +11,7 @@ class Api::V1::ImagesController < ApplicationController
 
     hex = SecureRandom.hex(4)    
 
-    original_image = avatar = Aws::S3::Object.new(ENV["AWS_BUCKET"], params[:path_from])
+    original_image = Aws::S3::Object.new(ENV["AWS_BUCKET"], params[:path_from])
     original_image_url = original_image.presigned_url(:get, expires_in: 90.seconds)
 
     # take acl from original image

@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
   def set_aws_credentials()
     credentials = {
       'AccessKeyId' => ENV["ADMIN_AWS_KEY_ID"],
-      'SecretAccessKey' => ENV["ADMIN_ADMIN_AWS_KEY_ID"],
+      'SecretAccessKey' => ENV["ADMIN_AWS_ACCESS_KEY"],
       'Bucket' => ENV["AWS_BUCKET"],
       'SeedBucket' => ENV["AWS_SEED_BUCKET"]
     } 
