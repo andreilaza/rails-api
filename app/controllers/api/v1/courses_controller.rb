@@ -113,7 +113,11 @@ class Api::V1::CoursesController < ApplicationController
       chapter.course_id = params[:id]      
 
       highest_order_chapter = Chapter.order(order: :desc).first
-      chapter.order         = highest_order_chapter.order + 1
+      if highest_order_chapter
+        chapter.order = highest_order_chapter.order + 1
+      else
+        chapter.order = 1
+      end
 
       if chapter.save
         render json: chapter, status: 201, root: false
