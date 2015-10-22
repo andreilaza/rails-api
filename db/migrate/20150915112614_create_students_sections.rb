@@ -1,6 +1,6 @@
 class CreateStudentsSections < ActiveRecord::Migration
   def change
-    create_table :students_sections do |t|
+    create_table :students_sections, :options => 'ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin' do |t|
       t.integer :course_id
       t.integer :user_id
       t.integer :chapter_id

@@ -1,6 +1,6 @@
 class CreateAnswers < ActiveRecord::Migration
   def change
-    create_table :answers do |t|
+    create_table :answers, :options => 'ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin' do |t|
       t.string :title, default: ""
       t.integer :question_id
       t.integer :correct, default: 0
