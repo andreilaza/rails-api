@@ -48,7 +48,8 @@ class Api::V1::SessionsController < ApplicationController
 
       # from an IO object
       File.open('john_doe.jpeg', 'rb') do |file|
-        avatar.put(body:file)
+        acl = "public-read"
+        avatar.put(body:file, acl: acl)        
         append_asset(user, user_avatar)
       end
 
