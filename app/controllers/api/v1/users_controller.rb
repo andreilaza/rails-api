@@ -28,7 +28,7 @@ class Api::V1::UsersController < ApplicationController
     end
   end  
 
-  def change_password
+  def change_password    
     send("#{current_user.role_name}_change_password")
   end  
 
@@ -90,7 +90,12 @@ class Api::V1::UsersController < ApplicationController
       students_course = StudentsCourse.where('completed' => false, 'user_id' => current_user.id).order('updated_at DESC').first
 
       if students_course
-        latest_course = Course.find(students_course.course_id)
+        latest_course = Course.where(id: students_course.course_id, published: true).first
+
+        if !latest_course
+          latest_course = {}
+        end
+
       else
         latest_course = {}
       end
