@@ -17,6 +17,9 @@ class Api::V1::ImagesController < ApplicationController
     # take acl from original image
     image = MiniMagick::Image.open(original_image_url)
 
+    image.auto_orient
+    image = yield(image) if block_given?
+    
     if params[:crop]
       image = resize_and_crop(image, params[:width])
     else
@@ -36,7 +39,7 @@ class Api::V1::ImagesController < ApplicationController
 
       avatar.put(body:file, acl: acl)
     end    
-    render json: { url: avatar.presigned_url(:get, expires_in: 90.seconds)}, status: 201, root: false
+    render json: { url: avatar.presigned_url(:get, expires_in: 90.seconds)}, status: 201, root: false    
   end
 
   private
