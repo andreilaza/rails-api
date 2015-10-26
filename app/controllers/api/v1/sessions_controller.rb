@@ -30,14 +30,7 @@ class Api::V1::SessionsController < ApplicationController
       end
 
       # credentials = JSON.load(File.read('secrets.json'))
-      credentials = {
-        'AccessKeyId' => ENV["ADMIN_AWS_KEY_ID"],
-        'SecretAccessKey' => ENV["ADMIN_AWS_ACCESS_KEY"],
-        'Bucket' => ENV["AWS_BUCKET"],
-        'SeedBucket' => ENV["AWS_SEED_BUCKET"]
-      } 
-      Aws.config[:region] = 'eu-central-1'
-      Aws.config[:credentials] = Aws::Credentials.new(credentials['AccessKeyId'], credentials['SecretAccessKey'])
+      set_aws_credentials
 
       s3 = Aws::S3::Client.new
       hex = SecureRandom.hex(4)

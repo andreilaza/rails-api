@@ -53,7 +53,7 @@ class ApplicationController < ActionController::Base
       'SeedBucket' => ENV["AWS_SEED_BUCKET"]
     } 
 
-    Aws.config[:region] = 'eu-central-1'
+    Aws.config[:region] = ENV["AWS_REGION"]
     Aws.config[:credentials] = Aws::Credentials.new(credentials['AccessKeyId'], credentials['SecretAccessKey'])
   end
 end
