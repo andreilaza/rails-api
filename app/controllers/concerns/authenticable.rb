@@ -12,6 +12,14 @@ module Authenticable
       end    
 
       @current_user.institution_id = @institution_id
+
+      if @current_user.role == User::ROLES[:admin]
+        @current_user.role_name = 'admin'
+      end
+
+      if @current_user.role == User::ROLES[:estudent]
+        @current_user.role_name = 'estudent'
+      end      
     end
         
     @current_user

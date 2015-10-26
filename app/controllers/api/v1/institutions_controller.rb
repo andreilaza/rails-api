@@ -44,34 +44,46 @@ class Api::V1::InstitutionsController < ApplicationController
     head 204    
   end
 
-  ## Custom Actions ##
+  ## Custom Actions ## 
   def create_users
-    institution = Institution.find(params[:id])
-    user = User.create(user_params)
-    institution.institution_users.create(:user_id => user.id)
-
-    if !user.save
-      render json: { errors: user.errors }, status: 422
-    elsif !institution.save
-      render json: { errors: institution.errors }, status: 422
-    else
-      render json: institution, status: 200, root: false
-    end
+    send("#{current_user.role_name}_create_users")
   end
 
   def list_users
-    institution = Institution.find(params[:id])
-
-    render json: institution.users.to_json(:except => [:auth_token]), status: 200, root: false 
+    send("#{current_user.role_name}_list_users")
   end
 
   def list_courses
-    institution = Institution.find(params[:id])
-
-    render json: institution.courses.to_json, status: 200, root: false   
+    send("#{current_user.role_name}_list_courses")
   end
 
   private
+    def admin_create_users
+      institution = Institution.find(params[:id])
+      user = User.create(user_params)
+      institution.institution_users.create(:user_id => user.id)
+
+      if !user.save
+        render json: { errors: user.errors }, status: 422
+      elsif !institution.save
+        render json: { errors: institution.errors }, status: 422
+      else
+        render json: institution, status: 200, root: false
+      end
+    end
+
+    def admin_list_users
+      institution = Institution.find(params[:id])
+
+      render json: institution.users.to_json(:except => [:auth_token]), status: 200, root: false 
+    end
+
+    def admin_list_courses
+      institution = Institution.find(params[:id])
+
+      render json: institution.courses.to_json, status: 200, root: false   
+    end
+
     def institution_params
       params.permit(:title, :description, :image)
     end

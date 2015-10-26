@@ -16,57 +16,65 @@ class Api::V1::ChaptersController < ApplicationController
     end
   end  
 
-  def update    
-    if check_permission
-      if chapter.update(chapter_params)
-        render json: chapter, status: 200, root: false
-      else
-        render json: { errors: chapter.errors }, status: 422
-      end
-    else
-      render json: { errors: 'Course not found' }, status: 404 
-    end
-  end
-
-  def destroy
-    chapter = Chapter.find(params[:id])
-    chapter.destroy
-
-    head 204    
-  end
-
   ## Sections actions ##
-
-  def add_section    
-    if check_permission
-      section = Section.new(section_params)
-      section.chapter_id = params[:id]
-
-      highest_order_section = Section.order(order: :desc).first
-
-      if highest_order_section
-        section.order = highest_order_section.order + 1
-      else
-        section.order = 1
-      end
-
-      if section.save
-        render json: section, status: 201, root: false
-      else
-        render json: { errors: section.errors }, status: 422
-      end
-    else
-      render json: { errors: 'Course not found' }, status: 404 
-    end
+  def add_section
+    send("#{current_user.role_name}_add_section")
   end
 
   def list_sections
-    chapter = Chapter.find(params[:id])
-    
-    render json: chapter.sections.order(order: :desc).to_json, status: 201, root: false
+    send("#{current_user.role_name}_list_sections")
   end
-
+  
   private
+    def admin_update    
+      if check_permission
+        if chapter.update(chapter_params)
+          render json: chapter, status: 200, root: false
+        else
+          render json: { errors: chapter.errors }, status: 422
+        end
+      else
+        render json: { errors: 'Course not found' }, status: 404 
+      end
+    end
+
+    def admin_destroy
+      chapter = Chapter.find(params[:id])
+      chapter.destroy
+
+      head 204    
+    end
+
+    def admin_add_section    
+      if check_permission
+        section = Section.new(section_params)
+        section.chapter_id = params[:id]
+
+        highest_order_section = Section.order(order: :desc).first
+
+        if highest_order_section
+          section.order = highest_order_section.order + 1
+        else
+          section.order = 1
+        end
+
+        if section.save
+          render json: section, status: 201, root: false
+        else
+          render json: { errors: section.errors }, status: 422
+        end
+      else
+        render json: { errors: 'Course not found' }, status: 404 
+      end
+    end
+
+    def admin_list_sections
+      chapter = Chapter.find(params[:id])
+      
+      render json: chapter.sections.order(order: :desc).to_json, status: 201, root: false
+    end
+
+
     def chapter_params
       params.require(:chapter).permit(:title, :description, :image)
     end

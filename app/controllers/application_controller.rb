@@ -5,6 +5,26 @@ class ApplicationController < ActionController::Base
   serialization_scope :current_user
   # before_filter :set_headers 
   include Authenticable
+    
+  def index
+    send("#{current_user.role_name}_index")
+  end
+  
+  def show
+    send("#{current_user.role_name}_show")
+  end
+
+  def create
+    send("#{current_user.role_name}_create")
+  end
+
+  def update
+    send("#{current_user.role_name}_update")
+  end
+
+  def destroy
+    send("#{current_user.role_name}_destroy")
+  end
 
   def add_asset(params)
 
