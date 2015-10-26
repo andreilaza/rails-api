@@ -17,7 +17,7 @@ Rails.application.routes.draw do
       # estudent_constraints = RoleRouteConstraint.new(User::ROLES[:estudent])
       
       # Course Routes
-      get '/courses', to: 'courses#index'#, constraints: constraints
+      get '/courses', to: 'courses#admin_index'#, constraints: constraints
       get '/estudent_courses', to: 'courses#estudent_index'#, constraints: estudent_constraints
       get '/estudent_courses/latest_course', to: 'users#latest_course'#, constraints: estudent_constraints
       post '/estudent_courses/:id/reset', to: 'courses#reset'#, constraints: estudent_constraints
