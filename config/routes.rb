@@ -21,7 +21,7 @@ Rails.application.routes.draw do
       get '/estudent_courses', to: 'courses#estudent_index'#, constraints: estudent_constraints
       get '/estudent_courses/latest_course', to: 'users#latest_course'#, constraints: estudent_constraints
       post '/estudent_courses/:id/reset', to: 'courses#reset'#, constraints: estudent_constraints
-      get '/courses/:id', to: 'courses#show'#, constraints: constraints
+      get '/courses/:id', to: 'courses#admin_show'#, constraints: constraints
       get '/estudent_courses/:id', to: 'courses#estudent_show'#, constraints: estudent_constraints
       post '/courses', to: 'courses#create'#, constraints: constraints
       put '/courses/:id', to: 'courses#update'#, constraints: constraints      
@@ -44,7 +44,7 @@ Rails.application.routes.draw do
       get '/sections', to: 'sections#index'
       get '/sections/:id', to: 'sections#show'
       post '/sections', to: 'sections#create'#, constraints: constraints
-      put '/sections/:id', to: 'sections#update'#, constraints: constraints
+      put '/sections/:id', to: 'sections#admin_update'#, constraints: constraints
       put '/estudent_sections/:id', to: 'sections#estudent_update'#, constraints: estudent_constraints
       delete '/sections/:id', to: 'sections#destroy'#, constraints: constraints
 
@@ -55,7 +55,7 @@ Rails.application.routes.draw do
       get '/questions', to: 'questions#index'
       get '/questions/:id', to: 'questions#show'
       post '/questions', to: 'questions#create'#, constraints: constraints
-      put '/questions/:id', to: 'questions#update'#, constraints: constraints
+      put '/questions/:id', to: 'questions#admin_update'#, constraints: constraints
       put '/estudent_questions/:id', to: 'questions#estudent_update'#, constraints: estudent_constraints
       delete '/questions/:id', to: 'questions#destroy'#, constraints: constraints
 
@@ -80,7 +80,7 @@ Rails.application.routes.draw do
 
       # User Routes      
       put '/estudent_users/:id', to: 'users#estudent_update'#, constraints: estudent_constraints
-      put '/users/:id', to: 'users#update'#, constraints: constraints
+      put '/users/:id', to: 'users#admin_update'#, constraints: constraints
       post '/estudent_users/change_password', to: 'users#change_password'#, constraints: estudent_constraints
 
       # Invitation Routes
