@@ -2,48 +2,6 @@ class Api::V1::InstitutionsController < ApplicationController
   before_action :authenticate_with_token!
   respond_to :json
 
-  def index
-    respond_with Institution.all.to_json
-  end
-
-  def show
-    institution = Institution.find(params[:id])
-
-    if institution
-      render json: institution, status: 201, root: false
-    else
-      render json: { errors: institution.errors }, status: 422
-    end
-  end
-
-  def create
-    institution = Institution.new(institution_params)    
-    
-    if institution.save
-      render json: institution, status: 201, root: false
-    else
-      render json: { errors: institution.errors }, status: 422
-    end
-  end
-
-  def update
-    institution = Institution.find(params[:id])
-
-    if institution.update(institution_params)
-      render json: institution, status: 200, root: false
-    else
-      render json: { errors: institution.errors }, status: 422
-    end
-
-  end
-
-  def destroy
-    institution = Institution.find(params[:id])
-    institution.destroy
-
-    head 204    
-  end
-
   ## Custom Actions ## 
   def create_users
     send("#{current_user.role_name}_create_users")
@@ -56,39 +14,103 @@ class Api::V1::InstitutionsController < ApplicationController
   def list_courses
     send("#{current_user.role_name}_list_courses")
   end
-
+  
   private
-    def admin_create_users
+    def institution_admin_index      
+      if current_user.institutions
+        render json: current_user.institutions, status: 201, root: false
+      else
+        render json: { errors: current_user.institutions.errors }, status: 422
+      end
+    end
+
+    def institution_admin_show
+      if check_permission
+        institution = Institution.find(params[:id])
+
+        if institution
+          render json: institution, status: 201, root: false
+        else
+          render json: { errors: institution.errors }, status: 422
+        end
+      else
+        render json: permission_error, status: 404, root: false
+      end
+    end
+
+    def admin_create
+      institution = Institution.new(institution_params)    
+      
+      if institution.save
+        render json: institution, status: 201, root: false
+      else
+        render json: { errors: institution.errors }, status: 422
+      end
+    end
+
+    def institution_admin_update
+      if check_permission
+
+        institution = Institution.find(params[:id])
+
+        if institution.update(institution_params)
+          render json: institution, status: 200, root: false
+        else
+          render json: { errors: institution.errors }, status: 422
+        end
+      else
+        render json: permission_error, status: 404, root: false
+      end
+    end
+
+    def admin_destroy
+      institution = Institution.find(params[:id])
+      institution.destroy
+
+      head 204    
+    end
+
+    def institution_admin_create_users
       institution = Institution.find(params[:id])
       user = User.create(user_params)
-      institution.institution_users.create(:user_id => user.id)
+      user.role = 3      
 
       if !user.save
         render json: { errors: user.errors }, status: 422
       elsif !institution.save
         render json: { errors: institution.errors }, status: 422
       else
-        render json: institution, status: 200, root: false
+        institution.institution_users.create(:user_id => user.id)
+        render json: user, status: 200, root: false
       end
     end
 
-    def admin_list_users
+    def institution_admin_list_users
       institution = Institution.find(params[:id])
 
       render json: institution.users.to_json(:except => [:auth_token]), status: 200, root: false 
     end
 
-    def admin_list_courses
+    def author_list_courses
       institution = Institution.find(params[:id])
 
       render json: institution.courses.to_json, status: 200, root: false   
     end
 
     def institution_params
-      params.permit(:title, :description, :image)
+      params.permit(:title, :description)
     end
 
     def user_params
-      params.permit(:email, :password, :password_confirmation)
+      params.permit(:email, :password, :password_confirmation, :first_name, :last_name, :role)
+    end
+
+    def check_permission
+      institution_user = InstitutionUser.where(institution_id: params[:id], user_id: current_user.id)
+      !institution_user.empty?
+    end
+
+    def permission_error
+      { errors: "Cannot find institution" }
     end
 end

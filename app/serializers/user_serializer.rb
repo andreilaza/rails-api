@@ -1,5 +1,5 @@
 class UserSerializer < ActiveModel::Serializer
-  attributes :id, :email, :role, :first_name, :last_name, :avatar, :created_at, :updated_at
+  attributes :id, :email, :role, :first_name, :last_name, :avatar, :institutions, :created_at, :updated_at
 
   def role    
     if object.role == 1

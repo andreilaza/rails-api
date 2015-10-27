@@ -1,3 +1,3 @@
 class InstitutionSerializer < ActiveModel::Serializer
-  attributes :id, :title, :image, :description
+  attributes :id, :title, :description
 end

@@ -4,7 +4,7 @@ class User < ApplicationModel
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
   validates :auth_token, uniqueness: true
-
+  
   attr_accessor :institution_id
   attr_accessor :course_id
   attr_accessor :role_name
@@ -17,7 +17,9 @@ class User < ApplicationModel
   ROLES = {
     :owner => 0,
     :admin => 1,
-    :estudent => 2    
+    :estudent => 2,
+    :author => 3,
+    :institution_admin => 4
   }
 
   def generate_authentication_token!

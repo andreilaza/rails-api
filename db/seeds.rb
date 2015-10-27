@@ -6,13 +6,17 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-User.create({email:"andrei@estudent.ro", password:"password", password_confirmation:"password", role: 2})
-User.create({email:"stefi@estudent.ro", password:"password", password_confirmation:"password"})
+User.create({email:"stefan@estudent.ro", password:"password", password_confirmation:"password", role: 1}) # general admin
+User.create({email:"andrei@estudent.ro", password:"password", password_confirmation:"password", role: 2}) # estudent
+User.create({email:"stefi@estudent.ro", password:"password", password_confirmation:"password", role: 3}) # autor
+User.create({email:"toni@estudent.ro", password:"password", password_confirmation:"password", role: 4}) # admin de institutie
 
-Institution.create({title:"Ctrl-D", image:"http://random.link", description:"Ctrl-D este o organizatie."})
+#Institution.create({title:"Asociatia de psihologie industriala si organizationala", description:"Asociatia de Psihologie Industriala si Organizationala (APIO) este o asociatie profesionala, care reuneste psihologi si alti specialisti activi in domeniul psihologiei muncii, industriale si organizationale, precum si al resurselor umane. Misiunea sa primara este aceea de a contribui in mod relevant la avansul cunostintelor si practicii din domeniul psihologiei organizationale si a resurselor umane, prin activitati legate de cercetare, de formarea profesionala, de monitorizarea si dezvoltarea practicilor din acest domeniu, in Romania."})
 
 # InstitutionUser.create({institution_id:1,user_id:1})
-InstitutionUser.create({institution_id:1,user_id:2})
+# InstitutionUser.create({institution_id:1,user_id:3})
+# InstitutionUser.create({institution_id:1,user_id:4})
+
 =begin
 courses = [
   ["Ctrl-D Comunicare Digitala", "Acesta este primul curs Estudent", false], # id = 1

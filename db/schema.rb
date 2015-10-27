@@ -81,9 +81,8 @@ ActiveRecord::Schema.define(version: 20151015081703) do
   add_index "institution_users", ["user_id"], name: "index_institution_users_on_user_id", using: :btree
 
   create_table "institutions", force: :cascade do |t|
-    t.string   "title",       limit: 255, default: ""
-    t.string   "image",       limit: 255, default: ""
-    t.string   "description", limit: 255, default: ""
+    t.string   "title",       limit: 255,   default: ""
+    t.text     "description", limit: 65535
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -26,7 +26,7 @@ class Api::V1::ChaptersController < ApplicationController
   end
   
   private
-    def admin_update    
+    def author_update    
       if check_permission
         if chapter.update(chapter_params)
           render json: chapter, status: 200, root: false
@@ -38,14 +38,14 @@ class Api::V1::ChaptersController < ApplicationController
       end
     end
 
-    def admin_destroy
+    def author_destroy
       chapter = Chapter.find(params[:id])
       chapter.destroy
 
       head 204    
     end
 
-    def admin_add_section    
+    def author_add_section    
       if check_permission
         section = Section.new(section_params)
         section.chapter_id = params[:id]
@@ -68,7 +68,7 @@ class Api::V1::ChaptersController < ApplicationController
       end
     end
 
-    def admin_list_sections
+    def author_list_sections
       chapter = Chapter.find(params[:id])
       
       render json: chapter.sections.order(order: :desc).to_json, status: 201, root: false

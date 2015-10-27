@@ -7,11 +7,11 @@ class Api::V1::AnswersController < ApplicationController
       params.require(:answer).permit(:title, :section_id, :order, :score, :correct, :answer_type)
     end
 
-    def admin_index
+    def author_index
       respond_with Answer.all.to_json
     end
 
-    def admin_show
+    def author_show
       answer = Answer.find(params[:id])
 
       if answer
@@ -21,7 +21,7 @@ class Api::V1::AnswersController < ApplicationController
       end
     end
     
-    def admin_update
+    def author_update
       answer = Answer.find(params[:id])
 
       if answer.update(answer_params)
@@ -32,7 +32,7 @@ class Api::V1::AnswersController < ApplicationController
 
     end
     
-    def admin_destroy
+    def author_destroy
       answer = Answer.find(params[:id])
       answer.destroy
 

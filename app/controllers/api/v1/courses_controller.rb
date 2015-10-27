@@ -63,7 +63,7 @@ class Api::V1::CoursesController < ApplicationController
       end
     end
 
-    def admin_index
+    def author_index
       courses = Course.joins(:course_institution, :institutions).where('institutions.id' => current_user.institution_id).all    
 
       render json: courses, status: 200, root: false
@@ -75,7 +75,7 @@ class Api::V1::CoursesController < ApplicationController
       render json: courses, status: 200, root: false
     end
 
-    def admin_show
+    def author_show
       course =  Course.joins(:course_institution, :institutions).where('institutions.id' => current_user.institution_id).find(params[:id])
 
       if course
@@ -95,7 +95,7 @@ class Api::V1::CoursesController < ApplicationController
       end
     end
 
-    def admin_create
+    def author_create
       course = Course.new(course_params)          
 
       if course.save
@@ -103,6 +103,7 @@ class Api::V1::CoursesController < ApplicationController
         course_institution = CourseInstitution.new
 
         course_institution.course_id = course.id
+        #TO-DO: Send institution as param if user belongs to multiple institutions        
         course_institution.institution_id = current_user.institution_id
 
         course_institution.save
@@ -117,7 +118,7 @@ class Api::V1::CoursesController < ApplicationController
       end
     end
 
-    def admin_update
+    def author_update
       course = Course.joins(:course_institution, :institutions).where('institutions.id' => current_user.institution_id).find(params[:id])    
       
       if course.update(course_params)
@@ -132,7 +133,7 @@ class Api::V1::CoursesController < ApplicationController
 
     end
 
-    def admin_destroy
+    def author_destroy
       course = Course.find(params[:id])
       course.destroy
 
@@ -164,7 +165,7 @@ class Api::V1::CoursesController < ApplicationController
       end
     end
 
-    def admin_add_chapter
+    def author_add_chapter
       # Check if admin has permission to access this course
       course_permission = CourseInstitution.where(course_id: params[:id], institution_id: current_user.institution_id).first
 
@@ -189,7 +190,7 @@ class Api::V1::CoursesController < ApplicationController
       end
     end  
 
-    def admin_list_chapters
+    def author_list_chapters
       course = Course.find(params[:id])
     
       render json: course.chapters.order(order: :desc).to_json, status: 201, root: false
