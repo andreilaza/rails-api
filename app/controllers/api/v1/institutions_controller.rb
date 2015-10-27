@@ -17,7 +17,7 @@ class Api::V1::InstitutionsController < ApplicationController
   
   private
     def admin_index
-      institutions = Institutions.all
+      institutions = Institution.all
       if institutions
         render json: institutions, status: 201, root: false
       else
@@ -43,6 +43,9 @@ class Api::V1::InstitutionsController < ApplicationController
       institution = Institution.new(institution_params)    
       
       if institution.save
+        if params[:logo]
+          append_asset(institution)
+        end
         render json: institution, status: 201, root: false
       else
         render json: { errors: institution.errors }, status: 422
@@ -55,6 +58,9 @@ class Api::V1::InstitutionsController < ApplicationController
         institution = Institution.find(params[:id])
 
         if institution.update(institution_params)
+          if params[:logo]
+            append_asset(institution)
+          end
           render json: institution, status: 200, root: false
         else
           render json: { errors: institution.errors }, status: 422
@@ -116,7 +122,7 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     def institution_params
-      params.permit(:title, :description, :url, :logo)
+      params.permit(:title, :description, :url)
     end
 
     def user_params

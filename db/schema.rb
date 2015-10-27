@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151027125618) do
+ActiveRecord::Schema.define(version: 20151027135450) do
 
   create_table "answers", force: :cascade do |t|
     t.string   "title",       limit: 255, default: ""
@@ -85,6 +85,7 @@ ActiveRecord::Schema.define(version: 20151027125618) do
     t.text     "description", limit: 65535
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "url",         limit: 255,   default: ""
   end
 
   add_index "institutions", ["title"], name: "index_institutions_on_title", using: :btree
@@ -120,7 +121,6 @@ ActiveRecord::Schema.define(version: 20151027125618) do
     t.integer  "section_type", limit: 4,   default: 1
     t.integer  "order",        limit: 4
     t.float    "duration",     limit: 24,  default: 0.0
-    t.string   "url",          limit: 255, default: ""
   end
 
   add_index "sections", ["chapter_id"], name: "index_sections_on_chapter_id", using: :btree
