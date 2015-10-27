@@ -5,7 +5,7 @@ class UserSerializer < ActiveModel::Serializer
     if object.role == 1
       'admin'
     elsif object.role == 2
-      'student'
+      'estudent'
     elsif object.role == 3
       'author'
     elsif object.role == 4
