@@ -29,6 +29,14 @@ class Api::V1::SessionsController < ApplicationController
         output["role"] = 'estudent'
       end
 
+      if output["role"] == User::ROLES[:author]
+        output["role"] = 'author'
+      end
+
+      if output["role"] == User::ROLES[:institution_admin]
+        output["role"] = 'institution_admin'
+      end
+
       # credentials = JSON.load(File.read('secrets.json'))
       set_aws_credentials
 
