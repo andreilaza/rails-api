@@ -74,7 +74,14 @@ class Api::V1::InstitutionsController < ApplicationController
     def institution_admin_create_users
       institution = Institution.find(params[:id])
       user = User.create(user_params)
-      user.role = 3      
+      
+      if user_params[:role] == 'author'
+        user.role = 3
+      end
+
+      if user_params[:role] == 'institution_admin'
+        user.role = 4
+      end
 
       if !user.save
         render json: { errors: user.errors }, status: 422
