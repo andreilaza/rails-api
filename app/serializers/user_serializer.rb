@@ -6,7 +6,12 @@ class UserSerializer < ActiveModel::Serializer
       'admin'
     elsif object.role == 2
       'student'
+    elsif object.role == 3
+      'author'
+    elsif object.role == 4
+      'institution_admin'
     end
+
   end
   
   def avatar
