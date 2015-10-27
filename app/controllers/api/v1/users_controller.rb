@@ -111,26 +111,7 @@ class Api::V1::UsersController < ApplicationController
         user.generate_authentication_token!
         user.save
 
-        # convert user to json to add the auth token field to it      
-        output = ActiveSupport::JSON.decode(user.to_json)
-
-        if output["role"] == User::ROLES[:admin]
-          output["role"] = 'admin'
-        end
-
-        if output["role"] == User::ROLES[:estudent]
-          output["role"] = 'estudent'
-        end
-
-        output["auth_token"] = user[:auth_token]
-
-        asset = Asset.where('entity_id' => user.id, 'entity_type' => 'user', 'definition' => 'avatar').first
-        
-        if asset
-          output["avatar"] = asset.path
-        else
-          output["avatar"] = nil
-        end
+        output = build_output(user)        
 
         render json: output.to_json, status: 200, root: false      
       else

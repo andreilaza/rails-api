@@ -56,4 +56,37 @@ class ApplicationController < ActionController::Base
     Aws.config[:region] = ENV["AWS_REGION"]
     Aws.config[:credentials] = Aws::Credentials.new(credentials['AccessKeyId'], credentials['SecretAccessKey'])
   end
+
+  def build_output(user)
+    # convert user to json to add the auth token field to it    
+    output = ActiveSupport::JSON.decode(user.to_json)
+    
+    output["auth_token"] = user[:auth_token]
+
+    if output["role"] == User::ROLES[:admin]
+      output["role"] = 'admin'
+    end
+
+    if output["role"] == User::ROLES[:estudent]
+      output["role"] = 'estudent'
+    end
+
+    if output["role"] == User::ROLES[:author]
+      output["role"] = 'author'
+    end
+
+    if output["role"] == User::ROLES[:institution_admin]
+      output["role"] = 'institution_admin'
+    end
+    
+    asset = Asset.where('entity_id' => user.id, 'entity_type' => 'user', 'definition' => 'avatar').first
+    
+    if asset
+      output["avatar"] = asset.path
+    else
+      output["avatar"] = nil
+    end
+
+    output.to_json    
+  end
 end

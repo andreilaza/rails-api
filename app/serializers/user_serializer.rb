@@ -11,7 +11,6 @@ class UserSerializer < ActiveModel::Serializer
     elsif object.role == 4
       'institution_admin'
     end
-
   end
   
   def avatar

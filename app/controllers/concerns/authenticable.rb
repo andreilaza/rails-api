@@ -22,7 +22,6 @@ module Authenticable
       add_institution
       @current_user.role_name = 'author'
     end
-
         
     @current_user
   end
