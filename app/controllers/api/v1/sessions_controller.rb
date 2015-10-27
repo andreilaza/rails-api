@@ -91,6 +91,14 @@ class Api::V1::SessionsController < ApplicationController
       if output["role"] == User::ROLES[:estudent]
         output["role"] = 'estudent'
       end
+      
+      if output["role"] == User::ROLES[:author]
+        output["role"] = 'author'
+      end
+
+      if output["role"] == User::ROLES[:institution_admin]
+        output["role"] = 'institution_admin'
+      end
 
       output["auth_token"] = user[:auth_token]
 

@@ -98,6 +98,16 @@ class Api::V1::InstitutionsController < ApplicationController
       render json: institution.courses.to_json, status: 200, root: false   
     end
 
+    def append_asset(institution)
+      asset = {
+        'entity_id'   => institution[:id],
+        'entity_type' => 'institution',
+        'path'        => params[:logo],
+        'definition'  => 'logo'
+      }
+      add_asset(asset)
+    end
+
     def institution_params
       params.permit(:title, :description)
     end
