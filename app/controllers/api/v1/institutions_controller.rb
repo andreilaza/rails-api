@@ -16,11 +16,12 @@ class Api::V1::InstitutionsController < ApplicationController
   end
   
   private
-    def institution_admin_index      
-      if current_user.institutions
-        render json: current_user.institutions, status: 201, root: false
+    def admin_index
+      institutions = Institutions.all
+      if institutions
+        render json: institutions, status: 201, root: false
       else
-        render json: { errors: current_user.institutions.errors }, status: 422
+        render json: { errors: institutions.errors }, status: 422
       end
     end
 
