@@ -109,7 +109,7 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     def institution_params
-      params.permit(:title, :description)
+      params.permit(:title, :description, :url, :logo)
     end
 
     def user_params
