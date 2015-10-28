@@ -18,6 +18,7 @@ class Api::V1::InstitutionsController < ApplicationController
   private
     def admin_index
       institutions = Institution.all
+
       if institutions
         render json: institutions, status: 201, root: false
       else
@@ -136,5 +137,5 @@ class Api::V1::InstitutionsController < ApplicationController
 
     def permission_error
       { errors: "Cannot find institution" }
-    end
+    end    
 end
