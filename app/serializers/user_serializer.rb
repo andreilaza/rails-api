@@ -11,7 +11,7 @@ class UserSerializer < ActiveModel::Serializer
     elsif object.role == 4
       'institution_admin'
     end
-  end
+  end 
   
   def avatar
     asset = Asset.where('entity_id' => object.id, 'entity_type' => 'user', 'definition' => 'avatar').first
@@ -22,4 +22,6 @@ class UserSerializer < ActiveModel::Serializer
       nil
     end
   end
+
+
 end

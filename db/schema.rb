@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151027135450) do
+ActiveRecord::Schema.define(version: 20151028084850) do
 
   create_table "answers", force: :cascade do |t|
     t.string   "title",       limit: 255, default: ""
@@ -36,6 +36,17 @@ ActiveRecord::Schema.define(version: 20151027135450) do
 
   add_index "assets", ["entity_id"], name: "index_assets_on_entity_id", using: :btree
   add_index "assets", ["entity_type"], name: "index_assets_on_entity_type", using: :btree
+
+  create_table "author_metadata", force: :cascade do |t|
+    t.integer  "user_id",    limit: 4,     default: 0
+    t.string   "facebook",   limit: 255,   default: ""
+    t.string   "twitter",    limit: 255,   default: ""
+    t.string   "linkedin",   limit: 255,   default: ""
+    t.text     "biography",  limit: 65535
+    t.string   "position",   limit: 255,   default: ""
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+  end
 
   create_table "chapters", force: :cascade do |t|
     t.string   "title",       limit: 255, default: ""

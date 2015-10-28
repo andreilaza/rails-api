@@ -83,11 +83,11 @@ class Api::V1::InstitutionsController < ApplicationController
       user = User.create(user_params)
       
       if user_params[:role] == 'author'
-        user.role = 3
+        user.role = User::ROLES[:author]       
       end
 
       if user_params[:role] == 'institution_admin'
-        user.role = 4
+        user.role = User::ROLES[:institution_admin]
       end
 
       if !user.save
@@ -95,7 +95,22 @@ class Api::V1::InstitutionsController < ApplicationController
       elsif !institution.save
         render json: { errors: institution.errors }, status: 422
       else
+
+        if user.role == User::ROLES[:author]
+          author_metadata = AuthorMetadatum.new()
+
+          author_metadata.user_id = user.id
+          author_metadata.facebook = params[:facebook] if defined? params[:facebook]
+          author_metadata.twitter = params[:twitter] if defined? params[:twitter]
+          author_metadata.linkedin = params[:linkedin] if defined? params[:linkedin]
+          author_metadata.biography = params[:biography] if defined? params[:biography]
+          author_metadata.position = params[:position] if defined? params[:position]
+
+          author_metadata.save
+        end
         institution.institution_users.create(:user_id => user.id)
+
+        user = build_output(user, false)
         render json: user, status: 200, root: false
       end
     end

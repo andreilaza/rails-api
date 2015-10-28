@@ -57,11 +57,13 @@ class ApplicationController < ActionController::Base
     Aws.config[:credentials] = Aws::Credentials.new(credentials['AccessKeyId'], credentials['SecretAccessKey'])
   end
 
-  def build_output(user)
+  def build_output(user, token = true)
     # convert user to json to add the auth token field to it    
     output = ActiveSupport::JSON.decode(user.to_json)
     
-    output["auth_token"] = user[:auth_token]
+    if token
+      output["auth_token"] = user[:auth_token]
+    end
 
     if output["role"] == User::ROLES[:admin]
       output["role"] = 'admin'
@@ -73,6 +75,16 @@ class ApplicationController < ActionController::Base
 
     if output["role"] == User::ROLES[:author]
       output["role"] = 'author'
+
+      if !token
+        author_metadata = AuthorMetadatum.where(user_id: user.id).first
+
+        output["facebook"] = author_metadata.facebook
+        output["twitter"] = author_metadata.twitter
+        output["linkedin"] = author_metadata.linkedin
+        output["biography"] = author_metadata.biography
+        output["position"] = author_metadata.position
+      end
     end
 
     if output["role"] == User::ROLES[:institution_admin]
@@ -85,7 +97,7 @@ class ApplicationController < ActionController::Base
       output["avatar"] = asset.path
     else
       output["avatar"] = nil
-    end
+    end    
 
     output.to_json    
   end
