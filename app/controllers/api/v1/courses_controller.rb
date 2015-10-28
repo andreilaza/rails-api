@@ -105,7 +105,7 @@ class Api::V1::CoursesController < ApplicationController
         course_institution.course_id = course.id
         #TO-DO: Send institution as param if user belongs to multiple institutions        
         course_institution.institution_id = current_user.institution_id
-
+        course_institution.user_id = current_user.id
         course_institution.save
 
         if params[:cover_image]

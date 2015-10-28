@@ -78,12 +78,13 @@ class ApplicationController < ActionController::Base
 
       if !token
         author_metadata = AuthorMetadatum.where(user_id: user.id).first
-
-        output["facebook"] = author_metadata.facebook
-        output["twitter"] = author_metadata.twitter
-        output["linkedin"] = author_metadata.linkedin
-        output["biography"] = author_metadata.biography
-        output["position"] = author_metadata.position
+        if author_metadata
+          output["facebook"] = author_metadata.facebook
+          output["twitter"] = author_metadata.twitter
+          output["linkedin"] = author_metadata.linkedin
+          output["biography"] = author_metadata.biography
+          output["position"] = author_metadata.position
+        end
       end
     end
 

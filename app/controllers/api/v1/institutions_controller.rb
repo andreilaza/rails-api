@@ -131,9 +131,9 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     def institution_admin_list_users
-      institution = Institution.find(params[:id])
+      users = User.joins(:institution_users, :institutions).where('institutions.id' => params[:id], 'users.role' => User::ROLES[:author]).all      
 
-      render json: institution.users.to_json(:except => [:auth_token]), status: 200, root: false 
+      render json: users, status: 200, root: false 
     end
 
     def author_list_courses

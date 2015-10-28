@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :published, :started, :progress, :completed, :duration, :institution, :cover_image
+  attributes :id, :title, :description, :published, :started, :progress, :completed, :duration, :institution, :cover_image, :author
 
   has_many :chapters
 
@@ -7,7 +7,7 @@ class CourseSerializer < ActiveModel::Serializer
     if scope.role == User::ROLES[:estudent]
       keys
     else
-      keys - [:completed] - [:institution] - [:progress] - [:started]
+      keys - [:completed] - [:institution] - [:progress] - [:started] - [:author]
     end
   end
 
@@ -65,5 +65,9 @@ class CourseSerializer < ActiveModel::Serializer
     else
       0
     end
+  end
+
+  def author
+    user = User.select("author_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:author_metadatum, :course_institutions, :courses).where('courses.id' => object.id, 'users.role' => User::ROLES[:author]).first
   end
 end
