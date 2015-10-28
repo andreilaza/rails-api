@@ -25,7 +25,7 @@ class Api::V1::ChaptersController < ApplicationController
     send("#{current_user.role_name}_list_sections")
   end
   
-  private
+  private    
     def author_update    
       if check_permission
         if chapter.update(chapter_params)
@@ -45,7 +45,7 @@ class Api::V1::ChaptersController < ApplicationController
       head 204    
     end
 
-    def author_add_section    
+    def author_add_section
       if check_permission
         section = Section.new(section_params)
         section.chapter_id = params[:id]

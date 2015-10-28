@@ -4,11 +4,11 @@ class Api::V1::InstitutionsController < ApplicationController
 
   ## Custom Actions ## 
   def create_users
-    send("#{current_user.role_name}_create_users")
+    send("#{current_user.real_role}_create_users")
   end
 
   def list_users
-    send("#{current_user.role_name}_list_users")
+    send("#{current_user.real_role}_list_users")
   end
 
   def list_courses
@@ -93,6 +93,7 @@ class Api::V1::InstitutionsController < ApplicationController
       else        
         institution.institution_users.create(:user_id => user.id)
 
+        add_author_metadata(user)
         user = build_output(user, false)
         render json: user, status: 200, root: false
       end
@@ -112,16 +113,7 @@ class Api::V1::InstitutionsController < ApplicationController
         render json: { errors: institution.errors }, status: 422
       else
         
-        author_metadata = AuthorMetadatum.new()
-
-        author_metadata.user_id = user.id
-        author_metadata.facebook = params[:facebook] if defined? params[:facebook]
-        author_metadata.twitter = params[:twitter] if defined? params[:twitter]
-        author_metadata.linkedin = params[:linkedin] if defined? params[:linkedin]
-        author_metadata.biography = params[:biography] if defined? params[:biography]
-        author_metadata.position = params[:position] if defined? params[:position]
-
-        author_metadata.save
+        add_author_metadata(user)
         
         institution.institution_users.create(:user_id => user.id)
 
@@ -140,6 +132,10 @@ class Api::V1::InstitutionsController < ApplicationController
       institution = Institution.find(params[:id])
 
       render json: institution.courses.to_json, status: 200, root: false   
+    end
+
+    def institution_admin_list_courses
+      author_list_courses
     end
 
     def append_asset(institution)
@@ -167,5 +163,18 @@ class Api::V1::InstitutionsController < ApplicationController
 
     def permission_error
       { errors: "Cannot find institution" }
-    end    
+    end
+
+    def add_author_metadata(user)
+      author_metadata = AuthorMetadatum.new()
+
+      author_metadata.user_id = user.id
+      author_metadata.facebook = params[:facebook] if defined? params[:facebook]
+      author_metadata.twitter = params[:twitter] if defined? params[:twitter]
+      author_metadata.linkedin = params[:linkedin] if defined? params[:linkedin]
+      author_metadata.biography = params[:biography] if defined? params[:biography]
+      author_metadata.position = params[:position] if defined? params[:position]
+
+      author_metadata.save
+    end
 end

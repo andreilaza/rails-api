@@ -42,6 +42,10 @@ class Api::V1::UsersController < ApplicationController
     send("#{current_user.role_name}_latest_course")
   end
 
+  def institution
+    send("#{current_user.role_name}_institution")
+  end
+
   private
     def estudent_update
       user = current_user
@@ -70,6 +74,36 @@ class Api::V1::UsersController < ApplicationController
       else
         render json: { errors: user.errors }, status: 422
       end
+    end
+    
+    def author_update
+      user = current_user
+
+      if user.update(user_params)
+
+        if params[:avatar]
+          append_asset(user)
+        end
+
+        author_metadata = AuthorMetadatum.where(user_id: current_user.id).first
+        author_metadata.facebook = params[:facebook] if defined? params[:facebook]
+        author_metadata.twitter = params[:twitter] if defined? params[:twitter]
+        author_metadata.linkedin = params[:linkedin] if defined? params[:linkedin]
+        author_metadata.biography = params[:biography] if defined? params[:biography]
+        author_metadata.position = params[:position] if defined? params[:position]
+
+        author_metadata.save
+
+        render json: user, status: 200, root: false
+      else
+        render json: { errors: user.errors }, status: 422
+      end
+    end
+
+    def author_institution
+      institution = Institution.joins(:institution_users, :users).where('users.id' => params[:id]).first
+
+      render json: institution, status: 200, root: false
     end
 
     def user_params

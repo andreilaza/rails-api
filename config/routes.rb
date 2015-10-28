@@ -75,8 +75,9 @@ Rails.application.routes.draw do
       get '/institutions/:id/courses', to: 'institutions#list_courses'
 
       # User Routes      
-      put '/users/:id', to: 'users#update'      
+      put '/users/:id', to: 'users#update'
       post '/users/change_password', to: 'users#change_password'
+      get '/users/:id/institution', to: 'users#institution'
 
       # Invitation Routes
       post '/invitations', to: 'invitations#create'

@@ -61,13 +61,7 @@ class Api::V1::CoursesController < ApplicationController
           students_section.save
         end
       end
-    end
-
-    def author_index
-      courses = Course.joins(:course_institution, :institutions).where('institutions.id' => current_user.institution_id).all    
-
-      render json: courses, status: 200, root: false
-    end
+    end    
 
     def estudent_index
       courses = Course.where(:published => true).all
@@ -75,9 +69,9 @@ class Api::V1::CoursesController < ApplicationController
       render json: courses, status: 200, root: false
     end
 
-    def author_show
-      course =  Course.joins(:course_institution, :institutions).where('institutions.id' => current_user.institution_id).find(params[:id])
-
+    def estudent_show
+      course =  Course.where(:published => true).find(params[:id])
+      
       if course
         render json: course, status: 200, root: false
       else
@@ -85,9 +79,40 @@ class Api::V1::CoursesController < ApplicationController
       end
     end
 
-    def estudent_show
+    def estudent_start
+      course = Course.find(params[:id])
+
+      if course.published
+        create_snapshot(course)      
+        render json: course, status: 200, root: false
+      else
+        render json: { errors: 'Course not found' }, status: 404
+      end    
+    end
+
+    def estudent_reset
+      StudentsQuestion.destroy_all(user_id: current_user.id, course_id: params[:id])
+      StudentsSection.destroy_all(user_id: current_user.id, course_id: params[:id])
+      StudentsCourse.destroy_all(user_id: current_user.id, course_id: params[:id])
+
       course =  Course.where(:published => true).find(params[:id])
       
+      if course
+        render json: course, status: 200, root: false
+      else
+        render json: { errors: course.errors }, status: 404
+      end
+    end    
+
+    def author_index
+      courses = Course.joins(:course_institution, :institutions).where('institutions.id' => current_user.institution_id).all    
+
+      render json: courses, status: 200, root: false
+    end
+
+    def author_show
+      course =  Course.joins(:course_institution, :institutions).where('institutions.id' => current_user.institution_id).find(params[:id])
+
       if course
         render json: course, status: 200, root: false
       else
@@ -138,32 +163,7 @@ class Api::V1::CoursesController < ApplicationController
       course.destroy
 
       head 204    
-    end
-
-    def estudent_start
-      course = Course.find(params[:id])
-
-      if course.published
-        create_snapshot(course)      
-        render json: course, status: 200, root: false
-      else
-        render json: { errors: 'Course not found' }, status: 404
-      end    
-    end
-
-    def estudent_reset
-      StudentsQuestion.destroy_all(user_id: current_user.id, course_id: params[:id])
-      StudentsSection.destroy_all(user_id: current_user.id, course_id: params[:id])
-      StudentsCourse.destroy_all(user_id: current_user.id, course_id: params[:id])
-
-      course =  Course.where(:published => true).find(params[:id])
-      
-      if course
-        render json: course, status: 200, root: false
-      else
-        render json: { errors: course.errors }, status: 404
-      end
-    end
+    end    
 
     def author_add_chapter
       # Check if admin has permission to access this course

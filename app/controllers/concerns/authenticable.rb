@@ -6,6 +6,7 @@ module Authenticable
   
 
     if @current_user.role == User::ROLES[:admin]
+      @current_user.real_role = 'admin'
       @current_user.role_name = 'admin'
     end
 
@@ -15,11 +16,12 @@ module Authenticable
 
     if @current_user.role == User::ROLES[:institution_admin]
       add_institution
-      @current_user.role_name = 'institution_admin'
+      @current_user.real_role = 'institution_admin'
+      @current_user.role_name = 'author'
     end
 
     if @current_user.role == User::ROLES[:author]
-      add_institution
+      add_institution      
       @current_user.role_name = 'author'
     end
         

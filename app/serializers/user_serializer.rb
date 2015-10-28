@@ -17,14 +17,14 @@ class UserSerializer < ActiveModel::Serializer
       end
     end
 
-    if object.role == User::ROLES[:author]
+    if object.role == User::ROLES[:author] || object.role == User::ROLES[:institution_admin]
       @author_metadata = author_metadata
     end
     
   end
 
   def filter(keys)
-    if object.role != User::ROLES[:author]
+    if object.role != User::ROLES[:author] && object.role != User::ROLES[:institution_admin]
       keys - [:facebook] - [:linkedin] - [:twitter] - [:biography] - [:position]
     else
       keys

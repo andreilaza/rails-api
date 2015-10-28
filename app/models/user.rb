@@ -8,6 +8,7 @@ class User < ApplicationModel
   attr_accessor :institution_id
   attr_accessor :course_id
   attr_accessor :role_name
+  attr_accessor :real_role
 
   before_create :generate_authentication_token!
 

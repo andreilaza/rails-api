@@ -68,6 +68,6 @@ class CourseSerializer < ActiveModel::Serializer
   end
 
   def author
-    user = User.select("author_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:author_metadatum, :course_institutions, :courses).where('courses.id' => object.id, 'users.role' => User::ROLES[:author]).first
+    user = User.select("author_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:author_metadatum, :course_institutions, :courses).where('courses.id' => object.id).first
   end
 end
