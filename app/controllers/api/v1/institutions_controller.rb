@@ -79,46 +79,50 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     def admin_create_users
-      institution = Institution.find(params[:id])
-      user = User.create(user_params)
-      
       if user_params[:role] == 'institution_admin'
-        user.role = User::ROLES[:institution_admin]
-      end
+        institution = Institution.find(params[:id])
+        user = User.create(user_params)
+              
+        user.role = User::ROLES[:institution_admin]        
 
-      if !user.save
-        render json: { errors: user.errors }, status: 422
-      elsif !institution.save
-        render json: { errors: institution.errors }, status: 422
-      else        
-        institution.institution_users.create(:user_id => user.id)
+        if !user.save
+          render json: { errors: user.errors }, status: 422
+        elsif !institution.save
+          render json: { errors: institution.errors }, status: 422
+        else        
+          institution.institution_users.create(:user_id => user.id)
 
-        add_author_metadata(user)
-        user = build_output(user, false)
-        render json: user, status: 200, root: false
+          add_author_metadata(user)
+          user = build_output(user, false)
+          render json: user, status: 200, root: false
+        end
+      else
+        render json: {'error' => 'Can only create institution admins!'}, status: 404
       end
     end
 
     def institution_admin_create_users
-      institution = Institution.find(params[:id])
-      user = User.create(user_params)
-      
       if user_params[:role] == 'author'
-        user.role = User::ROLES[:author]       
-      end
+        institution = Institution.find(params[:id])
+        user = User.create(user_params)
+                
+        user.role = User::ROLES[:author]               
 
-      if !user.save
-        render json: { errors: user.errors }, status: 422
-      elsif !institution.save
-        render json: { errors: institution.errors }, status: 422
+        if !user.save
+          render json: { errors: user.errors }, status: 422
+        elsif !institution.save
+          render json: { errors: institution.errors }, status: 422
+        else
+          
+          add_author_metadata(user)
+          
+          institution.institution_users.create(:user_id => user.id)
+
+          user = build_output(user, false)
+          render json: user, status: 200, root: false
+        end
       else
-        
-        add_author_metadata(user)
-        
-        institution.institution_users.create(:user_id => user.id)
-
-        user = build_output(user, false)
-        render json: user, status: 200, root: false
+        render json: {'error' => 'Can only create authors!'}, status: 404
       end
     end
 
