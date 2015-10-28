@@ -79,7 +79,7 @@ class Api::V1::UsersController < ApplicationController
     def author_update
       user = current_user
 
-      if user.update(user_params)
+      if user.update(admin_update_params)
 
         if params[:avatar]
           append_asset(user)
@@ -109,6 +109,10 @@ class Api::V1::UsersController < ApplicationController
 
     def user_params
       params.permit(:email, :password, :password_confirmation, :first_name, :last_name, :role)
+    end
+
+    def admin_update_params
+      params.permit(:email, :password, :password_confirmation, :first_name, :last_name)
     end
 
     def append_asset(user)
