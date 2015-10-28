@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151028093825) do
+ActiveRecord::Schema.define(version: 20151028145811) do
 
   create_table "answers", force: :cascade do |t|
     t.string   "title",       limit: 255, default: ""
@@ -36,17 +36,6 @@ ActiveRecord::Schema.define(version: 20151028093825) do
 
   add_index "assets", ["entity_id"], name: "index_assets_on_entity_id", using: :btree
   add_index "assets", ["entity_type"], name: "index_assets_on_entity_type", using: :btree
-
-  create_table "author_metadata", force: :cascade do |t|
-    t.integer  "user_id",    limit: 4,     default: 0
-    t.string   "facebook",   limit: 255,   default: ""
-    t.string   "twitter",    limit: 255,   default: ""
-    t.string   "linkedin",   limit: 255,   default: ""
-    t.text     "biography",  limit: 65535
-    t.string   "position",   limit: 255,   default: ""
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
-  end
 
   create_table "chapters", force: :cascade do |t|
     t.string   "title",       limit: 255, default: ""
@@ -179,6 +168,18 @@ ActiveRecord::Schema.define(version: 20151028093825) do
   add_index "students_sections", ["course_id"], name: "index_students_sections_on_course_id", using: :btree
   add_index "students_sections", ["section_id"], name: "index_students_sections_on_section_id", using: :btree
   add_index "students_sections", ["user_id"], name: "index_students_sections_on_user_id", using: :btree
+
+  create_table "user_metadata", force: :cascade do |t|
+    t.integer  "user_id",    limit: 4,     default: 0
+    t.string   "facebook",   limit: 255,   default: ""
+    t.string   "twitter",    limit: 255,   default: ""
+    t.string   "linkedin",   limit: 255,   default: ""
+    t.text     "biography",  limit: 65535
+    t.string   "position",   limit: 255,   default: ""
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+    t.string   "website",    limit: 255,   default: ""
+  end
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "", null: false

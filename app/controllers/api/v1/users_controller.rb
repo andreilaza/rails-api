@@ -85,8 +85,9 @@ class Api::V1::UsersController < ApplicationController
           append_asset(user)
         end
 
-        author_metadata = AuthorMetadatum.where(user_id: current_user.id).first
+        author_metadata = UserMetadatum.where(user_id: current_user.id).first
         author_metadata.facebook = params[:facebook] if defined? params[:facebook]
+        author_metadata.website = params[:website] if defined? params[:website]
         author_metadata.twitter = params[:twitter] if defined? params[:twitter]
         author_metadata.linkedin = params[:linkedin] if defined? params[:linkedin]
         author_metadata.biography = params[:biography] if defined? params[:biography]

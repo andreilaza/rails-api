@@ -77,13 +77,15 @@ class ApplicationController < ActionController::Base
       output["role"] = 'author'
 
       if !token
-        author_metadata = AuthorMetadatum.where(user_id: user.id).first
+        author_metadata = UserMetadatum.where(user_id: user.id).first
         if author_metadata
           output["facebook"] = author_metadata.facebook
+          output["website"] = author_metadata.website
           output["twitter"] = author_metadata.twitter
           output["linkedin"] = author_metadata.linkedin
           output["biography"] = author_metadata.biography
           output["position"] = author_metadata.position
+          output["website"] = author_metadata.website
         end
       end
     end

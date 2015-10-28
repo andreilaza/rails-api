@@ -1,5 +1,5 @@
 class UserSerializer < ActiveModel::Serializer
-  attributes :id, :email, :role, :first_name, :last_name, :avatar, :facebook, :linkedin, :twitter, :biography, :position, :created_at, :updated_at
+  attributes :id, :email, :role, :first_name, :last_name, :avatar, :facebook, :linkedin, :twitter, :biography, :position, :website, :created_at, :updated_at
 
   def initialize(object, options = {})
     @object = object
@@ -63,6 +63,10 @@ class UserSerializer < ActiveModel::Serializer
     @author_metadata.position
   end
 
+  def website
+    @author_metadata.website
+  end
+
   def avatar
     asset = Asset.where('entity_id' => object.id, 'entity_type' => 'user', 'definition' => 'avatar').first
     
@@ -75,6 +79,6 @@ class UserSerializer < ActiveModel::Serializer
 
   private
     def author_metadata
-      author_metadata = AuthorMetadatum.where(user_id: object.id).first
+      author_metadata = UserMetadatum.where(user_id: object.id).first
     end
 end

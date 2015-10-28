@@ -170,10 +170,11 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     def add_author_metadata(user)
-      author_metadata = AuthorMetadatum.new()
+      author_metadata = UserMetadatum.new()
 
       author_metadata.user_id = user.id
       author_metadata.facebook = params[:facebook] if defined? params[:facebook]
+      author_metadata.website = params[:facebook] if defined? params[:website]
       author_metadata.twitter = params[:twitter] if defined? params[:twitter]
       author_metadata.linkedin = params[:linkedin] if defined? params[:linkedin]
       author_metadata.biography = params[:biography] if defined? params[:biography]
