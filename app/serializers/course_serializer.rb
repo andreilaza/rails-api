@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :published, :started, :progress, :completed, :duration, :institution, :cover_image, :author
+  attributes :id, :title, :description, :published, :started, :progress, :completed, :duration, :institution, :cover_image, :author, :questions
 
   has_many :chapters
 
@@ -68,6 +68,10 @@ class CourseSerializer < ActiveModel::Serializer
   end
 
   def author
-    user = User.select("author_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:author_metadatum, :course_institutions, :courses).where('courses.id' => object.id).first
+    user = User.select("user_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:user_metadatum, :course_institutions, :courses).where('courses.id' => object.id).first
+  end
+
+  def questions    
+    
   end
 end

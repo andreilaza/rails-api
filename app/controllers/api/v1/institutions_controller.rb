@@ -26,20 +26,6 @@ class Api::V1::InstitutionsController < ApplicationController
       end
     end
 
-    def institution_admin_show
-      if check_permission
-        institution = Institution.find(params[:id])
-
-        if institution
-          render json: institution, status: 201, root: false
-        else
-          render json: { errors: institution.errors }, status: 422
-        end
-      else
-        render json: permission_error, status: 404, root: false
-      end
-    end
-
     def admin_create
       institution = Institution.new(institution_params)    
       
@@ -50,24 +36,6 @@ class Api::V1::InstitutionsController < ApplicationController
         render json: institution, status: 201, root: false
       else
         render json: { errors: institution.errors }, status: 422
-      end
-    end
-
-    def institution_admin_update
-      if check_permission
-
-        institution = Institution.find(params[:id])
-
-        if institution.update(institution_params)
-          if params[:logo]
-            append_asset(institution)
-          end
-          render json: institution, status: 200, root: false
-        else
-          render json: { errors: institution.errors }, status: 422
-        end
-      else
-        render json: permission_error, status: 404, root: false
       end
     end
 
@@ -101,6 +69,38 @@ class Api::V1::InstitutionsController < ApplicationController
       end
     end
 
+    def institution_admin_show
+      if check_permission
+        institution = Institution.find(params[:id])
+
+        if institution
+          render json: institution, status: 201, root: false
+        else
+          render json: { errors: institution.errors }, status: 422
+        end
+      else
+        render json: permission_error, status: 404, root: false
+      end
+    end    
+
+    def institution_admin_update
+      if check_permission
+
+        institution = Institution.find(params[:id])
+
+        if institution.update(institution_params)
+          if params[:logo]
+            append_asset(institution)
+          end
+          render json: institution, status: 200, root: false
+        else
+          render json: { errors: institution.errors }, status: 422
+        end
+      else
+        render json: permission_error, status: 404, root: false
+      end
+    end   
+
     def institution_admin_create_users
       if user_params[:role] == 'author'
         institution = Institution.find(params[:id])
@@ -132,14 +132,24 @@ class Api::V1::InstitutionsController < ApplicationController
       render json: users, status: 200, root: false 
     end
 
+    def institution_admin_list_courses
+      author_list_courses
+    end
+
     def author_list_courses
       institution = Institution.find(params[:id])
 
-      render json: institution.courses.to_json, status: 200, root: false   
+      render json: institution.courses.to_json, status: 200, root: false
     end
 
-    def institution_admin_list_courses
-      author_list_courses
+    def estudent_show
+      if published_courses > 0
+        institution = Institution.find(params[:id])
+
+        render json: institution, status: 200, root: false
+      else
+        render json: {'error' => 'Institution not found.'}, status: 404
+      end
     end
 
     def append_asset(institution)
@@ -164,6 +174,10 @@ class Api::V1::InstitutionsController < ApplicationController
       institution_user = InstitutionUser.where(institution_id: params[:id], user_id: current_user.id)
       !institution_user.empty?
     end
+
+    def published_courses
+      published_courses = Course.joins(:course_institution, :institutions).where('institutions.id' => params[:id], 'courses.published' => true).count
+    end    
 
     def permission_error
       { errors: "Cannot find institution" }

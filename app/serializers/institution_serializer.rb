@@ -14,6 +14,8 @@ class InstitutionSerializer < ActiveModel::Serializer
   def filter(keys)
     if scope.role == User::ROLES[:admin]
       keys
+    elsif scope.role == User::ROLES[:estudent]
+      keys + [:courses] + [:authors]
     else
       keys - [:has_institution_admin]
     end
@@ -27,5 +29,13 @@ class InstitutionSerializer < ActiveModel::Serializer
     else
       false
     end
+  end
+
+  def courses
+    courses = Course.joins(:course_institution, :institutions).where('institutions.id' => object.id, 'courses.published' => true).all    
+  end
+
+  def authors
+    authors = User.joins(:institution_users, :institutions).where('institutions.id' => object.id).all
   end
 end

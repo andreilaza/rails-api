@@ -14,7 +14,7 @@ class User < ApplicationModel
 
   has_many :institution_users
   has_many :institutions, through: :institution_users  
-  has_one :author_metadatum
+  has_one :user_metadatum
   has_many :course_institutions
   has_many :courses, through: :course_institutions
 
