@@ -26,9 +26,19 @@ class UserSerializer < ActiveModel::Serializer
   def filter(keys)
     if object.role != User::ROLES[:author] && object.role != User::ROLES[:institution_admin]
       keys - [:facebook] - [:linkedin] - [:twitter] - [:biography] - [:position]
+    elsif (object.role == User::ROLES[:author] || object.role == User::ROLES[:institution_admin]) && scope.role == User::ROLES[:estudent]
+      keys + [:institution] + [:courses] 
     else
       keys
     end
+  end
+
+  def institution
+    Institution.joins(:institution_users, :users).where('users.id' => object.id).first
+  end
+
+  def courses
+    Course.joins(:course_institutions, :institutions).where('course_institutions.user_id' => object.id, 'courses.published' => true).all
   end
 
   def role    

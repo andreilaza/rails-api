@@ -2,7 +2,7 @@ class Api::V1::UsersController < ApplicationController
   before_action :authenticate_with_token!, only: [:update, :destroy]
   respond_to :json
 
-  def show
+  def admin_show
     user = User.find(params[:id])
 
     if user
@@ -10,7 +10,28 @@ class Api::V1::UsersController < ApplicationController
     else
       render json: { errors: user.errors }, status: 422
     end
+  end
 
+  def institution_admin_show
+    admin_show
+  end
+
+  def author_show
+    if current_user.real_role == 'institution_admin'
+      admin_show
+    else
+      render json: {'error' => 'User not found.'}, status: 404
+    end
+  end
+
+  def estudent_show
+    user = User.find(params[:id])
+
+    if user
+      render json: user, status: 201, root: false
+    else
+      render json: { errors: user.errors }, status: 422
+    end
   end
 
   def create
