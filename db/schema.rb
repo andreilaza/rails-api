@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151028145811) do
+ActiveRecord::Schema.define(version: 20151102173458) do
 
   create_table "answers", force: :cascade do |t|
     t.string   "title",       limit: 255, default: ""
@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 20151028145811) do
     t.integer  "order",       limit: 4,   default: 0
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
+    t.integer  "course_id",   limit: 4,   default: 0
   end
 
   add_index "answers", ["question_id"], name: "index_answers_on_question_id", using: :btree
@@ -108,6 +109,7 @@ ActiveRecord::Schema.define(version: 20151028145811) do
     t.integer  "score",         limit: 4,   default: 0
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
+    t.integer  "course_id",     limit: 4,   default: 0
   end
 
   add_index "questions", ["section_id"], name: "index_questions_on_section_id", using: :btree
@@ -122,6 +124,7 @@ ActiveRecord::Schema.define(version: 20151028145811) do
     t.integer  "section_type", limit: 4,   default: 1
     t.integer  "order",        limit: 4
     t.float    "duration",     limit: 24,  default: 0.0
+    t.integer  "course_id",    limit: 4,   default: 0
   end
 
   add_index "sections", ["chapter_id"], name: "index_sections_on_chapter_id", using: :btree

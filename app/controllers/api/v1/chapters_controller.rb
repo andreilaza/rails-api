@@ -51,7 +51,7 @@ class Api::V1::ChaptersController < ApplicationController
       if check_permission(chapter)
         section = Section.new(section_params)
         section.chapter_id = params[:id]
-
+        section.course_id = chapter.course_id
         highest_order_section = Section.order(order: :desc).first
 
         if highest_order_section

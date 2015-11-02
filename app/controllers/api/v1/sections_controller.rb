@@ -103,7 +103,8 @@ class Api::V1::SectionsController < ApplicationController
       if check_permission(section)
         question = Question.new(question_params)
         question.section_id = params[:id]
-
+        question.course_id = section.course_id
+        
         highest_order_question = Question.order(order: :desc).first
         
         if highest_order_question
@@ -153,7 +154,6 @@ class Api::V1::SectionsController < ApplicationController
 
     def check_permission(section)
       # Check if admin has permission to access this course      
-      chapter = Chapter.find(section.chapter_id)
-      course_permission = CourseInstitution.where(course_id: chapter.course_id, institution_id: current_user.institution_id).first
+      course_permission = CourseInstitution.where(course_id: section.course_id, institution_id: current_user.institution_id).first
     end 
 end

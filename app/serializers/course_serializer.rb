@@ -56,9 +56,8 @@ class CourseSerializer < ActiveModel::Serializer
     end
   end
 
-  def duration
-    chapters = Chapter.where(course_id: object.id).select(:id)
-    duration = Section.where(chapter_id: chapters).sum(:duration)
+  def duration    
+    duration = Section.where(course_id: object.id).sum(:duration)
 
     if duration
       duration
@@ -72,6 +71,6 @@ class CourseSerializer < ActiveModel::Serializer
   end
 
   def questions    
-    
+    duration = Question.where(course_id: object.id).count
   end
 end

@@ -20,10 +20,8 @@ class Api::V1::QuestionsController < ApplicationController
     end
 
     def check_permission(question)
-      # Check if admin has permission to access this course      
-      section = Section.find(question.section_id)
-      chapter = Chapter.find(section.chapter_id)
-      course_permission = CourseInstitution.where(course_id: chapter.course_id, institution_id: current_user.institution_id).first
+      # Check if admin has permission to access this course            
+      course_permission = CourseInstitution.where(course_id: question.course_id, institution_id: current_user.institution_id).first
     end
 
     def author_index
@@ -67,7 +65,7 @@ class Api::V1::QuestionsController < ApplicationController
       end
 
       if ok
-        course = Course.joins(chapters: [{ sections: :questions }]).where('questions.id' => params[:id]).first      
+        course = Course.where(course_id: question.course_id).first      
 
         existing = StudentsQuestion.where(section_id: question.section_id, user_id: current_user.id, question_id: question.id).first
 
@@ -150,11 +148,8 @@ class Api::V1::QuestionsController < ApplicationController
       if next_section
         #TO-DO add course progress ??
         next_section = serialize_section(next_section)
-      else
-        chapter = Chapter.find(current_section.chapter_id)
-        course = Course.find(chapter.course_id)
-        
-        students_course = StudentsCourse.where(course_id: course.id, user_id: current_user.id).first
+      else        
+        students_course = StudentsCourse.where(course_id: question.course_id, user_id: current_user.id).first
         students_course.completed = true
         students_course.save
         
@@ -170,7 +165,8 @@ class Api::V1::QuestionsController < ApplicationController
       if check_permission(question)
         answer = Answer.new(answer_params)
         answer.question_id = params[:id]
-
+        answer.course_id = question.course_id
+        
         highest_order_answer = Answer.order(order: :desc).first
 
         if !highest_order_answer
