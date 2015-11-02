@@ -31,9 +31,9 @@ class Api::V1::SectionsController < ApplicationController
   end  
 
   private
-    def admin_update
+    def author_update
       section = Section.find(params[:id])
-      if check_permission
+      if check_permission(section)
         if section.update(section_params)
           if params[:content]
             append_asset(section)
@@ -83,7 +83,7 @@ class Api::V1::SectionsController < ApplicationController
       end
     end
 
-    def admin_destroy
+    def author_destroy
       section = Section.find(params[:id])
       section.destroy
 
@@ -98,8 +98,9 @@ class Api::V1::SectionsController < ApplicationController
       params.permit(:completed)
     end
 
-    def admin_add_question    
-      if check_permission
+    def author_add_question 
+      section = Section.find(params[:id])   
+      if check_permission(section)
         question = Question.new(question_params)
         question.section_id = params[:id]
 
@@ -121,7 +122,7 @@ class Api::V1::SectionsController < ApplicationController
       end
     end
 
-    def admin_list_questions
+    def author_list_questions
       section = Section.find(params[:id])
       
       render json: section.questions.order(order: :desc).to_json, status: 201, root: false
@@ -143,16 +144,15 @@ class Api::V1::SectionsController < ApplicationController
       
     end
 
-    def admin_content_asset
+    def author_content_asset
       asset = Asset.find(params[:id])
       asset.destroy
 
       head 204
     end 
 
-    def check_permission
-      # Check if admin has permission to access this course
-      section = Section.find(params[:id])
+    def check_permission(section)
+      # Check if admin has permission to access this course      
       chapter = Chapter.find(section.chapter_id)
       course_permission = CourseInstitution.where(course_id: chapter.course_id, institution_id: current_user.institution_id).first
     end 

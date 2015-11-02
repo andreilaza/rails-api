@@ -27,7 +27,8 @@ class Api::V1::ChaptersController < ApplicationController
   
   private    
     def author_update    
-      if check_permission
+      chapter = Chapter.find(params[:id])
+      if check_permission(chapter)
         if chapter.update(chapter_params)
           render json: chapter, status: 200, root: false
         else
@@ -46,7 +47,8 @@ class Api::V1::ChaptersController < ApplicationController
     end
 
     def author_add_section
-      if check_permission
+      chapter = Chapter.find(params[:id])
+      if check_permission(chapter)
         section = Section.new(section_params)
         section.chapter_id = params[:id]
 
@@ -83,9 +85,8 @@ class Api::V1::ChaptersController < ApplicationController
       params.permit(:title, :description, :chapter_id, :section_type)
     end   
 
-    def check_permission
-      # Check if admin has permission to access this course
-      chapter = Chapter.find(params[:id])
+    def check_permission(chapter)
+      # Check if admin has permission to access this course      
       course_permission = CourseInstitution.where(course_id: chapter.course_id, institution_id: current_user.institution_id).first
     end 
 end

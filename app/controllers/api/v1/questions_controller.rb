@@ -19,19 +19,18 @@ class Api::V1::QuestionsController < ApplicationController
       params.permit(:title, :question_id, :order, :correct)
     end
 
-    def check_permission
-      # Check if admin has permission to access this course
-      question = Question.find(params[:id])
+    def check_permission(question)
+      # Check if admin has permission to access this course      
       section = Section.find(question.section_id)
       chapter = Chapter.find(section.chapter_id)
       course_permission = CourseInstitution.where(course_id: chapter.course_id, institution_id: current_user.institution_id).first
     end
 
-    def admin_index
+    def author_index
       respond_with Question.all.to_json
     end
 
-    def admin_show
+    def author_show
       question = Question.find(params[:id])
 
       if question
@@ -41,9 +40,9 @@ class Api::V1::QuestionsController < ApplicationController
       end
     end 
     
-    def admin_update
-      if check_permission
-        question = Question.find(params[:id])
+    def author_update
+      question = Question.find(params[:id])
+      if check_permission(question)        
 
         if question.update(question_params)
           render json: question, status: 200, root: false
@@ -126,7 +125,7 @@ class Api::V1::QuestionsController < ApplicationController
       render json: response, status: 200, root: false
     end
 
-    def admin_destroy
+    def author_destroy
       question = Question.find(params[:id])
       question.destroy
 
@@ -166,8 +165,9 @@ class Api::V1::QuestionsController < ApplicationController
       next_section
     end
 
-    def admin_add_answer
-      if check_permission
+    def author_add_answer
+      question = Question.find(params[:id])
+      if check_permission(question)
         answer = Answer.new(answer_params)
         answer.question_id = params[:id]
 
@@ -189,7 +189,7 @@ class Api::V1::QuestionsController < ApplicationController
       end
     end
 
-    def admin_list_answers
+    def author_list_answers
       question = Question.find(params[:id])
       
       render json: question.answers.order(order: :desc).to_json, status: 201, root: false

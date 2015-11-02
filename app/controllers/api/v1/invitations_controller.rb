@@ -25,7 +25,7 @@ class Api::V1::InvitationsController < ApplicationController
       params.permit(:email)
     end
 
-    def admin_create
+    def author_create
       invitation = Invitation.new(invitation_params)
       
       invitation.invitation = SecureRandom.hex(30)
