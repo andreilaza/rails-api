@@ -33,6 +33,17 @@ class CourseSerializer < ActiveModel::Serializer
 
   def institution
     institution  = Institution.joins(:course_institution, :courses).where('courses.id' => object.id).first
+    asset = Asset.where('entity_id' => institution.id, 'entity_type' => 'institution', 'definition' => 'logo').first
+
+    institution = institution.as_json
+
+    if asset
+      institution['logo'] = asset.path
+    else
+      institution['logo'] = nil
+    end
+
+    institution
   end
 
   def progress
@@ -68,6 +79,17 @@ class CourseSerializer < ActiveModel::Serializer
 
   def author
     user = User.select("user_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:user_metadatum, :course_institutions, :courses).where('courses.id' => object.id).first
+    asset = Asset.where('entity_id' => user.id, 'entity_type' => 'user', 'definition' => 'avatar').first
+
+    user = user.as_json
+
+    if asset
+      user['avatar'] = asset.path
+    else
+      user['avatar'] = nil
+    end
+
+    user
   end
 
   def questions    
