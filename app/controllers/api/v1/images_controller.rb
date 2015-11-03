@@ -21,9 +21,9 @@ class Api::V1::ImagesController < ApplicationController
     image = yield(image) if block_given?
     
     if params[:crop] == 'square'
-      image = resize_and_crop_square(image, params[:width])
+      image = resize_and_crop_square(image, params[:size])
     elsif params[:crop] == 'widescreen'
-      image = resize_and_crop_widescreen(image, image.width, image.height)
+      image = resize_and_crop_widescreen(image, params[:size])
     end
         
     bucket = Aws::S3::Bucket.new(ENV["AWS_BUCKET"], client: s3)
@@ -55,21 +55,24 @@ class Api::V1::ImagesController < ApplicationController
       image
     end
 
-    def resize_and_crop_widescreen(image, width, height)      
+    def resize_and_crop_widescreen(image, size)
+      width = image.width
+      height = image.height
+      
       expected_ratio = 16 / 9
       image_ratio = width / height
-      
-      if image_ratio > expected_ratio # taie din width
+
+      if image_ratio > expected_ratio
         remove = ((width - 16 * height / 9)/2).round
         width = width - remove * 2
         image.shave("#{remove}x0")
-      else # taie din height
+      else
         remove = ((height - 9 * width / 16)/2).round
         height = height - remove * 2
         image.shave("0x#{remove}") 
       end
       
-      image.resize("#{width}x#{height}!")
+      image.resize("#{width}x#{size}")
       image
     end
 end
