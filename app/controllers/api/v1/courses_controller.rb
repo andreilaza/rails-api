@@ -21,7 +21,7 @@ class Api::V1::CoursesController < ApplicationController
 
   private
     def course_params
-      params.permit(:title, :description, :published, :file)
+      params.permit(:title, :description, :second_description, :published)
     end
 
     def chapter_params
