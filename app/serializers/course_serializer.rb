@@ -92,7 +92,7 @@ class CourseSerializer < ActiveModel::Serializer
     user
   end
 
-  def questions    
-    duration = Question.where(course_id: object.id).count
+  def questions
+    questions = Question.where(course_id: object.id).count
   end
 end

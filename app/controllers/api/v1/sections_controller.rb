@@ -10,7 +10,7 @@ class Api::V1::SectionsController < ApplicationController
 
   def show
     section = Section.find(params[:id])
-        
+    
     if section
       render json: section, serializer: CustomSectionSerializer, status: 200, root: false
     else
