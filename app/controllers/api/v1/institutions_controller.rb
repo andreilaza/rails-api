@@ -176,7 +176,7 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     def published_courses
-      published_courses = Course.joins(:course_institution, :institutions).where('institutions.id' => params[:id], 'courses.published' => true).count
+      published_courses = Course.joins(:course_institutions, :institutions).where('institutions.id' => params[:id], 'courses.published' => true).count
     end    
 
     def permission_error
