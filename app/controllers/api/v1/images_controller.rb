@@ -13,10 +13,10 @@ class Api::V1::ImagesController < ApplicationController
 
     original_image = Aws::S3::Object.new(ENV["AWS_BUCKET"], params[:path_from])
     original_image_url = original_image.presigned_url(:get, expires_in: 90.seconds)
-
+    
     # take acl from original image
     image = MiniMagick::Image.open(original_image_url)
-
+    # render json: { url: original_image_url}, status: 201, root: false
     image.auto_orient
     image = yield(image) if block_given?
     

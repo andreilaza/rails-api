@@ -32,7 +32,7 @@ class CourseSerializer < ActiveModel::Serializer
   end
 
   def institution
-    institution  = Institution.joins(:course_institution, :courses).where('courses.id' => object.id).first
+    institution = Institution.joins(:course_institution, :courses).where('courses.id' => object.id).first
     asset = Asset.where('entity_id' => institution.id, 'entity_type' => 'institution', 'definition' => 'logo').first
 
     institution = institution.as_json

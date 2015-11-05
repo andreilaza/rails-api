@@ -18,7 +18,7 @@ class Api::V1::WaitingListController < ApplicationController
       params.permit(:email)
     end
 
-    def author_index
+    def admin_index
       waiting_list = WaitingList.all    
 
       render json: waiting_list, status: 200, root: false

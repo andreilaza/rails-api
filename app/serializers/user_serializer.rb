@@ -34,7 +34,19 @@ class UserSerializer < ActiveModel::Serializer
   end
 
   def institution
-    Institution.joins(:institution_users, :users).where('users.id' => object.id).first
+    institution = Institution.joins(:institution_users, :users).where('users.id' => object.id).first
+
+    asset = Asset.where('entity_id' => institution.id, 'entity_type' => 'institution', 'definition' => 'logo').first
+
+    institution = institution.as_json
+
+    if asset
+      institution['logo'] = asset.path
+    else
+      institution['logo'] = nil
+    end
+
+    institution
   end
 
   def courses
