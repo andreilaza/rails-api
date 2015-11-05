@@ -53,8 +53,22 @@ class InstitutionSerializer < ActiveModel::Serializer
         entry['duration'] = 0
       end
 
-      questions = Question.where(course_id: object.id).count
+      questions = Question.where(course_id: course.id).count
       entry['questions'] = questions
+
+      user = User.select("user_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:user_metadatum, :course_institutions, :courses).where('courses.id' => course.id).first
+      
+      asset = Asset.where('entity_id' => user.id, 'entity_type' => 'user', 'definition' => 'avatar').first
+
+      user = user.as_json
+
+      if asset
+        user['avatar'] = asset.path
+      else
+        user['avatar'] = nil
+      end
+
+      entry['author'] = user
 
       courses_response.push(entry)
     end
