@@ -65,7 +65,7 @@ class Api::V1::QuestionsController < ApplicationController
       end
 
       if ok
-        course = Course.where(course_id: question.course_id).first      
+        course = Course.where(id: question.course_id).first      
 
         existing = StudentsQuestion.where(section_id: question.section_id, user_id: current_user.id, question_id: question.id).first
 
@@ -132,7 +132,7 @@ class Api::V1::QuestionsController < ApplicationController
 
     def next_section(question)
       current_section = StudentsSection.where(user_id: current_user.id, section_id: question.section_id).first
-
+      
       if current_section && current_section.completed == false
         next_student_section = current_section
       else
