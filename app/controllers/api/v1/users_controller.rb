@@ -19,8 +19,10 @@ class Api::V1::UsersController < ApplicationController
   def author_show
     if current_user.real_role == 'institution_admin'
       admin_show
+    elsif current_user.id.to_s == params[:id].to_s
+      admin_show
     else
-      render json: {'error' => 'User not found.'}, status: 404
+      render json: {'error' => 'User not found.'}, status: 404      
     end
   end
 
