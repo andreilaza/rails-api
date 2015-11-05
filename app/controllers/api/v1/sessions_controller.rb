@@ -24,8 +24,8 @@ class Api::V1::SessionsController < ApplicationController
       hex = SecureRandom.hex(4)
       user_avatar = "users/user_#{hex}"
 
-      bucket = Aws::S3::Bucket.new(credentials['Bucket'], client: s3)
-      avatar = Aws::S3::Object.new(credentials['Bucket'], user_avatar)      
+      bucket = Aws::S3::Bucket.new(ENV["AWS_BUCKET"], client: s3)
+      avatar = Aws::S3::Object.new(ENV["AWS_BUCKET"], user_avatar)      
 
       # from an IO object
       File.open('john_doe.jpeg', 'rb') do |file|
