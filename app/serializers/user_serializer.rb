@@ -27,7 +27,7 @@ class UserSerializer < ActiveModel::Serializer
     if object.role != User::ROLES[:author] && object.role != User::ROLES[:institution_admin]
       keys - [:facebook] - [:linkedin] - [:twitter] - [:biography] - [:position] - [:website]
     elsif (object.role == User::ROLES[:author] || object.role == User::ROLES[:institution_admin]) && scope.role == User::ROLES[:estudent]
-      keys + [:institution] + [:courses] 
+      keys + [:institution] + [:courses] - [:role]
     else
       keys
     end

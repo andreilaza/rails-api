@@ -70,6 +70,7 @@ class InstitutionSerializer < ActiveModel::Serializer
     authors.each do |author|
       entry = author.as_json
       entry.except!('auth_token')
+      entry.except!('role')
 
       asset = Asset.where('entity_id' => author.id, 'entity_type' => 'user', 'definition' => 'avatar').first
     
