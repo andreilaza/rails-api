@@ -71,7 +71,7 @@ class UserSerializer < ActiveModel::Serializer
         entry['duration'] = 0
       end
 
-      questions = Question.where(course_id: object.id).count
+      questions = Question.where(course_id: course.id).count
       entry['questions'] = questions
 
       courses_response.push(entry)
