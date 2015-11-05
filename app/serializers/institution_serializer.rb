@@ -78,7 +78,7 @@ class InstitutionSerializer < ActiveModel::Serializer
   end
 
   def authors
-    authors = User.joins(:institution_users, :institutions).where('institutions.id' => object.id).all
+    authors = User.select("user_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:user_metadatum, :institution_users, :institutions).where('institutions.id' => object.id).all
     authors_response = []
     entry = {}
     authors.each do |author|
