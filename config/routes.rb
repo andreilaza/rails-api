@@ -84,7 +84,7 @@ Rails.application.routes.draw do
       # Invitation Routes
       post '/invitations', to: 'invitations#create'
       post '/invitations/check', to: 'invitations#check'
-      get '/invitations', to: 'invitations#index'      
+      # get '/invitations', to: 'invitations#index'      
 
       # Waiting List Routes
       get '/waiting-list', to: 'waiting_list#index'

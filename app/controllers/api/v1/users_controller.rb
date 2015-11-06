@@ -70,8 +70,6 @@ class Api::V1::UsersController < ApplicationController
   end
 
   def current
-    # output = build_output(current_user)
-
     render json: current_user, status: 200, root: false
   end
 

@@ -7,7 +7,7 @@ class Api::V1::InvitationsController < ApplicationController
 
     if !invitation
       render json: {"error" => "Invitation not found"}, status: 404, root: false
-    elsif invitation.expires > DateTime.now
+    elsif (invitation.expires > DateTime.now) || (invitation.invitation_type == Invitation::TYPE[:multiple])
       render json: {"success" => "Invitation is valid"}, status: 200, root: false
     else
       render json: {"error" => "Invitation is invalid"}, status: 422, root: false
