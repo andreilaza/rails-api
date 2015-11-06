@@ -69,6 +69,12 @@ class Api::V1::UsersController < ApplicationController
     send("#{current_user.role_name}_institution")
   end
 
+  def current
+    # output = build_output(current_user)
+
+    render json: current_user, status: 200, root: false
+  end
+
   private
     def estudent_update
       user = current_user
@@ -173,7 +179,7 @@ class Api::V1::UsersController < ApplicationController
         user.generate_authentication_token!
         user.save
 
-        output = build_output(user)        
+        output = build_output(user)
 
         render json: output.to_json, status: 200, root: false      
       else
