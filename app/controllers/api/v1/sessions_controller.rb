@@ -33,7 +33,8 @@ class Api::V1::SessionsController < ApplicationController
         avatar.put(body:file, acl: acl)        
         append_asset(user, user_avatar)
       end
-
+      
+      UserMailer.send_confirmation(user).deliver      
       output = build_output(user)
       
       render json: output, status: 201, root: false
