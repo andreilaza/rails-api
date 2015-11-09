@@ -49,7 +49,9 @@ class Api::V1::SectionsController < ApplicationController
     end
 
     def estudent_update
-      student_section = StudentsSection.where(user_id: current_user.id, section_id: params[:id]).first
+      section = Section.find(params[:id])
+      
+      student_section = StudentsSection.where(course_id: section.course_id, user_id: current_user.id, section_id: params[:id]).first
       
       if student_section.update(student_section_params)
         students_course = StudentsCourse.where(course_id: student_section.course_id, user_id: current_user.id).first
