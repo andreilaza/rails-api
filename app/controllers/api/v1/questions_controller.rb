@@ -90,7 +90,7 @@ class Api::V1::QuestionsController < ApplicationController
 
         if students_question.remaining == 0
           # Next Section
-          students_section = StudentsSection.where(user_id: current_user.id, section_id: students_question.section_id).first
+          students_section = StudentsSection.where(user_id: current_user.id, section_id: students_question.section_id, course_id: course.id).first
           students_section.completed = true
           students_section.save        
 
@@ -105,7 +105,7 @@ class Api::V1::QuestionsController < ApplicationController
       end
 
       # Update Students Course
-      students_section = StudentsSection.where(user_id: current_user.id, section_id: question.section_id).first
+      students_section = StudentsSection.where(user_id: current_user.id, section_id: question.section_id, course_id: course.id).first
       if students_section
         students_course = StudentsCourse.where(course_id: students_section.course_id, user_id: current_user.id).first
         students_course.touch
@@ -131,7 +131,7 @@ class Api::V1::QuestionsController < ApplicationController
     end
 
     def next_section(question)
-      current_section = StudentsSection.where(user_id: current_user.id, section_id: question.section_id).first
+      current_section = StudentsSection.where(user_id: current_user.id, section_id: question.section_id, course_id: question.course_id).first
       
       if current_section && current_section.completed == false
         next_student_section = current_section
