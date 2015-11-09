@@ -64,9 +64,7 @@ class Api::V1::QuestionsController < ApplicationController
         ok = true
       end
 
-      if ok
-        course = Course.where(id: question.course_id).first      
-
+      if ok        
         existing = StudentsQuestion.where(section_id: question.section_id, user_id: current_user.id, question_id: question.id).first
 
         if existing
@@ -75,7 +73,7 @@ class Api::V1::QuestionsController < ApplicationController
           students_question = StudentsQuestion.new()
         end
 
-        students_question.course_id = course.id
+        students_question.course_id = question.course_id
         students_question.section_id = question.section_id
         students_question.question_id = question.id
         students_question.user_id = current_user.id
@@ -90,7 +88,7 @@ class Api::V1::QuestionsController < ApplicationController
 
         if students_question.remaining == 0
           # Next Section
-          students_section = StudentsSection.where(user_id: current_user.id, section_id: students_question.section_id, course_id: course.id).first
+          students_section = StudentsSection.where(user_id: current_user.id, section_id: students_question.section_id, course_id: question.course_id).first
           students_section.completed = true
           students_section.save        
 
@@ -105,7 +103,7 @@ class Api::V1::QuestionsController < ApplicationController
       end
 
       # Update Students Course
-      students_section = StudentsSection.where(user_id: current_user.id, section_id: question.section_id, course_id: course.id).first
+      students_section = StudentsSection.where(user_id: current_user.id, section_id: question.section_id, course_id: question.course_id).first
       if students_section
         students_course = StudentsCourse.where(course_id: students_section.course_id, user_id: current_user.id).first
         students_course.touch
