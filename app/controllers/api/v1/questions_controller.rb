@@ -82,7 +82,7 @@ class Api::V1::QuestionsController < ApplicationController
         students_question.completed = true      
 
         questions_count = Question.where(section_id: question.section_id).count
-        students_question_count = StudentsQuestion.where(section_id: question.section_id).count
+        students_question_count = StudentsQuestion.where(section_id: question.section_id, user_id: current_user.id).count
 
         students_question.remaining = questions_count - students_question_count - 1
 
