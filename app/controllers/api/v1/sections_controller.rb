@@ -56,7 +56,7 @@ class Api::V1::SectionsController < ApplicationController
       if student_section.update(student_section_params)
         students_course = StudentsCourse.where(course_id: student_section.course_id, user_id: current_user.id).first
         students_course.touch
-        next_student_section = StudentsSection.where(user_id: current_user.id, completed: false).first
+        next_student_section = StudentsSection.where(user_id: current_user.id, completed: false, course_id: section.course_id).first
 
         if next_student_section
           next_section = Section.find(next_student_section.section_id)        
