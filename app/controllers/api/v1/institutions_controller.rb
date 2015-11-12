@@ -147,13 +147,13 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     def estudent_show
-      if published_courses > 0
-        institution = Institution.find(params[:id])
+      # if published_courses > 0
+      institution = Institution.find(params[:id])
 
-        render json: institution, status: 200, root: false
-      else
-        render json: {'error' => 'Institution not found.'}, status: 404
-      end
+      render json: institution, status: 200, root: false
+      # else
+        # render json: {'error' => 'Institution not found.'}, status: 404
+      # end
     end
 
     def append_asset(institution)
