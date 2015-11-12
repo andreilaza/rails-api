@@ -28,7 +28,7 @@ class Api::V1::SessionsController < ApplicationController
       avatar = Aws::S3::Object.new(ENV["AWS_BUCKET"], user_avatar)      
 
       # from an IO object
-      File.open('john_doe.jpeg', 'rb') do |file|
+      File.open('avatar.png', 'rb') do |file|
         acl = "public-read"
         avatar.put(body:file, acl: acl)        
         append_asset(user, user_avatar)
