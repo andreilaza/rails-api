@@ -16,6 +16,10 @@ class Api::V1::InstitutionsController < ApplicationController
   end
   
   private
+    def admin_update
+      institution_admin_update
+    end
+
     def admin_index
       institutions = Institution.all
 
