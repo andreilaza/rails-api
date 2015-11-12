@@ -15,11 +15,7 @@ class Api::V1::InstitutionsController < ApplicationController
     send("#{current_user.role_name}_list_courses")
   end
   
-  private
-    def admin_update
-      institution_admin_update
-    end
-
+  private    
     def admin_index
       institutions = Institution.all
 
@@ -41,6 +37,10 @@ class Api::V1::InstitutionsController < ApplicationController
       else
         render json: { errors: institution.errors }, status: 422
       end
+    end
+
+    def admin_update
+      institution_admin_update
     end
 
     def admin_destroy
@@ -175,8 +175,12 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     def check_permission
-      institution_user = InstitutionUser.where(institution_id: params[:id], user_id: current_user.id)
-      !institution_user.empty?
+      if current_user.role == User::ROLES[:admin]
+        true
+      else
+        institution_user = InstitutionUser.where(institution_id: params[:id], user_id: current_user.id)
+        !institution_user.empty?
+      end
     end
 
     def published_courses
