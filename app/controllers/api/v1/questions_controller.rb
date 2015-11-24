@@ -6,6 +6,7 @@ class Api::V1::QuestionsController < ApplicationController
   def add_answer
     send("#{current_user.role_name}_add_answer")
   end
+  
   def list_answers
     send("#{current_user.role_name}_list_answers")
   end  
