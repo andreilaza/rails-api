@@ -171,7 +171,7 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     def user_params
-      params.permit(:email, :password, :password_confirmation, :first_name, :last_name, :role)
+      params.permit(:email, :password, :password_confirmation, :first_name, :last_name, :role, :username)
     end
 
     def check_permission

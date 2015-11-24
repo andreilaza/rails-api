@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151124093438) do
+ActiveRecord::Schema.define(version: 20151124115616) do
 
   create_table "answers", force: :cascade do |t|
     t.string   "title",       limit: 255, default: ""
@@ -229,6 +229,7 @@ ActiveRecord::Schema.define(version: 20151124093438) do
     t.integer  "role",                   limit: 4,   default: 1
     t.string   "first_name",             limit: 255, default: ""
     t.string   "last_name",              limit: 255, default: ""
+    t.string   "username",               limit: 255, default: ""
   end
 
   add_index "users", ["auth_token"], name: "index_users_on_auth_token", unique: true, using: :btree

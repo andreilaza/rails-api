@@ -88,7 +88,7 @@ class Api::V1::SessionsController < ApplicationController
 
   private
     def user_params
-      params.permit(:email, :password, :password_confirmation, :role, :first_name, :last_name)
+      params.permit(:email, :password, :password_confirmation, :role, :first_name, :last_name, :username)
     end
 
     def append_asset(user, avatar)

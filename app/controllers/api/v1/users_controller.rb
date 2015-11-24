@@ -2,6 +2,15 @@ class Api::V1::UsersController < ApplicationController
   before_action :authenticate_with_token!, only: [:update, :destroy]
   respond_to :json
 
+  def check_username_availability
+    user = User.where('username' => params[:username]).first
+    if user
+      render json: false, status: 422, root: false
+    else
+      render json: true, status: 200, root: false
+    end
+  end
+
   def admin_show
     user = User.find(params[:id])
 
@@ -135,11 +144,11 @@ class Api::V1::UsersController < ApplicationController
     end
 
     def user_params
-      params.permit(:email, :password, :password_confirmation, :first_name, :last_name, :role)
+      params.permit(:email, :password, :password_confirmation, :first_name, :last_name, :role, :username)
     end
 
     def admin_update_params
-      params.permit(:email, :password, :password_confirmation, :first_name, :last_name)
+      params.permit(:email, :password, :password_confirmation, :first_name, :last_name, :username)
     end
 
     def append_asset(user)
