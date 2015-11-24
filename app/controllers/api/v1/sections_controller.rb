@@ -31,13 +31,29 @@ class Api::V1::SectionsController < ApplicationController
   end  
 
   private
+    def append_asset(section_id, path, metadata)
+      asset = {
+        'entity_id'   => section_id,
+        'entity_type' => 'section',
+        'path'        => path,
+        'metadata'    => metadata,
+        'definition'  => 'subtitles'
+      }
+
+      add_asset(asset)
+    end
+
     def author_update
       section = Section.find(params[:id])
       if check_permission(section)
         if section.update(section_params)
-          if params[:content]
-            append_asset(section)
+          if params[:content]            
+            append_asset(params[:id], params[:content][:path], params[:content][:metadata])
           end        
+
+          if params[:subtitles]
+            append_asset(params[:id], params[:subtitles][:path], params[:subtitles][:metadata])
+          end
 
           render json: section, serializer: CustomSectionSerializer, status: 200, root: false
         else
@@ -133,19 +149,7 @@ class Api::V1::SectionsController < ApplicationController
 
     def question_params
       params.permit(:title, :section_id, :order, :score, :question_type)
-    end
-
-    def append_asset(section)
-      asset = {
-        'entity_id'   => section[:id],
-        'entity_type' => 'section',
-        'path'        => params[:content][:path],
-        'metadata'    => params[:content][:metadata],
-        'definition'  => 'content'
-      }
-      add_asset(asset)
-      
-    end
+    end    
 
     def author_content_asset
       asset = Asset.find(params[:id])

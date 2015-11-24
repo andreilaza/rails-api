@@ -28,12 +28,13 @@ class Api::V1::CoursesController < ApplicationController
       params.permit(:title, :description)
     end
 
-    def append_asset(course)
+    def append_asset(course_id, path, definition, metadata = nil)
       asset = {
-        'entity_id'   => course[:id],
+        'entity_id'   => course_id,
         'entity_type' => 'course',
-        'path'        => params[:cover_image],
-        'definition'  => 'cover_image'
+        'path'        => path,
+        'definition'  => definition,
+        'metadata'    => metadata
       }
       add_asset(asset)
     end
@@ -145,7 +146,11 @@ class Api::V1::CoursesController < ApplicationController
         end
 
         if params[:cover_image]
-          append_asset(course)
+          append_asset(course.id, params[:cover_image], 'cover_image')
+        end
+
+        if params[:teaser]
+          append_asset(course.id, params[:teaser][:path], 'teaser', params[:teaser][:metadata])
         end
 
         render json: course, status: 201, root: false
@@ -159,7 +164,11 @@ class Api::V1::CoursesController < ApplicationController
       
       if course.update(course_params)
         if params[:cover_image]
-          append_asset(course)
+          append_asset(course.id, params[:cover_image], 'cover_image')
+        end
+
+        if params[:teaser]
+          append_asset(course.id, params[:teaser][:path], 'teaser', params[:teaser][:metadata])
         end
 
         if params[:category_id]

@@ -1,5 +1,5 @@
 class SectionSerializer < ActiveModel::Serializer # Used for requests at the course and chapter level.
-  attributes :id, :title, :description, :chapter_id, :section_type, :order, :completed, :duration, :content, :questions
+  attributes :id, :title, :description, :chapter_id, :section_type, :order, :completed, :duration, :content, :subtitles,:questions
 
   def filter(keys)
     if scope.role == User::ROLES[:estudent]
@@ -20,6 +20,24 @@ class SectionSerializer < ActiveModel::Serializer # Used for requests at the cou
 
   def content
     assets = Asset.where('entity_id' => object.id, 'entity_type' => 'section', 'definition' => 'content').all
+    
+    if assets
+      response = []
+      assets.each do |asset|
+        response.push({
+          "id" => asset.id,
+          "path" => asset.path,
+          "metadata" => asset.metadata
+        })
+      response
+      end
+    else
+      nil
+    end
+  end
+
+  def subtitles
+    assets = Asset.where('entity_id' => object.id, 'entity_type' => 'section', 'definition' => 'subtitles').all
     
     if assets
       response = []
