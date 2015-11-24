@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :second_description, :published, :started, :progress, :completed, :duration, :institution, :cover_image, :author, :questions
+  attributes :id, :title, :description, :second_description, :published, :started, :progress, :completed, :duration, :institution, :cover_image, :author, :questions, :domain, :category
 
   has_many :chapters
 
@@ -94,5 +94,13 @@ class CourseSerializer < ActiveModel::Serializer
 
   def questions
     questions = Question.where(course_id: object.id).count
+  end
+
+  def category
+    category = Category.joins(:category_courses, :courses).where('courses.id' => object.id).first
+  end
+
+  def domain
+    domain = Domain.joins(:category_courses, :courses).where('courses.id' => object.id).first
   end
 end

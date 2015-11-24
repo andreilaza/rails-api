@@ -11,7 +11,8 @@ Rails.application.routes.draw do
       
       resources :users, :only => [:create, :destroy] # owner
       resources :sessions, :only => [:create, :destroy] # all
-      resources :institutions, :only => [:index, :show, :create, :update, :destroy] # owner      
+      resources :institutions, :only => [:index, :show, :create, :update, :destroy] # owner
+      resources :domains, :only => [:index, :show, :create, :update, :destroy] # owner      
 
       # Course Routes
       get '/courses', to: 'courses#index'
@@ -91,7 +92,16 @@ Rails.application.routes.draw do
       post '/waiting-list', to: 'waiting_list#create'
 
       # Image Routes
-      post '/images/process_image', to: 'images#process_image'      
+      post '/images/process_image', to: 'images#process_image'
+
+      # Domain Routes
+      post '/domains/:id/categories', to: 'domains#add_category'
+      get '/domains/:id/categories', to: 'domains#list_categories'
+
+      # Category Routes
+      get '/categories/:id', to: 'categories#show'
+      put '/categories/:id', to: 'categories#update'
+      delete '/categories/:id', to: 'categories#destroy'
 
     end
   end

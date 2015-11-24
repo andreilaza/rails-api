@@ -121,7 +121,7 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def author_create
-      course = Course.new(course_params)          
+      course = Course.new(course_params)
 
       if course.save
         
@@ -132,6 +132,17 @@ class Api::V1::CoursesController < ApplicationController
         course_institution.institution_id = current_user.institution_id
         course_institution.user_id = current_user.id
         course_institution.save
+
+        if params[:category_id]
+          category = Category.find(params[:category_id])
+
+          category_course = CategoryCourse.new
+          category_course.category_id = params[:category_id]
+          category_course.course_id = course.id
+          category_course.domain_id = category.domain_id
+          
+          category_course.save
+        end
 
         if params[:cover_image]
           append_asset(course)

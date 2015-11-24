@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151102173458) do
+ActiveRecord::Schema.define(version: 20151124093438) do
 
   create_table "answers", force: :cascade do |t|
     t.string   "title",       limit: 255, default: ""
@@ -38,6 +38,25 @@ ActiveRecord::Schema.define(version: 20151102173458) do
   add_index "assets", ["entity_id"], name: "index_assets_on_entity_id", using: :btree
   add_index "assets", ["entity_type"], name: "index_assets_on_entity_type", using: :btree
 
+  create_table "categories", force: :cascade do |t|
+    t.string   "title",       limit: 255,   default: ""
+    t.text     "description", limit: 65535
+    t.integer  "domain_id",   limit: 4,     default: 0
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+  end
+
+  create_table "category_courses", force: :cascade do |t|
+    t.integer  "category_id", limit: 4
+    t.integer  "course_id",   limit: 4
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+    t.integer  "domain_id",   limit: 4
+  end
+
+  add_index "category_courses", ["category_id"], name: "index_category_courses_on_category_id", using: :btree
+  add_index "category_courses", ["course_id"], name: "index_category_courses_on_course_id", using: :btree
+
   create_table "chapters", force: :cascade do |t|
     t.string   "title",       limit: 255, default: ""
     t.string   "description", limit: 255, default: ""
@@ -63,14 +82,22 @@ ActiveRecord::Schema.define(version: 20151102173458) do
   add_index "course_institutions", ["institution_id"], name: "index_course_institutions_on_institution_id", using: :btree
 
   create_table "courses", force: :cascade do |t|
-    t.string   "title",       limit: 255, default: ""
-    t.string   "description", limit: 255, default: ""
-    t.boolean  "published",               default: false
+    t.string   "title",              limit: 255,      default: ""
+    t.text     "description",        limit: 16777215
+    t.boolean  "published",                           default: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "second_description", limit: 65535
   end
 
   add_index "courses", ["title"], name: "index_courses_on_title", using: :btree
+
+  create_table "domains", force: :cascade do |t|
+    t.string   "title",       limit: 255,   default: ""
+    t.text     "description", limit: 65535
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+  end
 
   create_table "institution_users", force: :cascade do |t|
     t.integer  "institution_id", limit: 4
@@ -93,12 +120,13 @@ ActiveRecord::Schema.define(version: 20151102173458) do
   add_index "institutions", ["title"], name: "index_institutions_on_title", using: :btree
 
   create_table "invitations", force: :cascade do |t|
-    t.string   "email",      limit: 255, default: ""
-    t.string   "invitation", limit: 255, default: ""
-    t.integer  "sent",       limit: 4,   default: 0
+    t.string   "email",           limit: 255, default: ""
+    t.string   "invitation",      limit: 255, default: ""
+    t.integer  "sent",            limit: 4,   default: 0
     t.datetime "expires"
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
+    t.integer  "invitation_type", limit: 4,   default: 1
   end
 
   create_table "questions", force: :cascade do |t|
