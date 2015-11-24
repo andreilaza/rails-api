@@ -160,7 +160,23 @@ class Api::V1::CoursesController < ApplicationController
       if course.update(course_params)
         if params[:cover_image]
           append_asset(course)
-        end      
+        end
+
+        if params[:category_id]
+          category_course = CategoryCourse.where('course_id' => params[:id]).first
+
+          if category_course
+            category_course.category_id = params[:category_id]
+          else
+            category = Category.find(params[:category_id])
+            category_course = CategoryCourse.new
+            category_course.course_id = course.id
+            category_course.category_id = category.id
+            category_course.domain_id = category.domain_id
+          end
+
+          category_course.save
+        end
           
         render json: course, status: 200, root: false
       else
