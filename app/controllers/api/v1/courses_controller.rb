@@ -248,38 +248,36 @@ class Api::V1::CoursesController < ApplicationController
     end  
 
     def admin_slugify
-      courses = Course.all
+      # courses = Course.all
 
-      courses.each do |course|
-        course.slug = change_diacritics(course.title)
-        existing = Course.where('slug' => course.slug).first
+      # courses.each do |course|
+      #   course.slug = change_diacritics(course.title)
+      #   existing = Course.where('slug' => course.slug).first
 
-        if existing
-          result = course.slug.split('-')
-          last = result.last
-          
-          render json: is_number?(last), status: 200, root: false
-          return
+      #   if existing
+      #     result = course.slug.split('-')
+      #     last = result.last          
+      #     render json: last, status: 200, root: false
+      #       return
+      #     if is_number?(last) && !last.empty?
+      #       result.delete(last)
+      #       last += 1
+      #       result.push(last)
+      #       result = result.join('-')
+      #       render json: result, status: 200, root: false
+      #       return
 
-          if is_number?(last) && !last.empty?
-            # result.delete(last)
-            # last += 1
-            # result.push(last)
-            # result = result.join('-')
-            render json: last, status: 200, root: false
-            return
+      #     else            
+      #       result = result.join('-')
+      #       result += '-1'
+      #       render json: result, status: 200, root: false
+      #       return
+      #     end
 
-          else
-            result = result.join('-')
-            result += '-1'
-          end
-
-          course.slug = result
-        end
-        render json: result, status: 200, root: false
-        return
-        course.save
-      end
+      #     course.slug = result
+      #   end        
+      #   course.save
+      # end
 
       # chapters = Chapter.all
 

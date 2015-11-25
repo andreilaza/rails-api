@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :second_description, :published, :started, :progress, :completed, :duration, :institution, :cover_image, :author, :questions, :domain, :category, :teasers
+  attributes :id, :title, :description, :second_description, :published, :started, :progress, :completed, :duration, :institution, :cover_image, :author, :questions, :domain, :category, :teaser
 
   has_many :chapters
 
@@ -92,7 +92,7 @@ class CourseSerializer < ActiveModel::Serializer
     user
   end
 
-  def teasers
+  def teaser
     assets = Asset.where('entity_id' => object.id, 'entity_type' => 'course', 'definition' => 'teaser').all
     
     if assets
