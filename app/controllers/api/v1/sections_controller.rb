@@ -149,14 +149,7 @@ class Api::V1::SectionsController < ApplicationController
 
     def question_params
       params.permit(:title, :section_id, :order, :score, :question_type)
-    end    
-
-    def author_content_asset
-      asset = Asset.find(params[:id])
-      asset.destroy
-
-      head 204
-    end 
+    end     
 
     def check_permission(section)
       # Check if admin has permission to access this course      

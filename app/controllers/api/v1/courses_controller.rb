@@ -23,8 +23,8 @@ class Api::V1::CoursesController < ApplicationController
     send("#{current_user.role_name}_slugify")
   end
 
-  def teaser_asset
-    send("#{current_user.role_name}_teaser_asset")
+  def assets
+    send("#{current_user.role_name}_assets")
   end  
 
   private
@@ -209,7 +209,7 @@ class Api::V1::CoursesController < ApplicationController
       head 204    
     end    
 
-    def author_teaser_asset
+    def author_assets
       asset = Asset.find(params[:id])
       asset.destroy
 

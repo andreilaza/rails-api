@@ -24,11 +24,8 @@ Rails.application.routes.draw do
       delete '/courses/:id', to: 'courses#destroy'
       post '/courses/:id/start', to: 'courses#start'
       post '/courses/:id/chapters', to: 'courses#add_chapter'
-      get '/courses/:id/chapters', to: 'courses#list_chapters'
-      
-      # Delete teaser
-      delete '/teaser_assets/:id', to: 'courses#teaser_asset'
-      
+      get '/courses/:id/chapters', to: 'courses#list_chapters'            
+
       # Chapter Routes
       get '/chapters', to: 'chapters#index'
       get '/chapters/:id', to: 'chapters#show'
@@ -50,7 +47,7 @@ Rails.application.routes.draw do
       get '/sections/:id/questions', to: 'sections#list_questions'
       
       # Delete video
-      delete '/content_assets/:id', to: 'sections#content_asset'
+      delete '/delete-assets/:id', to: 'courses#assets'
 
       # Question Routes
       get '/questions', to: 'questions#index'
