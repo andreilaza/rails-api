@@ -26,6 +26,9 @@ Rails.application.routes.draw do
       post '/courses/:id/chapters', to: 'courses#add_chapter'
       get '/courses/:id/chapters', to: 'courses#list_chapters'
       
+      # Delete teaser
+      delete '/teaser_assets/:id', to: 'courses#teaser_asset'
+      
       # Chapter Routes
       get '/chapters', to: 'chapters#index'
       get '/chapters/:id', to: 'chapters#show'
@@ -103,7 +106,9 @@ Rails.application.routes.draw do
       get '/categories/:id', to: 'categories#show'
       put '/categories/:id', to: 'categories#update'
       delete '/categories/:id', to: 'categories#destroy'
+      get 'categories/:id/courses', to: 'categories#list_courses'
 
+      post 'slugify', to: 'courses#slugify'
     end
   end
 end

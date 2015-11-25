@@ -23,6 +23,10 @@ class Api::V1::CoursesController < ApplicationController
     send("#{current_user.role_name}_slugify")
   end
 
+  def teaser_asset
+    send("#{current_user.role_name}_teaser_asset")
+  end  
+
   private
     def course_params
       params.permit(:title, :description, :second_description, :published)
@@ -204,6 +208,13 @@ class Api::V1::CoursesController < ApplicationController
 
       head 204    
     end    
+
+    def author_teaser_asset
+      asset = Asset.find(params[:id])
+      asset.destroy
+
+      head 204
+    end
 
     def author_add_chapter
       # Check if admin has permission to access this course
