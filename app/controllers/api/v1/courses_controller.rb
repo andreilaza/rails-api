@@ -19,6 +19,10 @@ class Api::V1::CoursesController < ApplicationController
     send("#{current_user.role_name}_list_chapters")
   end
 
+  def slugify
+    send("#{current_user.role_name}_slugify")
+  end
+
   private
     def course_params
       params.permit(:title, :description, :second_description, :published)
@@ -28,7 +32,7 @@ class Api::V1::CoursesController < ApplicationController
       params.permit(:title, :description)
     end
 
-    def append_asset(course_id, path, definition, metadata = nil)
+    def append_asset(course_id, path, definition, metadata)
       asset = {
         'entity_id'   => course_id,
         'entity_type' => 'course',
@@ -146,7 +150,7 @@ class Api::V1::CoursesController < ApplicationController
         end
 
         if params[:cover_image]
-          append_asset(course.id, params[:cover_image], 'cover_image')
+          append_asset(course.id, params[:cover_image], 'cover_image', nil)
         end
 
         if params[:teaser]
@@ -164,7 +168,7 @@ class Api::V1::CoursesController < ApplicationController
       
       if course.update(course_params)
         if params[:cover_image]
-          append_asset(course.id, params[:cover_image], 'cover_image')
+          append_asset(course.id, params[:cover_image], 'cover_image', nil)
         end
 
         if params[:teaser]
@@ -231,4 +235,102 @@ class Api::V1::CoursesController < ApplicationController
     
       render json: course.chapters.order(order: :desc).to_json, status: 201, root: false
     end  
+
+    def admin_slugify
+      courses = Course.all
+
+      courses.each do |course|
+        course.slug = change_diacritics(course.title)
+        existing = Course.where('slug' => course.slug).first
+
+        if existing
+          result = course.slug.split('-')
+          last = result.last
+          
+          render json: is_number?(last), status: 200, root: false
+          return
+
+          if is_number?(last) && !last.empty?
+            # result.delete(last)
+            # last += 1
+            # result.push(last)
+            # result = result.join('-')
+            render json: last, status: 200, root: false
+            return
+
+          else
+            result = result.join('-')
+            result += '-1'
+          end
+
+          course.slug = result
+        end
+        render json: result, status: 200, root: false
+        return
+        course.save
+      end
+
+      # chapters = Chapter.all
+
+      # chapters.each do |chapter|
+      #   chapter.slug = change_diacritics(chapter.title)
+        
+      #   chapter.save
+      # end
+
+      # sections = Section.all
+
+      # sections.each do |section|
+      #   section.slug = change_diacritics(section.title)
+        
+      #   section.save
+      # end 
+
+      # domains = Domain.all
+
+      # domains.each do |domain|
+      #   domain.slug = change_diacritics(domain.title)
+      #   domain.slug = check_uniqueness(domain.slug)
+      #   domain.save
+      # end 
+
+      # categories = Category.all
+
+      # categories.each do |category|
+      #   category.slug = change_diacritics(category.title)
+      #   category.slug = check_uniqueness(category.slug)
+      #   category.save
+      # end
+
+      # institutions = Institution.all
+
+      # institutions.each do |institution|
+      #   institution.slug = change_diacritics(institution.title)
+      #   institution.slug = check_uniqueness(institution.slug)
+      #   institution.save
+      # end
+
+      head 200
+    end
+
+    def change_diacritics(item)
+
+      item.gsub! 'ț', 't'
+      item.gsub! 'ă', 'a'
+      item.gsub! 'î', 'i'
+      item.gsub! 'â', 'a'
+      item.gsub! 'ș', 's'
+
+      item.gsub! 'Ț', 'T'
+      item.gsub! 'Â', 'A'
+      item.gsub! 'Î', 'I'
+      item.gsub! 'Ă', 'A'
+      item.gsub! 'Ș', 'S'
+
+      item.parameterize
+    end
+
+    def is_number?(string)
+      true if Float(string) rescue false
+    end    
 end

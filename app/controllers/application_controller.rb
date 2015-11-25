@@ -31,9 +31,19 @@ class ApplicationController < ActionController::Base
     asset = Asset.where(:entity_id => params['entity_id'], :entity_type => params['entity_type'], :definition => params['definition']).first
 
     if asset && asset.entity_type != 'section' && asset.definition != 'content'
+      if asset.entity_type == 'course' && asset.definition == 'teaser'
+        asset = Asset.new(params)
+        asset.save
+      end
+
       asset['path'] = params['path']
+
+      if params['metadata']
+        asset['metadata'] = params['metadata']
+      end
+
       asset.save
-    else      
+    else
       asset = Asset.new(params)
       asset.save
     end

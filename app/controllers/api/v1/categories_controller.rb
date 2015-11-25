@@ -2,6 +2,10 @@ class Api::V1::CategoriesController < ApplicationController
   before_action :authenticate_with_token!
   respond_to :json  
 
+  def list_courses
+    send("#{current_user.role_name}_list_courses")
+  end
+
   private
     def admin_show
       category =  Category.find(params[:id])
@@ -32,5 +36,11 @@ class Api::V1::CategoriesController < ApplicationController
     
     def category_params
       params.permit(:title, :description, :domain_id)
+    end
+
+    def estudent_list_courses
+      courses = Course.joins(:category_courses, :categories).where('categories.id' => params[:id], 'courses.published' => true).all 
+      
+      render json: courses, status: 200, root: false
     end
 end

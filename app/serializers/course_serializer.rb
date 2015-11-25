@@ -93,13 +93,22 @@ class CourseSerializer < ActiveModel::Serializer
   end
 
   def teaser
-    asset = Asset.where('entity_id' => object.id, 'entity_type' => 'course', 'definition' => 'teaser').first
+    assets = Asset.where('entity_id' => object.id, 'entity_type' => 'course', 'definition' => 'teaser').all
     
-    if asset
-      asset.path
+    if assets
+      response = []
+      assets.each do |asset|
+        response.push({
+          "id" => asset.id,
+          "path" => asset.path,
+          "metadata" => asset.metadata
+        })
+      response
+      end
     else
       nil
-    end
+    end    
+
   end
 
   def questions
