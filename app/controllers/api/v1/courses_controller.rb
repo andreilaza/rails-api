@@ -172,7 +172,7 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def author_update
-      course = Course.joins(:course_institutions, :institutions).where('institutions.id' => current_user.institution_id).find_by("id = ? OR slug = ?", params[:id], params[:id])
+      course = Course.joins(:course_institutions, :institutions).where('institutions.id' => current_user.institution_id).find_by("courses.id = ? OR courses.slug = ?", params[:id], params[:id])
       
       if course.update(course_params)
         if params[:cover_image]
