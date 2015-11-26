@@ -1,32 +1,33 @@
 class Api::V1::DomainsController < ApplicationController
-  before_action :authenticate_with_token!
+  before_action :authenticate_with_token!, except: [:show, :index]
   respond_to :json  
 
   def add_category
     send("#{current_user.role_name}_add_category")
+  end  
+
+  def index
+    domains = Domain.all
+
+    render json: domains, status: 200, root: false
+  end
+
+  def show
+    domain =  Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
+
+    if domain
+      render json: domain, status: 200, root: false
+    else
+      render json: { errors: domain.errors }, status: 404
+    end
   end
 
   def list_categories
-    send("#{current_user.role_name}_list_categories")    
-  end  
-
-  private
-    def admin_index
-      domains = Domain.all
-
-      render json: domains, status: 200, root: false
-    end
-
-    def admin_show
-      domain =  Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
-
-      if domain
-        render json: domain, status: 200, root: false
-      else
-        render json: { errors: domain.errors }, status: 404
-      end
-    end
-
+    domain = Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
+  
+    render json: domain.categories, status: 201, root: false
+  end
+  private    
     def admin_create
       domain = Domain.new(domain_params)    
       
@@ -87,11 +88,5 @@ class Api::V1::DomainsController < ApplicationController
       else
         render json: { errors: category.errors }, status: 422
       end
-    end
-
-    def admin_list_categories
-      domain = Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
-    
-      render json: domain.categories, status: 201, root: false
-    end
+    end    
 end

@@ -120,7 +120,7 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def author_show
-      course =  Course.joins(:course_institutions, :institutions).where('institutions.id' => current_user.institution_id).find_by("id = ? OR slug = ?", params[:id], params[:id])
+      course =  Course.joins(:course_institutions, :institutions).where('institutions.id' => current_user.institution_id).find_by("courses.id = ? OR courses.slug = ?", params[:id], params[:id])
 
       if course
         render json: course, status: 200, root: false
