@@ -7,7 +7,7 @@ class Api::V1::ChaptersController < ApplicationController
   end
 
   def show
-    chapter = Chapter.find(params[:id])
+    chapter = Chapter.find_by("id = ? OR slug = ?", params[:id], params[:id])
 
     if chapter
       render json: chapter, status: 200, root: false
@@ -27,9 +27,15 @@ class Api::V1::ChaptersController < ApplicationController
   
   private    
     def author_update    
-      chapter = Chapter.find(params[:id])
+      chapter = Chapter.find_by("id = ? OR slug = ?", params[:id], params[:id])
       if check_permission(chapter)
         if chapter.update(chapter_params)
+          if params[:title]
+            slug_string = slugify(chapter.title)
+            chapter = check_existing_slug(chapter, 'chapter', slug_string)
+            chapter.save
+          end
+          
           render json: chapter, status: 200, root: false
         else
           render json: { errors: chapter.errors }, status: 422
@@ -40,14 +46,14 @@ class Api::V1::ChaptersController < ApplicationController
     end
 
     def author_destroy
-      chapter = Chapter.find(params[:id])
+      chapter = Chapter.find_by("id = ? OR slug = ?", params[:id], params[:id])
       chapter.destroy
 
       head 204    
     end
 
     def author_add_section
-      chapter = Chapter.find(params[:id])
+      chapter = Chapter.find_by("id = ? OR slug = ?", params[:id], params[:id])
       if check_permission(chapter)
         section = Section.new(section_params)
         section.chapter_id = params[:id]
@@ -61,6 +67,11 @@ class Api::V1::ChaptersController < ApplicationController
         end
 
         if section.save
+          if params[:title]
+            slug_string = slugify(section.title)
+            section = check_existing_slug(section, 'section', slug_string)
+            section.save
+          end
           render json: section, status: 201, root: false
         else
           render json: { errors: section.errors }, status: 422
@@ -71,7 +82,7 @@ class Api::V1::ChaptersController < ApplicationController
     end
 
     def author_list_sections
-      chapter = Chapter.find(params[:id])
+      chapter = Chapter.find_by("id = ? OR slug = ?", params[:id], params[:id])
       
       render json: chapter.sections.order(order: :desc).to_json, status: 201, root: false
     end

@@ -105,7 +105,7 @@ Rails.application.routes.draw do
       delete '/categories/:id', to: 'categories#destroy'
       get 'categories/:id/courses', to: 'categories#list_courses'
 
-      post 'slugify', to: 'courses#slugify'
+      post 'slugify', to: 'courses#temporary_slugify'
     end
   end
 end

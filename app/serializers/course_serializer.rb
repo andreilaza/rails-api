@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :second_description, :published, :started, :progress, :completed, :duration, :institution, :cover_image, :author, :questions, :domain, :category, :teaser
+  attributes :id, :title, :description, :second_description, :published, :started, :progress, :completed, :duration, :institution, :cover_image, :author, :questions, :domain, :category, :teaser, :slug
 
   has_many :chapters
 

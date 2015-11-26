@@ -1,5 +1,5 @@
 class InstitutionSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :url, :logo, :has_institution_admin
+  attributes :id, :title, :description, :url, :logo, :has_institution_admin, :slug
 
   def logo
     asset = Asset.where('entity_id' => object.id, 'entity_type' => 'institution', 'definition' => 'logo').first

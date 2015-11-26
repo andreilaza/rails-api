@@ -18,7 +18,7 @@ class Api::V1::DomainsController < ApplicationController
     end
 
     def admin_show
-      domain =  Domain.find(params[:id])
+      domain =  Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
 
       if domain
         render json: domain, status: 200, root: false
@@ -31,6 +31,11 @@ class Api::V1::DomainsController < ApplicationController
       domain = Domain.new(domain_params)    
       
       if domain.save      
+        if params[:title]
+          slug_string = slugify(domain.title)
+          domain = check_existing_slug(domain, 'domain', slug_string)
+          domain.save
+        end
         render json: domain, status: 201, root: false
       else
         render json: { errors: domain.errors }, status: 422
@@ -38,9 +43,14 @@ class Api::V1::DomainsController < ApplicationController
     end
 
     def admin_update
-      domain = Domain.find(params[:id])
+      domain = Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
 
-      if domain.update(domain_params)      
+      if domain.update(domain_params)
+        if params[:title]
+          slug_string = slugify(domain.title)
+          domain = check_existing_slug(domain, 'domain', slug_string)
+          domain.save
+        end
         render json: domain, status: 200, root: false
       else
         render json: { errors: domain.errors }, status: 422
@@ -48,7 +58,7 @@ class Api::V1::DomainsController < ApplicationController
     end
 
     def admin_destroy
-      domain = Domain.find(params[:id])
+      domain = Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
       domain.destroy
 
       head 204    
@@ -64,9 +74,15 @@ class Api::V1::DomainsController < ApplicationController
 
     def admin_add_category
       category = Category.new(category_params)
-      category.domain_id = params[:id]
+      domain = Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      category.domain_id = domain.id
           
       if category.save
+        if params[:title]
+          slug_string = slugify(category.title)
+          category = check_existing_slug(category, 'category', slug_string)
+          category.save
+        end
         render json: category, status: 201, root: false
       else
         render json: { errors: category.errors }, status: 422
@@ -74,7 +90,7 @@ class Api::V1::DomainsController < ApplicationController
     end
 
     def admin_list_categories
-      domain = Domain.find(params[:id])
+      domain = Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
     
       render json: domain.categories, status: 201, root: false
     end

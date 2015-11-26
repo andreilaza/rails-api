@@ -19,7 +19,7 @@ class Api::V1::CoursesController < ApplicationController
     send("#{current_user.role_name}_list_chapters")
   end
 
-  def slugify
+  def temporary_slugify
     send("#{current_user.role_name}_slugify")
   end
 
@@ -79,7 +79,7 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def estudent_show
-      course =  Course.where(:published => true).find(params[:id])
+      course =  Course.where(:published => true).find_by("id = ? OR slug = ?", params[:id], params[:id])
       
       if course
         render json: course, status: 200, root: false
@@ -89,7 +89,7 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def estudent_start
-      course = Course.find(params[:id])
+      course = Course.find_by("id = ? OR slug = ?", params[:id], params[:id])
 
       if course.published
         create_snapshot(course)      
@@ -100,11 +100,11 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def estudent_reset
-      StudentsQuestion.destroy_all(user_id: current_user.id, course_id: params[:id])
-      StudentsSection.destroy_all(user_id: current_user.id, course_id: params[:id])
-      StudentsCourse.destroy_all(user_id: current_user.id, course_id: params[:id])
+      course = Course.find_by("id = ? OR slug = ?", params[:id], params[:id])
 
-      course =  Course.where(:published => true).find(params[:id])
+      StudentsQuestion.destroy_all(user_id: current_user.id, course_id: course.id)
+      StudentsSection.destroy_all(user_id: current_user.id, course_id: course.id)
+      StudentsCourse.destroy_all(user_id: current_user.id, course_id: course.id)
       
       if course
         render json: course, status: 200, root: false
@@ -120,7 +120,7 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def author_show
-      course =  Course.joins(:course_institutions, :institutions).where('institutions.id' => current_user.institution_id).find(params[:id])
+      course =  Course.joins(:course_institutions, :institutions).where('institutions.id' => current_user.institution_id).find_by("id = ? OR slug = ?", params[:id], params[:id])
 
       if course
         render json: course, status: 200, root: false
@@ -133,7 +133,11 @@ class Api::V1::CoursesController < ApplicationController
       course = Course.new(course_params)
 
       if course.save
-        
+        if params[:title]
+          slug_string = slugify(course.title)
+          course = check_existing_slug(course, 'course', slug_string)
+          course.save
+        end
         course_institution = CourseInstitution.new
 
         course_institution.course_id = course.id
@@ -143,10 +147,10 @@ class Api::V1::CoursesController < ApplicationController
         course_institution.save
 
         if params[:category_id]
-          category = Category.find(params[:category_id])
+          category = Category.find_by("id = ? OR slug = ?", params[:category_id], params[:category_id])
 
           category_course = CategoryCourse.new
-          category_course.category_id = params[:category_id]
+          category_course.category_id = category.id
           category_course.course_id = course.id
           category_course.domain_id = category.domain_id
           
@@ -168,7 +172,7 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def author_update
-      course = Course.joins(:course_institutions, :institutions).where('institutions.id' => current_user.institution_id).find(params[:id])    
+      course = Course.joins(:course_institutions, :institutions).where('institutions.id' => current_user.institution_id).find_by("id = ? OR slug = ?", params[:id], params[:id])
       
       if course.update(course_params)
         if params[:cover_image]
@@ -180,7 +184,7 @@ class Api::V1::CoursesController < ApplicationController
         end
 
         if params[:category_id]
-          category_course = CategoryCourse.where('course_id' => params[:id]).first
+          category_course = CategoryCourse.where('course_id' => course.id).first
 
           if category_course
             category_course.category_id = params[:category_id]
@@ -194,6 +198,12 @@ class Api::V1::CoursesController < ApplicationController
 
           category_course.save
         end
+
+        if params[:title]
+          slug_string = slugify(course.title)
+          course = check_existing_slug(course, 'course', slug_string)
+          course.save
+        end
           
         render json: course, status: 200, root: false
       else
@@ -203,7 +213,7 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def author_destroy
-      course = Course.find(params[:id])
+      course = Course.find_by("id = ? OR slug = ?", params[:id], params[:id])
       course.destroy
 
       head 204    
@@ -218,11 +228,12 @@ class Api::V1::CoursesController < ApplicationController
 
     def author_add_chapter
       # Check if admin has permission to access this course
-      course_permission = CourseInstitution.where(course_id: params[:id], institution_id: current_user.institution_id).first
+      course = Course.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      course_permission = CourseInstitution.where(course_id: course.id, institution_id: current_user.institution_id).first
 
       if course_permission
         chapter = Chapter.new(chapter_params)
-        chapter.course_id = params[:id]      
+        chapter.course_id = course.id
 
         highest_order_chapter = Chapter.order(order: :desc).first
         if highest_order_chapter
@@ -232,6 +243,11 @@ class Api::V1::CoursesController < ApplicationController
         end
 
         if chapter.save
+          if params[:title]
+            slug_string = slugify(chapter.title)
+            chapter = check_existing_slug(chapter, 'chapter', slug_string)
+            chapter.save
+          end
           render json: chapter, status: 201, root: false
         else
           render json: { errors: chapter.errors }, status: 422
@@ -242,82 +258,125 @@ class Api::V1::CoursesController < ApplicationController
     end  
 
     def author_list_chapters
-      course = Course.find(params[:id])
+      course = Course.find_by("id = ? OR slug = ?", params[:id], params[:id])
     
       render json: course.chapters.order(order: :desc).to_json, status: 201, root: false
     end  
 
     def admin_slugify
-      # courses = Course.all
+      courses = Course.all
 
-      # courses.each do |course|
-      #   course.slug = change_diacritics(course.title)
-      #   existing = Course.where('slug' => course.slug).first
+      courses.each do |course|
+        slug_string = change_diacritics(course.title)
+        existing = Course.where('slug_string' => slug_string).order('occurences' => 'desc').first
 
-      #   if existing
-      #     result = course.slug.split('-')
-      #     last = result.last          
-      #     render json: last, status: 200, root: false
-      #       return
-      #     if is_number?(last) && !last.empty?
-      #       result.delete(last)
-      #       last += 1
-      #       result.push(last)
-      #       result = result.join('-')
-      #       render json: result, status: 200, root: false
-      #       return
+        if existing
+          course.occurences = existing.occurences + 1
+          course.slug_string = slug_string
+          course.slug = slug_string + '-' + existing.occurences.to_s
+        else
+          course.occurences = 1
+          course.slug_string = slug_string
+          course.slug = slug_string
+        end
 
-      #     else            
-      #       result = result.join('-')
-      #       result += '-1'
-      #       render json: result, status: 200, root: false
-      #       return
-      #     end
+        course.save
+      end
 
-      #     course.slug = result
-      #   end        
-      #   course.save
-      # end
+      chapters = Chapter.all
 
-      # chapters = Chapter.all
-
-      # chapters.each do |chapter|
-      #   chapter.slug = change_diacritics(chapter.title)
+      chapters.each do |chapter|
+        slug_string = change_diacritics(chapter.title)
+        existing = Chapter.where('slug_string' => slug_string).order('occurences' => 'desc').first
         
-      #   chapter.save
-      # end
-
-      # sections = Section.all
-
-      # sections.each do |section|
-      #   section.slug = change_diacritics(section.title)
+        if existing
+          chapter.occurences = existing.occurences + 1
+          chapter.slug_string = slug_string
+          chapter.slug = slug_string + '-' + existing.occurences.to_s
+        else
+          chapter.occurences = 1
+          chapter.slug_string = slug_string
+          chapter.slug = slug_string
+        end
         
-      #   section.save
-      # end 
+        chapter.save
+      end
 
-      # domains = Domain.all
+      sections = Section.all
 
-      # domains.each do |domain|
-      #   domain.slug = change_diacritics(domain.title)
-      #   domain.slug = check_uniqueness(domain.slug)
-      #   domain.save
-      # end 
+      sections.each do |section|
+        slug_string = change_diacritics(section.title)
+        existing = Section.where('slug_string' => slug_string).order('occurences' => 'desc').first
+        
+        if existing
+          section.occurences = existing.occurences + 1
+          section.slug_string = slug_string
+          section.slug = slug_string + '-' + existing.occurences.to_s
+        else
+          section.occurences = 1
+          section.slug_string = slug_string
+          section.slug = slug_string
+        end
+        
+        section.save
+      end 
 
-      # categories = Category.all
+      domains = Domain.all
 
-      # categories.each do |category|
-      #   category.slug = change_diacritics(category.title)
-      #   category.slug = check_uniqueness(category.slug)
-      #   category.save
-      # end
+      domains.each do |domain|
+        slug_string = change_diacritics(domain.title)
+        existing = Domain.where('slug_string' => slug_string).order('occurences' => 'desc').first
+        
+        if existing
+          domain.occurences = existing.occurences + 1
+          domain.slug_string = slug_string
+          domain.slug = slug_string + '-' + existing.occurences.to_s
+        else
+          domain.occurences = 1
+          domain.slug_string = slug_string
+          domain.slug = slug_string
+        end
 
-      # institutions = Institution.all
+        domain.save
+      end 
 
-      # institutions.each do |institution|
-      #   institution.slug = change_diacritics(institution.title)
-      #   institution.slug = check_uniqueness(institution.slug)
-      #   institution.save
-      # end
+      categories = Category.all
+
+      categories.each do |category|
+        slug_string = change_diacritics(category.title)
+        existing = Category.where('slug_string' => slug_string).order('occurences' => 'desc').first
+        
+        if existing
+          category.occurences = existing.occurences + 1
+          category.slug_string = slug_string
+          category.slug = slug_string + '-' + existing.occurences.to_s
+        else
+          category.occurences = 1
+          category.slug_string = slug_string
+          category.slug = slug_string
+        end
+
+        category.save
+      end
+
+      institutions = Institution.all
+
+      institutions.each do |institution|
+        slug_string = change_diacritics(institution.title)
+        existing = Institution.where('slug_string' => slug_string).order('occurences' => 'desc').first
+        
+        if existing
+          institution.occurences = existing.occurences + 1
+          institution.slug_string = slug_string
+          institution.slug = slug_string + '-' + existing.occurences.to_s
+        else
+          institution.occurences = 1
+          institution.slug_string = slug_string
+          institution.slug = slug_string
+        end
+
+        institution.save
+      end
 
       head 200
     end
@@ -338,8 +397,4 @@ class Api::V1::CoursesController < ApplicationController
 
       item.parameterize
     end
-
-    def is_number?(string)
-      true if Float(string) rescue false
-    end    
 end
