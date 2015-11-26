@@ -31,13 +31,13 @@ class Api::V1::SectionsController < ApplicationController
   end  
 
   private
-    def append_asset(section_id, path, metadata)
+    def append_asset(section_id, path, metadata, definition)
       asset = {
         'entity_id'   => section_id,
         'entity_type' => 'section',
         'path'        => path,
         'metadata'    => metadata,
-        'definition'  => 'subtitles'
+        'definition'  => definition
       }
 
       add_asset(asset)
@@ -48,11 +48,11 @@ class Api::V1::SectionsController < ApplicationController
       if check_permission(section)
         if section.update(section_params)
           if params[:content]            
-            append_asset(section.id, params[:content][:path], params[:content][:metadata])
+            append_asset(section.id, params[:content][:path], params[:content][:metadata], 'content')
           end        
 
           if params[:subtitles]
-            append_asset(section.id, params[:subtitles][:path], params[:subtitles][:metadata])
+            append_asset(section.id, params[:subtitles][:path], params[:subtitles][:metadata], 'subtitles')
           end
 
           if params[:title]
