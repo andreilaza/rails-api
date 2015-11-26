@@ -37,21 +37,14 @@ class SectionSerializer < ActiveModel::Serializer # Used for requests at the cou
   end
 
   def subtitles
-    assets = Asset.where('entity_id' => object.id, 'entity_type' => 'section', 'definition' => 'subtitles').all
+    asset = Asset.where('entity_id' => object.id, 'entity_type' => 'section', 'definition' => 'subtitles').first
     
-    if assets
-      response = []
-      assets.each do |asset|
-        response.push({
-          "id" => asset.id,
-          "path" => asset.path,
-          "metadata" => asset.metadata
-        })
-      response
-      end
+    if asset
+      asset.path
     else
       nil
-    end
+    end  
+
   end
 
   private 

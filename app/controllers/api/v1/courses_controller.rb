@@ -166,7 +166,7 @@ class Api::V1::CoursesController < ApplicationController
         end
 
         if params[:subtitles]
-          append_asset(course.id, params[:subtitles][:path], 'subtitles', params[:subtitles][:metadata])
+          append_asset(course.id, params[:subtitles], 'subtitles', nil)
         end
 
         render json: course, status: 201, root: false
@@ -188,7 +188,7 @@ class Api::V1::CoursesController < ApplicationController
         end
 
         if params[:subtitles]
-          append_asset(course.id, params[:subtitles][:path], 'subtitles', params[:subtitles][:metadata])
+          append_asset(course.id, params[:subtitles], 'subtitles', nil)
         end
 
         if params[:category_id]

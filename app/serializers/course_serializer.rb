@@ -112,21 +112,13 @@ class CourseSerializer < ActiveModel::Serializer
   end
 
   def subtitles
-    assets = Asset.where('entity_id' => object.id, 'entity_type' => 'course', 'definition' => 'subtitles').all
+    asset = Asset.where('entity_id' => object.id, 'entity_type' => 'course', 'definition' => 'subtitles').first
     
-    if assets
-      response = []
-      assets.each do |asset|
-        response.push({
-          "id" => asset.id,
-          "path" => asset.path,
-          "metadata" => asset.metadata
-        })
-      response
-      end
+    if asset
+      asset.path
     else
       nil
-    end    
+    end  
 
   end
 

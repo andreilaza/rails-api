@@ -52,7 +52,7 @@ class Api::V1::SectionsController < ApplicationController
           end        
 
           if params[:subtitles]
-            append_asset(section.id, params[:subtitles][:path], params[:subtitles][:metadata], 'subtitles')
+            append_asset(section.id, params[:subtitles], nil, 'subtitles')
           end
 
           if params[:title]
