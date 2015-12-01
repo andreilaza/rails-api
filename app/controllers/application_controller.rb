@@ -123,56 +123,15 @@ class ApplicationController < ActionController::Base
     end    
 
     output.to_json    
-  end
-
-  def check_existing_slug(entity, entity_type, slug_string)
-    existing = nil
-
-    if entity_type == 'course'
-      existing = Course.where('slug_string = ? AND id != ?', slug_string, entity.id).order('occurences' => 'desc').first
-    end
-
-    if entity_type == 'chapter'
-      existing = Chapter.where('slug_string = ? AND id != ?', slug_string, entity.id).order('occurences' => 'desc').first
-    end
-
-    if entity_type == 'section'
-      existing = Section.where('slug_string = ? AND id != ?', slug_string, entity.id).order('occurences' => 'desc').first
-    end
-
-    if entity_type == 'domain'
-      existing = Domain.where('slug_string = ? AND id != ?', slug_string, entity.id).order('occurences' => 'desc').first
-    end
-
-    if entity_type == 'category'
-      existing = Category.where('slug_string = ? AND id != ?', slug_string, entity.id).order('occurences' => 'desc').first
-    end
-
-    if entity_type == 'institution'
-      existing = Institution.where('slug_string = ? AND id != ?', slug_string, entity.id).order('occurences' => 'desc').first
-    end
-    
-
-    if existing
-      if entity.occurences == 1
-        entity.occurences = 1
-        entity.slug_string = slug_string
-        entity.slug = slug_string
-      else  
-        entity.occurences = existing.occurences + 1
-        entity.slug_string = slug_string
-        entity.slug = slug_string + '-' + existing.occurences.to_s
-      end
-    else
-      entity.occurences = 1
-      entity.slug_string = slug_string
-      entity.slug = slug_string
-    end
-
-    entity
-  end
+  end  
 
   def slugify(item)
+    item = clean_title(item)
+
+    item.parameterize
+  end
+
+  def clean_title(item)
     item.gsub! 'ț', 't'
     item.gsub! 'ă', 'a'
     item.gsub! 'î', 'i'
@@ -185,10 +144,6 @@ class ApplicationController < ActionController::Base
     item.gsub! 'Ă', 'A'
     item.gsub! 'Ș', 'S'
 
-    item.parameterize
-  end
-
-  def is_number? string
-    true if Float(string) rescue false
-  end
+    item
+  end  
 end

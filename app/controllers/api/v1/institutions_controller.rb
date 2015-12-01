@@ -2,7 +2,7 @@ class Api::V1::InstitutionsController < ApplicationController
   before_action :authenticate_with_token!
   respond_to :json
 
-  ## Custom Actions ## 
+  ## ROUTE METHODS ## 
   def create_users
     send("#{current_user.real_role}_create_users")
   end
@@ -15,7 +15,8 @@ class Api::V1::InstitutionsController < ApplicationController
     send("#{current_user.role_name}_list_courses")
   end
   
-  private    
+  private
+    ### ADMIN METHODS ###   
     def admin_index
       institutions = Institution.all
 
@@ -29,16 +30,14 @@ class Api::V1::InstitutionsController < ApplicationController
     def admin_create
       institution = Institution.new(institution_params)    
       
+      institution.friendly_id
+      institution.slug = nil
+      institution.clean_title = clean_title(params[:title])
+
       if institution.save
         if params[:logo]
           append_asset(institution)
-        end
-
-        if params[:title]
-          slug_string = slugify(institution.title)
-          institution = check_existing_slug(institution, 'institution', slug_string)
-          institution.save
-        end
+        end        
 
         render json: institution, status: 201, root: false
       else
@@ -80,6 +79,21 @@ class Api::V1::InstitutionsController < ApplicationController
       end
     end
 
+    ### AUTHOR METHODS ###
+    def author_list_courses
+      institution = Institution.find_by("id = ? OR slug = ?", params[:id], params[:id])
+
+      render json: institution.courses.to_json, status: 200, root: false
+    end
+
+    ### ESTUDENT METHODS ###
+    def estudent_show      
+      institution = Institution.find_by("id = ? OR slug = ?", params[:id], params[:id])
+
+      render json: institution, status: 200, root: false      
+    end
+
+    ### INSTITUTION ADMIN METHODS ###
     def institution_admin_show
       if check_permission
         institution = Institution.find_by("id = ? OR slug = ?", params[:id], params[:id])
@@ -99,16 +113,14 @@ class Api::V1::InstitutionsController < ApplicationController
 
         institution = Institution.find_by("id = ? OR slug = ?", params[:id], params[:id])
 
+        institution.friendly_id
+        institution.slug = nil
+        institution.clean_title = clean_title(institution.title)
+
         if institution.update(institution_params)
           if params[:logo]
             append_asset(institution)
-          end
-
-          if params[:title]
-            slug_string = slugify(institution.title)
-            institution = check_existing_slug(institution, 'institution', slug_string)
-            institution.save
-          end
+          end          
           render json: institution, status: 200, root: false
         else
           render json: { errors: institution.errors }, status: 422
@@ -154,22 +166,7 @@ class Api::V1::InstitutionsController < ApplicationController
       author_list_courses
     end
 
-    def author_list_courses
-      institution = Institution.find_by("id = ? OR slug = ?", params[:id], params[:id])
-
-      render json: institution.courses.to_json, status: 200, root: false
-    end
-
-    def estudent_show
-      # if published_courses > 0
-      institution = Institution.find_by("id = ? OR slug = ?", params[:id], params[:id])
-
-      render json: institution, status: 200, root: false
-      # else
-        # render json: {'error' => 'Institution not found.'}, status: 404
-      # end
-    end
-
+    ### GENERAL METHODS ###
     def append_asset(institution)
       asset = {
         'entity_id'   => institution[:id],
@@ -196,10 +193,6 @@ class Api::V1::InstitutionsController < ApplicationController
         institution_user = InstitutionUser.where(institution_id: institution.id, user_id: current_user.id)
         !institution_user.empty?
       end
-    end
-
-    def published_courses
-      published_courses = Course.joins(:course_institutions, :institutions).where('institutions.id' => institution.id, 'courses.published' => true).count
     end    
 
     def permission_error

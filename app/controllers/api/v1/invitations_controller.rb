@@ -2,6 +2,7 @@ class Api::V1::InvitationsController < ApplicationController
   before_action :authenticate_with_token!, except: :check
   respond_to :json  
 
+  ### ROUTE METHODS ###
   def check
     invitation = Invitation.find_by(invitation: params[:invitation])
 
@@ -21,10 +22,7 @@ class Api::V1::InvitationsController < ApplicationController
   end
 
   private
-    def invitation_params
-      params.permit(:email)
-    end
-
+    ### ADMIN METHODS ###
     def admin_create
       invitation = Invitation.new(invitation_params)
       
@@ -47,5 +45,9 @@ class Api::V1::InvitationsController < ApplicationController
       else
         render json: { errors: invitation.errors }, status: 422
       end
+    end
+    ### GENERAL METHODS ###
+    def invitation_params
+      params.permit(:email)
     end
 end

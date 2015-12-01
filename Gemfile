@@ -48,6 +48,8 @@ gem 'mini_magick'
 
 gem 'mysql2', '~> 0.3.18'
 
+gem 'friendly_id', '~> 5.1.0'
+
 group :development do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'

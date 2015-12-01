@@ -2,6 +2,7 @@ class Api::V1::SectionsController < ApplicationController
   before_action :authenticate_with_token!
   respond_to :json
 
+  ### ROUTE METHODS ###
   def index
     sections = Section.all    
 
@@ -21,8 +22,7 @@ class Api::V1::SectionsController < ApplicationController
   def content_asset
     send("#{current_user.role_name}_content_asset")
   end  
-
-  ## Questions actions ##
+  
   def add_question
     send("#{current_user.role_name}_add_question")
   end
@@ -31,21 +31,14 @@ class Api::V1::SectionsController < ApplicationController
   end  
 
   private
-    def append_asset(section_id, path, metadata, definition)
-      asset = {
-        'entity_id'   => section_id,
-        'entity_type' => 'section',
-        'path'        => path,
-        'metadata'    => metadata,
-        'definition'  => definition
-      }
-
-      add_asset(asset)
-    end
-
+    ### AUTHOR METHODS ###
     def author_update
       section = Section.find_by("id = ? OR slug = ?", params[:id], params[:id])
       if check_permission(section)
+        section.friendly_id
+        section.slug = nil
+        section.clean_title = clean_title(section.title)
+
         if section.update(section_params)
           if params[:content]            
             append_asset(section.id, params[:content][:path], params[:content][:metadata], 'content')
@@ -53,13 +46,7 @@ class Api::V1::SectionsController < ApplicationController
 
           if params[:subtitles]
             append_asset(section.id, params[:subtitles], nil, 'subtitles')
-          end
-
-          if params[:title]
-            slug_string = slugify(section.title)
-            section = check_existing_slug(section, 'section', slug_string)
-            section.save
-          end
+          end          
 
           render json: section, serializer: CustomSectionSerializer, status: 200, root: false
         else
@@ -68,6 +55,44 @@ class Api::V1::SectionsController < ApplicationController
       else
         render json: { errors: 'Course not found' }, status: 404 
       end
+    end
+
+    def author_destroy
+      section = Section.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      section.destroy
+
+      head 204    
+    end   
+
+    def author_add_question 
+      section = Section.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      if check_permission(section)
+        question = Question.new(question_params)
+        question.section_id = section.id
+        question.course_id = section.course_id
+        
+        highest_order_question = Question.order(order: :desc).first
+        
+        if highest_order_question
+          question.order = highest_order_question.order + 1
+        else
+          question.order = 1
+        end
+        
+        if question.save
+          render json: question, status: 201, root: false
+        else
+          render json: { errors: question.errors }, status: 422
+        end
+      else
+        render json: { errors: 'Course not found' }, status: 404 
+      end
+    end
+
+    def author_list_questions
+      section = Section.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      
+      render json: section.questions.order(order: :desc).to_json, status: 201, root: false
     end
 
     def estudent_update
@@ -105,52 +130,15 @@ class Api::V1::SectionsController < ApplicationController
       else
         render json: { errors: 'Course not found' }, status: 404 
       end
-    end
+    end    
 
-    def author_destroy
-      section = Section.find_by("id = ? OR slug = ?", params[:id], params[:id])
-      section.destroy
-
-      head 204    
-    end  
-
+    ### GENERAL METHODS ###
     def section_params
       params.permit(:title, :description, :chapter_id, :section_type, :duration)
     end
 
     def student_section_params
       params.permit(:completed)
-    end
-
-    def author_add_question 
-      section = Section.find_by("id = ? OR slug = ?", params[:id], params[:id])
-      if check_permission(section)
-        question = Question.new(question_params)
-        question.section_id = section.id
-        question.course_id = section.course_id
-        
-        highest_order_question = Question.order(order: :desc).first
-        
-        if highest_order_question
-          question.order = highest_order_question.order + 1
-        else
-          question.order = 1
-        end
-        
-        if question.save
-          render json: question, status: 201, root: false
-        else
-          render json: { errors: question.errors }, status: 422
-        end
-      else
-        render json: { errors: 'Course not found' }, status: 404 
-      end
-    end
-
-    def author_list_questions
-      section = Section.find_by("id = ? OR slug = ?", params[:id], params[:id])
-      
-      render json: section.questions.order(order: :desc).to_json, status: 201, root: false
     end
 
     def question_params
@@ -161,4 +149,16 @@ class Api::V1::SectionsController < ApplicationController
       # Check if admin has permission to access this course      
       course_permission = CourseInstitution.where(course_id: section.course_id, institution_id: current_user.institution_id).first
     end 
+
+    def append_asset(section_id, path, metadata, definition)
+      asset = {
+        'entity_id'   => section_id,
+        'entity_type' => 'section',
+        'path'        => path,
+        'metadata'    => metadata,
+        'definition'  => definition
+      }
+
+      add_asset(asset)
+    end
 end

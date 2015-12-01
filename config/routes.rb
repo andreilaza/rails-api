@@ -9,10 +9,10 @@ Rails.application.routes.draw do
     scope module: :v1,
               constraints: ApiConstraints.new(version: 1, default: true) do
       
-      resources :users, :only => [:create, :destroy] # owner
-      resources :sessions, :only => [:create, :destroy] # all
-      resources :institutions, :only => [:index, :show, :create, :update, :destroy] # owner
-      resources :domains, :only => [:index, :show, :create, :update, :destroy] # owner      
+      resources :users, :only => [:create, :destroy]
+      resources :sessions, :only => [:create, :destroy]
+      resources :institutions, :only => [:index, :show, :create, :update, :destroy]
+      resources :domains, :only => [:index, :show, :create, :update, :destroy]
 
       # Course Routes
       get '/courses', to: 'courses#index'
@@ -105,6 +105,7 @@ Rails.application.routes.draw do
       delete '/categories/:id', to: 'categories#destroy'
       get 'categories/:id/courses', to: 'categories#list_courses'
 
+      # Temporary Routes - Deploy scripts
       post 'slugify', to: 'courses#temporary_slugify'
     end
   end

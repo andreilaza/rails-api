@@ -2,7 +2,7 @@ class Api::V1::QuestionsController < ApplicationController
   before_action :authenticate_with_token!
   respond_to :json
   
-  ## Questions actions ##
+  ### ROUTE METHODS ###
   def add_answer
     send("#{current_user.role_name}_add_answer")
   end
@@ -12,19 +12,7 @@ class Api::V1::QuestionsController < ApplicationController
   end  
 
   private
-    def question_params
-      params.require(:question).permit(:title, :section_id, :order, :score, :question_type)
-    end
-
-    def answer_params
-      params.permit(:title, :question_id, :order, :correct)
-    end
-
-    def check_permission(question)
-      # Check if admin has permission to access this course            
-      course_permission = CourseInstitution.where(course_id: question.course_id, institution_id: current_user.institution_id).first
-    end
-
+    ### AUTHOR METHODS ###    
     def author_index
       respond_with Question.all.to_json
     end
@@ -53,6 +41,45 @@ class Api::V1::QuestionsController < ApplicationController
       end
     end
 
+    def author_destroy
+      question = Question.find(params[:id])
+      question.destroy
+
+      head 204    
+    end
+
+    def author_add_answer
+      question = Question.find(params[:id])
+      if check_permission(question)
+        answer = Answer.new(answer_params)
+        answer.question_id = params[:id]
+        answer.course_id = question.course_id
+        
+        highest_order_answer = Answer.order(order: :desc).first
+
+        if !highest_order_answer
+          answer.order = 1
+        else
+          answer.order = highest_order_answer.order + 1
+        end
+        
+        if answer.save
+          render json: answer, status: 201, root: false
+        else
+          render json: { errors: answer.errors }, status: 422
+        end
+      else
+        render json: { errors: 'Course not found' }, status: 404 
+      end
+    end
+
+    def author_list_answers
+      question = Question.find(params[:id])
+      
+      render json: question.answers.order(order: :desc).to_json, status: 201, root: false
+    end
+
+    ### ESTUDENT METHODS ###
     def estudent_update
       correct_answers = Answer.where(:question_id => params[:id], :correct => true).all
       payload_answers = Answer.where(:question_id => params[:id], :correct => true, :id => params[:answers]).all
@@ -120,15 +147,9 @@ class Api::V1::QuestionsController < ApplicationController
       end
 
       render json: response, status: 200, root: false
-    end
+    end    
 
-    def author_destroy
-      question = Question.find(params[:id])
-      question.destroy
-
-      head 204    
-    end
-
+    ### GENERAL METHODS ###
     def next_section(question)
       current_section = StudentsSection.where(user_id: current_user.id, section_id: question.section_id, course_id: question.course_id).first
       
@@ -158,35 +179,18 @@ class Api::V1::QuestionsController < ApplicationController
 
       next_section
     end
-
-    def author_add_answer
-      question = Question.find(params[:id])
-      if check_permission(question)
-        answer = Answer.new(answer_params)
-        answer.question_id = params[:id]
-        answer.course_id = question.course_id
-        
-        highest_order_answer = Answer.order(order: :desc).first
-
-        if !highest_order_answer
-          answer.order = 1
-        else
-          answer.order = highest_order_answer.order + 1
-        end
-        
-        if answer.save
-          render json: answer, status: 201, root: false
-        else
-          render json: { errors: answer.errors }, status: 422
-        end
-      else
-        render json: { errors: 'Course not found' }, status: 404 
-      end
+    
+    def question_params
+      params.require(:question).permit(:title, :section_id, :order, :score, :question_type)
     end
 
-    def author_list_answers
-      question = Question.find(params[:id])
-      
-      render json: question.answers.order(order: :desc).to_json, status: 201, root: false
-    end  
+    def answer_params
+      params.permit(:title, :question_id, :order, :correct)
+    end
+
+    def check_permission(question)
+      # Check if admin has permission to access this course            
+      course_permission = CourseInstitution.where(course_id: question.course_id, institution_id: current_user.institution_id).first
+    end
+
 end

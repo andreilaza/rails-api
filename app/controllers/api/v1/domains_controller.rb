@@ -1,7 +1,7 @@
 class Api::V1::DomainsController < ApplicationController
   before_action :authenticate_with_token!, except: [:show, :index]
   respond_to :json  
-
+  ### ROUTE METHODS ###
   def add_category
     send("#{current_user.role_name}_add_category")
   end  
@@ -27,16 +27,17 @@ class Api::V1::DomainsController < ApplicationController
   
     render json: domain.categories, status: 201, root: false
   end
-  private    
+
+  private
+    ### ADMIN METHODS ###
     def admin_create
       domain = Domain.new(domain_params)    
       
-      if domain.save      
-        if params[:title]
-          slug_string = slugify(domain.title)
-          domain = check_existing_slug(domain, 'domain', slug_string)
-          domain.save
-        end
+      domain.friendly_id
+      domain.slug = nil
+      domain.clean_title = clean_title(params[:title])
+
+      if domain.save        
         render json: domain, status: 201, root: false
       else
         render json: { errors: domain.errors }, status: 422
@@ -46,12 +47,11 @@ class Api::V1::DomainsController < ApplicationController
     def admin_update
       domain = Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
 
-      if domain.update(domain_params)
-        if params[:title]
-          slug_string = slugify(domain.title)
-          domain = check_existing_slug(domain, 'domain', slug_string)
-          domain.save
-        end
+      domain.friendly_id
+      domain.slug = nil
+      domain.clean_title = clean_title(domain.title)
+
+      if domain.update(domain_params)        
         render json: domain, status: 200, root: false
       else
         render json: { errors: domain.errors }, status: 422
@@ -64,29 +64,29 @@ class Api::V1::DomainsController < ApplicationController
 
       head 204    
     end
+
+    def admin_add_category
+      category = Category.new(category_params)
+      domain = Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      category.domain_id = domain.id
+      
+      category.friendly_id
+      category.slug = nil
+      category.clean_title = clean_title(params[:title])
+
+      if category.save        
+        render json: category, status: 201, root: false
+      else
+        render json: { errors: category.errors }, status: 422
+      end
+    end
     
+    ### GENERAL METHODS ###
     def domain_params
       params.permit(:title, :description)
     end
 
     def category_params
       params.permit(:title, :description, :domain_id)
-    end
-
-    def admin_add_category
-      category = Category.new(category_params)
-      domain = Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
-      category.domain_id = domain.id
-          
-      if category.save
-        if params[:title]
-          slug_string = slugify(category.title)
-          category = check_existing_slug(category, 'category', slug_string)
-          category.save
-        end
-        render json: category, status: 201, root: false
-      else
-        render json: { errors: category.errors }, status: 422
-      end
-    end    
+    end      
 end

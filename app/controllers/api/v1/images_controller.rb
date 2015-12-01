@@ -4,6 +4,7 @@ class Api::V1::ImagesController < ApplicationController
   before_action :authenticate_with_token!
   respond_to :json
 
+  ### ROUTE METHODS ###
   def process_image
     set_aws_credentials
 
@@ -43,6 +44,7 @@ class Api::V1::ImagesController < ApplicationController
   end
 
   private
+    ### GENERAL METHODS ###
     def resize_and_crop_square(image, size)
       if image.width < image.height   
         remove = ((image.height - image.width)/2).round
