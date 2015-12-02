@@ -44,7 +44,7 @@ class ApplicationController < ActionController::Base
 
       asset.save
     else
-      if asset.definition == 'subtitles'
+      if asset && asset.definition == 'subtitles'
         asset['path'] = params['path']
 
         if params['metadata']

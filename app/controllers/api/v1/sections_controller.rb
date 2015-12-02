@@ -10,7 +10,7 @@ class Api::V1::SectionsController < ApplicationController
   end
 
   def show
-    section = Section.find_by("id = ? OR slug = ?", params[:id], params[:id])
+    section = Section.find(params[:id])
     
     if section
       render json: section, serializer: CustomSectionSerializer, status: 200, root: false
@@ -33,7 +33,7 @@ class Api::V1::SectionsController < ApplicationController
   private
     ### AUTHOR METHODS ###
     def author_update
-      section = Section.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      section = Section.find(params[:id])
       if check_permission(section)
         section.friendly_id
         section.slug = nil
@@ -58,14 +58,14 @@ class Api::V1::SectionsController < ApplicationController
     end
 
     def author_destroy
-      section = Section.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      section = Section.find(params[:id])
       section.destroy
 
       head 204    
     end   
 
     def author_add_question 
-      section = Section.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      section = Section.find(params[:id])
       if check_permission(section)
         question = Question.new(question_params)
         question.section_id = section.id
@@ -90,13 +90,13 @@ class Api::V1::SectionsController < ApplicationController
     end
 
     def author_list_questions
-      section = Section.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      section = Section.find(params[:id])
       
       render json: section.questions.order(order: :desc).to_json, status: 201, root: false
     end
 
     def estudent_update
-      section = Section.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      section = Section.find(params[:id])
       
       student_section = StudentsSection.where(course_id: section.course_id, user_id: current_user.id, section_id: section.id).first
       

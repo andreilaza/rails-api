@@ -8,7 +8,7 @@ class Api::V1::ChaptersController < ApplicationController
   end
 
   def show
-    chapter = Chapter.find_by("id = ? OR slug = ?", params[:id], params[:id])
+    chapter = Chapter.find(params[:id])
 
     if chapter
       render json: chapter, status: 200, root: false
@@ -28,7 +28,7 @@ class Api::V1::ChaptersController < ApplicationController
   private
     ### AUTHOR METHODS ###
     def author_update    
-      chapter = Chapter.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      chapter = Chapter.find(params[:id])
       if check_permission(chapter)
         chapter.friendly_id
         chapter.slug = nil      
@@ -45,14 +45,14 @@ class Api::V1::ChaptersController < ApplicationController
     end
 
     def author_destroy
-      chapter = Chapter.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      chapter = Chapter.find(params[:id])
       chapter.destroy
 
       head 204    
     end
 
     def author_add_section
-      chapter = Chapter.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      chapter = Chapter.find(params[:id])
       if check_permission(chapter)
         section = Section.new(section_params)
         section.chapter_id = params[:id]
@@ -80,7 +80,7 @@ class Api::V1::ChaptersController < ApplicationController
     end
 
     def author_list_sections
-      chapter = Chapter.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      chapter = Chapter.find(params[:id])
       
       render json: chapter.sections.order(order: :desc).to_json, status: 201, root: false
     end

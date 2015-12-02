@@ -50,7 +50,7 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     def admin_destroy
-      institution = Institution.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      institution = Institution.find(params[:id])
       institution.destroy
 
       head 204    
@@ -58,7 +58,7 @@ class Api::V1::InstitutionsController < ApplicationController
 
     def admin_create_users
       if user_params[:role] == 'institution_admin'
-        institution = Institution.find_by("id = ? OR slug = ?", params[:id], params[:id])
+        institution = Institution.find(params[:id])
         user = User.create(user_params)
               
         user.role = User::ROLES[:institution_admin]        
@@ -81,14 +81,14 @@ class Api::V1::InstitutionsController < ApplicationController
 
     ### AUTHOR METHODS ###
     def author_list_courses
-      institution = Institution.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      institution = Institution.find(params[:id])
 
       render json: institution.courses.to_json, status: 200, root: false
     end
 
     ### ESTUDENT METHODS ###
     def estudent_show      
-      institution = Institution.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      institution = Institution.find(params[:id])
 
       render json: institution, status: 200, root: false      
     end
@@ -96,7 +96,7 @@ class Api::V1::InstitutionsController < ApplicationController
     ### INSTITUTION ADMIN METHODS ###
     def institution_admin_show
       if check_permission
-        institution = Institution.find_by("id = ? OR slug = ?", params[:id], params[:id])
+        institution = Institution.find(params[:id])
 
         if institution
           render json: institution, status: 201, root: false
@@ -111,7 +111,7 @@ class Api::V1::InstitutionsController < ApplicationController
     def institution_admin_update
       if check_permission
 
-        institution = Institution.find_by("id = ? OR slug = ?", params[:id], params[:id])
+        institution = Institution.find(params[:id])
 
         institution.friendly_id
         institution.slug = nil
@@ -132,7 +132,7 @@ class Api::V1::InstitutionsController < ApplicationController
 
     def institution_admin_create_users
       if user_params[:role] == 'author'
-        institution = Institution.find_by("id = ? OR slug = ?", params[:id], params[:id])
+        institution = Institution.find(params[:id])
         user = User.create(user_params)
                 
         user.role = User::ROLES[:author]               
@@ -156,7 +156,7 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     def institution_admin_list_users
-      institution = Institutions.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      institution = Institution.find(params[:id])
       users = User.joins(:institution_users, :institutions).where('institutions.id' => institution.id).all      
 
       render json: users, status: 200, root: false 
@@ -189,7 +189,7 @@ class Api::V1::InstitutionsController < ApplicationController
       if current_user.role == User::ROLES[:admin]
         true
       else
-        institution = Institution.find_by("id = ? OR slug = ?", params[:id], params[:id])
+        institution = Institution.find(params[:id])
         institution_user = InstitutionUser.where(institution_id: institution.id, user_id: current_user.id)
         !institution_user.empty?
       end

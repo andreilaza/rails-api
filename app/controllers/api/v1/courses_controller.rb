@@ -36,8 +36,8 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def author_show
-      # course =  Course.joins(:course_institutions, :institutions).where('institutions.id' => current_user.institution_id).find_by("courses.id = ? OR courses.slug = ?", params[:id], params[:id])
-      course = Course.friendly.find(params[:id])
+      course =  Course.joins(:course_institutions, :institutions).where('institutions.id' => current_user.institution_id).find(params[:id])      
+      
       if course
         render json: course, status: 200, root: false
       else
@@ -53,7 +53,7 @@ class Api::V1::CoursesController < ApplicationController
       course.clean_title = clean_title(params[:title])
 
       if params[:category_id]
-        category = Category.find_by("id = ? OR slug = ?", params[:category_id], params[:category_id])          
+        category = Category.find(params[:category_id])
         course.category = category.title
       end
 
@@ -136,7 +136,7 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def author_destroy
-      course = Course.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      course = Course.find(params[:id])
       course.destroy
 
       head 204    
@@ -151,7 +151,7 @@ class Api::V1::CoursesController < ApplicationController
 
     def author_add_chapter
       # Check if author has permission to access this course
-      course = Course.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      course = Course.find(params[:id])
       course_permission = CourseInstitution.where(course_id: course.id, institution_id: current_user.institution_id).first
 
       if course_permission
@@ -180,7 +180,7 @@ class Api::V1::CoursesController < ApplicationController
     end  
 
     def author_list_chapters
-      course = Course.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      course = Course.find(params[:id])
     
       render json: course.chapters.order(order: :desc).to_json, status: 201, root: false
     end
@@ -193,7 +193,7 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def estudent_show
-      course =  Course.where(:published => true).find_by("id = ? OR slug = ?", params[:id], params[:id])
+      course =  Course.where(:published => true).find(params[:id])
       
       if course
         render json: course, status: 200, root: false
@@ -203,7 +203,7 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def estudent_start
-      course = Course.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      course = Course.find(params[:id])
 
       if course.published
         create_snapshot(course)      
@@ -214,7 +214,7 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def estudent_reset
-      course = Course.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      course = Course.find(params[:id])
 
       StudentsQuestion.destroy_all(user_id: current_user.id, course_id: course.id)
       StudentsSection.destroy_all(user_id: current_user.id, course_id: course.id)
@@ -336,22 +336,5 @@ class Api::V1::CoursesController < ApplicationController
       end
 
       head 200
-    end
-
-    def change_diacritics(item)
-
-      item.gsub! 'ț', 't'
-      item.gsub! 'ă', 'a'
-      item.gsub! 'î', 'i'
-      item.gsub! 'â', 'a'
-      item.gsub! 'ș', 's'
-
-      item.gsub! 'Ț', 'T'
-      item.gsub! 'Â', 'A'
-      item.gsub! 'Î', 'I'
-      item.gsub! 'Ă', 'A'
-      item.gsub! 'Ș', 'S'
-
-      item.parameterize
-    end
+    end    
 end

@@ -8,7 +8,7 @@ class Api::V1::CategoriesController < ApplicationController
   end
   
   def show
-    category =  Category.find_by("id = ? OR slug = ?", params[:id], params[:id])
+    category =  Category.find(params[:id])
 
     if category
       render json: category, status: 200, root: false
@@ -20,7 +20,7 @@ class Api::V1::CategoriesController < ApplicationController
   private
     ### ADMIN METHODS ###
     def admin_update
-      category = Category.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      category =  Category.find(params[:id])
 
       category.friendly_id
       category.slug = nil      
@@ -34,7 +34,7 @@ class Api::V1::CategoriesController < ApplicationController
     end
 
     def admin_destroy
-      category = Category.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      category =  Category.find(params[:id])
       category.destroy
 
       head 204    
@@ -42,7 +42,7 @@ class Api::V1::CategoriesController < ApplicationController
 
     ### ESTUDENT METHODS ###
     def estudent_list_courses
-      category = Category.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      category =  Category.find(params[:id])
       courses = Course.joins(:category_courses, :categories).where('categories.id' => category.id, 'courses.published' => true).all
       
       render json: courses, status: 200, root: false

@@ -15,8 +15,11 @@ class Course < ApplicationModel
   has_many :domains, through: :category_courses      
 
   attr_accessor :clean_title
+  attr_accessor :category
 
   def slug_candidates
-    [:clean_title]
+    [
+      :clean_title
+    ]
   end
 end

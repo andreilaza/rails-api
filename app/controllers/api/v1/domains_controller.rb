@@ -13,7 +13,7 @@ class Api::V1::DomainsController < ApplicationController
   end
 
   def show
-    domain =  Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
+    domain =  Domain.find(params[:id])
 
     if domain
       render json: domain, status: 200, root: false
@@ -23,7 +23,7 @@ class Api::V1::DomainsController < ApplicationController
   end
 
   def list_categories
-    domain = Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
+    domain =  Domain.find(params[:id])
   
     render json: domain.categories, status: 201, root: false
   end
@@ -45,7 +45,7 @@ class Api::V1::DomainsController < ApplicationController
     end
 
     def admin_update
-      domain = Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      domain =  Domain.find(params[:id])
 
       domain.friendly_id
       domain.slug = nil
@@ -59,7 +59,7 @@ class Api::V1::DomainsController < ApplicationController
     end
 
     def admin_destroy
-      domain = Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      domain =  Domain.find(params[:id])
       domain.destroy
 
       head 204    
@@ -67,7 +67,7 @@ class Api::V1::DomainsController < ApplicationController
 
     def admin_add_category
       category = Category.new(category_params)
-      domain = Domain.find_by("id = ? OR slug = ?", params[:id], params[:id])
+      domain =  Domain.find(params[:id])
       category.domain_id = domain.id
       
       category.friendly_id
