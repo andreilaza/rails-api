@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       resources :sessions, :only => [:create, :destroy]
       resources :institutions, :only => [:index, :show, :create, :update, :destroy]
       resources :domains, :only => [:index, :show, :create, :update, :destroy]
+      resources :video_moments, :only => [:index, :show, :create, :update, :destroy]
 
       # Course Routes
       get '/courses', to: 'courses#index'

@@ -9,6 +9,7 @@ class Chapter < ApplicationModel
   has_many :sections, dependent: :destroy
 
   attr_accessor :clean_title
+  attr_accessor :category
 
   def slug_candidates
     [:clean_title]
