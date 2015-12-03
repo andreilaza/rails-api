@@ -3,5 +3,5 @@ class VideoMoment < ActiveRecord::Base
   validates :title, presence: true
   validates :asset_id, presence: true
 
-  belongs_to :asset
+  belongs_to :asset  
 end

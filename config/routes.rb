@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       resources :institutions, :only => [:index, :show, :create, :update, :destroy]
       resources :domains, :only => [:index, :show, :create, :update, :destroy]
       resources :video_moments, :only => [:index, :show, :create, :update, :destroy]
+      resources :question_hints, :only => [:show, :update, :destroy]
 
       # Course Routes
       get '/courses', to: 'courses#index'
@@ -59,6 +60,9 @@ Rails.application.routes.draw do
 
       post '/questions/:id/answers', to: 'questions#add_answer'
       get '/questions/:id/answers', to: 'questions#list_answers'
+
+      post '/questions/:id/hints', to: 'questions#add_hint'
+      get '/questions/:id/hints', to: 'questions#list_hints'
 
       # Answer Routes
       get '/answers', to: 'answers#index'

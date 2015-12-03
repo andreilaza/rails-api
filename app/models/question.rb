@@ -5,4 +5,5 @@ class Question < ApplicationModel
   belongs_to :section
 
   has_many :answers, dependent: :destroy
+  has_many :question_hints, dependent: :destroy
 end

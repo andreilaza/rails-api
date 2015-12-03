@@ -11,6 +11,14 @@ class Api::V1::QuestionsController < ApplicationController
     send("#{current_user.role_name}_list_answers")
   end  
 
+  def add_hint
+    send("#{current_user.role_name}_add_hint")
+  end
+  
+  def list_hints
+    send("#{current_user.role_name}_list_hints")
+  end  
+
   private
     ### AUTHOR METHODS ###    
     def author_index
@@ -69,7 +77,7 @@ class Api::V1::QuestionsController < ApplicationController
           render json: { errors: answer.errors }, status: 422
         end
       else
-        render json: { errors: 'Course not found' }, status: 404 
+        render json: { errors: 'Question not found' }, status: 404 
       end
     end
 
@@ -77,6 +85,26 @@ class Api::V1::QuestionsController < ApplicationController
       question = Question.find(params[:id])
       
       render json: question.answers.order(order: :desc).to_json, status: 201, root: false
+    end
+
+    def author_add_hint
+      question = Question.find(params[:id])
+      if check_permission(question)
+        question_hint = QuestionHint.new(question_hints_params)
+        question_hint.question_id = params[:id]
+                
+        if question_hint.save
+          render json: question_hint, status: 201, root: false
+        else
+          render json: { errors: question_hint.errors }, status: 422
+        end
+      else
+        render json: { errors: 'Question not found' }, status: 404 
+      end        
+    end
+
+    def author_list_hints
+      respond_with QuestionHint.all
     end
 
     ### ESTUDENT METHODS ###
@@ -182,6 +210,10 @@ class Api::V1::QuestionsController < ApplicationController
     
     def question_params
       params.require(:question).permit(:title, :section_id, :order, :score, :question_type)
+    end
+
+    def question_hints_params
+      params.permit(:title, :video_moment_id)
     end
 
     def answer_params
