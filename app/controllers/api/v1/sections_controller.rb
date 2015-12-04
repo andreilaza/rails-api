@@ -26,9 +26,14 @@ class Api::V1::SectionsController < ApplicationController
   def add_question
     send("#{current_user.role_name}_add_question")
   end
+
   def list_questions
     send("#{current_user.role_name}_list_questions")
   end  
+
+  def feedback
+    send("#{current_user.role_name}_feedback")
+  end
 
   private
     ### AUTHOR METHODS ###
@@ -95,6 +100,7 @@ class Api::V1::SectionsController < ApplicationController
       render json: section.questions.order(order: :desc).to_json, status: 201, root: false
     end
 
+    ### ESTUDENT METHODS ###
     def estudent_update
       section = Section.find(params[:id])
       
@@ -132,9 +138,27 @@ class Api::V1::SectionsController < ApplicationController
       end
     end    
 
+    def estudent_feedback
+      feedback = SectionFeedback.new(feedback_params)
+      section = Section.find(params[:id])
+      
+      feedback.section_id = section.id
+      feedback.user_id = current_user.id
+      if feedback.save
+        UserMailer.send_feedback(current_user, feedback_params[:feedback], section.title).deliver
+        render json: feedback, status: 201, root: false
+      else
+        render json: { errors: feedback.errors }, status: 422
+      end
+    end
+
     ### GENERAL METHODS ###
     def section_params
       params.permit(:title, :description, :chapter_id, :section_type, :duration)
+    end
+
+    def feedback_params
+      params.permit(:feedback)
     end
 
     def student_section_params

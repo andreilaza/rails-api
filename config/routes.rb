@@ -15,6 +15,7 @@ Rails.application.routes.draw do
       resources :domains, :only => [:index, :show, :create, :update, :destroy]
       resources :video_moments, :only => [:index, :show, :create, :update, :destroy]
       resources :question_hints, :only => [:show, :update, :destroy]
+      resources :student_video_snapshots, :only => [:create, :update, :destroy]
 
       # Course Routes
       get '/courses', to: 'courses#index'
@@ -47,6 +48,7 @@ Rails.application.routes.draw do
 
       post '/sections/:id/questions', to: 'sections#add_question'
       get '/sections/:id/questions', to: 'sections#list_questions'
+      post '/sections/:id/feedback', to: 'sections#feedback'
       
       # Delete video
       delete '/delete-assets/:id', to: 'courses#assets'

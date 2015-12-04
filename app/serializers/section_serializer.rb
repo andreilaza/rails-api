@@ -1,5 +1,5 @@
 class SectionSerializer < ActiveModel::Serializer # Used for requests at the course and chapter level.
-  attributes :id, :title, :description, :chapter_id, :section_type, :order, :completed, :duration, :content, :video_moments, :subtitles,:questions, :slug
+  attributes :id, :title, :description, :slug, :chapter_id, :section_type, :order, :completed, :duration, :content, :video_moments, :subtitles, :video_snapshot, :questions
 
   def filter(keys)
     if scope.role == User::ROLES[:estudent]
@@ -49,6 +49,10 @@ class SectionSerializer < ActiveModel::Serializer # Used for requests at the cou
       nil
     end  
 
+  end
+
+  def video_snapshot
+    snapshot = StudentVideoSnapshot.joins(:asset).where('assets.entity_id' => object.id, 'assets.entity_type' => 'section', 'assets.definition' => 'content', 'student_video_snapshots.user_id' => scope.id).first
   end
 
   private 

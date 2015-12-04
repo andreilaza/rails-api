@@ -7,4 +7,13 @@ class UserMailer < ApplicationMailer
 
     response
   end
+
+  def send_feedback(user, feedback, section_title)
+    @user = user
+    @feedback = feedback
+    @section_title = section_title
+
+    mail( :to => ENV["ESTUDENT_EMAIL"],
+    :subject => 'Section Feedback' )
+  end
 end
