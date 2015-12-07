@@ -49,8 +49,8 @@ Rails.application.routes.draw do
       post '/sections/:id/questions', to: 'sections#add_question'
       get '/sections/:id/questions', to: 'sections#list_questions'
       post '/sections/:id/feedback', to: 'sections#feedback'
-      post '/sections/:id/video-moments', to: 'sections#add_video_moment'
-      get '/sections/:id/video-moments', to: 'sections#list_video_moments'
+      post '/sections/:id/video_moments', to: 'sections#add_video_moment'
+      get '/sections/:id/video_moments', to: 'sections#list_video_moments'
 
       # Delete video
       delete '/delete-assets/:id', to: 'courses#assets'
