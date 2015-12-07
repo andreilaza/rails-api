@@ -27,7 +27,8 @@ Rails.application.routes.draw do
       delete '/courses/:id', to: 'courses#destroy'
       post '/courses/:id/start', to: 'courses#start'
       post '/courses/:id/chapters', to: 'courses#add_chapter'
-      get '/courses/:id/chapters', to: 'courses#list_chapters'            
+      get '/courses/:id/chapters', to: 'courses#list_chapters'
+      get '/courses/:id/video_moments', to: 'courses#list_video_moments'
 
       # Chapter Routes
       get '/chapters', to: 'chapters#index'

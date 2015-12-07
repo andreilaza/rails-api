@@ -19,6 +19,10 @@ class Api::V1::CoursesController < ApplicationController
     send("#{current_user.role_name}_list_chapters")
   end
 
+  def list_video_moments
+    send("#{current_user.role_name}_list_video_moments")
+  end
+
   def temporary_slugify
     send("#{current_user.role_name}_slugify")
   end
@@ -183,6 +187,16 @@ class Api::V1::CoursesController < ApplicationController
       course = Course.find(params[:id])
     
       render json: course.chapters.order(order: :desc).to_json, status: 201, root: false
+    end
+
+    def author_list_video_moments
+      sections = Section.where('course_id' => params[:id])
+
+      if sections
+        render json: sections, status: 200, root: false
+      else
+        render json: { errors: sections.errors }, status: 404
+      end
     end
 
     ### ESTUDENT METHODS ###
