@@ -216,6 +216,25 @@ class Api::V1::CoursesController < ApplicationController
       end
     end
 
+    def estudent_update   
+      favorite_course = UserFavoriteCourse.where('course_id' => params[:id], 'user_id' => current_user.id).first   
+      if params[:favorite]        
+        if !favorite_course
+          favorite_course = UserFavoriteCourse.new()
+          favorite_course.user_id = current_user.id
+          favorite_course.course_id = params[:id]
+          favorite_course.save
+        end        
+      else
+        if favorite_course
+          favorite_course.destroy
+        end
+      end
+
+      estudent_show
+
+    end
+
     def estudent_start
       course = Course.find(params[:id])
 

@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :second_description, :slug, :published, :started, :progress, :completed, :duration, :institution, :cover_image, :author, :questions, :domain, :category, :teaser, :subtitles
+  attributes :id, :title, :description, :second_description, :slug, :favorite, :published, :started, :progress, :completed, :duration, :institution, :cover_image, :author, :questions, :domain, :category, :teaser, :subtitles
 
   has_many :chapters
 
@@ -54,6 +54,15 @@ class CourseSerializer < ActiveModel::Serializer
       progress = completed * 100 / students_sections
     else
       0
+    end
+  end
+
+  def favorite
+    favorite = UserFavoriteCourse.where('course_id' => object.id, 'user_id' => scope.id).first
+    if favorite
+      true
+    else
+      false
     end
   end
 
