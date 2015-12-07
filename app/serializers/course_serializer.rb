@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :second_description, :slug, :published, :started, :progress, :completed, :duration, :institution, :cover_image, :author, :questions, :domain, :category, :teaser, :video_moments, :video_snapshot, :subtitles
+  attributes :id, :title, :description, :second_description, :slug, :published, :started, :progress, :completed, :duration, :institution, :cover_image, :author, :questions, :domain, :category, :teaser, :video_snapshot, :subtitles
 
   has_many :chapters
 
@@ -94,11 +94,7 @@ class CourseSerializer < ActiveModel::Serializer
 
   def teaser
     assets = Asset.where('entity_id' => object.id, 'entity_type' => 'course', 'definition' => 'teaser').all    
-  end
-
-  def video_moments
-    video_moments = VideoMoment.joins(:asset).where('assets.entity_id' => object.id, 'assets.entity_type' => 'course', 'assets.definition' => 'teaser').all
-  end
+  end  
 
   def subtitles
     asset = Asset.where('entity_id' => object.id, 'entity_type' => 'course', 'definition' => 'subtitles').first

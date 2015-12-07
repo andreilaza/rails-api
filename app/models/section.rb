@@ -7,6 +7,7 @@ class Section < ApplicationModel
   belongs_to :chapter
 
   has_many :questions, dependent: :destroy
+  has_many :video_moments, dependent: :destroy
 
   attr_accessor :clean_title
 

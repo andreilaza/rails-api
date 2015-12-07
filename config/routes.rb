@@ -13,7 +13,7 @@ Rails.application.routes.draw do
       resources :sessions, :only => [:create, :destroy]
       resources :institutions, :only => [:index, :show, :create, :update, :destroy]
       resources :domains, :only => [:index, :show, :create, :update, :destroy]
-      resources :video_moments, :only => [:index, :show, :create, :update, :destroy]
+      resources :video_moments, :only => [:show, :update, :destroy]
       resources :question_hints, :only => [:show, :update, :destroy]
       resources :student_video_snapshots, :only => [:create, :update, :destroy]
 
@@ -49,7 +49,9 @@ Rails.application.routes.draw do
       post '/sections/:id/questions', to: 'sections#add_question'
       get '/sections/:id/questions', to: 'sections#list_questions'
       post '/sections/:id/feedback', to: 'sections#feedback'
-      
+      post '/sections/:id/video-moments', to: 'sections#add_video_moment'
+      get '/sections/:id/video-moments', to: 'sections#list_video_moments'
+
       # Delete video
       delete '/delete-assets/:id', to: 'courses#assets'
 

@@ -16,17 +16,7 @@ class Api::V1::VideoMomentsController < ApplicationController
       else
         render json: { errors: video_moment.errors }, status: 404
       end
-    end 
-    
-    def author_create
-      video_moment = VideoMoment.new(video_moment_params)    
-      
-      if video_moment.save        
-        render json: video_moment, status: 201, root: false
-      else
-        render json: { errors: video_moment.errors }, status: 422
-      end
-    end
+    end    
 
     def author_update
       video_moment = VideoMoment.find(params[:id])
@@ -47,6 +37,6 @@ class Api::V1::VideoMomentsController < ApplicationController
 
     ### GENERAL METHODS ###
     def video_moment_params
-      params.permit(:title, :asset_id, :time)
+      params.permit(:title, :section_id, :time)
     end
 end

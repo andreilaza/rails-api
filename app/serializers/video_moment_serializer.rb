@@ -1,3 +1,3 @@
 class VideoMomentSerializer < ActiveModel::Serializer
-  attributes :id, :title, :time, :asset_id
+  attributes :id, :title, :time, :section_id
 end

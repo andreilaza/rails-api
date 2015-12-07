@@ -35,6 +35,13 @@ class Api::V1::SectionsController < ApplicationController
     send("#{current_user.role_name}_feedback")
   end
 
+  def add_video_moment
+    send("#{current_user.role_name}_add_video_moment")
+  end
+
+  def list_video_moments
+    send("#{current_user.role_name}_list_video_moments")
+  end
   private
     ### AUTHOR METHODS ###
     def author_update
@@ -98,6 +105,27 @@ class Api::V1::SectionsController < ApplicationController
       section = Section.find(params[:id])
       
       render json: section.questions.order(order: :desc).to_json, status: 201, root: false
+    end
+
+    def author_add_video_moment   
+      section = Section.find(params[:id])
+      if check_permission(section)
+        video_moment = VideoMoment.new(video_moment_params)    
+        video_moment.section_id = params[:id]
+        if video_moment.save        
+          render json: video_moment, status: 201, root: false
+        else
+          render json: { errors: video_moment.errors }, status: 422
+        end
+      else
+        render json: { errors: 'Course not found' }, status: 404 
+      end
+    end
+
+    def author_list_video_moments
+      section = Section.find(params[:id])
+      
+      render json: section.video_moments, status: 201, root: false
     end
 
     ### ESTUDENT METHODS ###
@@ -167,7 +195,11 @@ class Api::V1::SectionsController < ApplicationController
 
     def question_params
       params.permit(:title, :section_id, :order, :score, :question_type)
-    end     
+    end   
+
+    def video_moment_params
+      params.permit(:title, :section_id, :time)
+    end  
 
     def check_permission(section)
       # Check if admin has permission to access this course      
