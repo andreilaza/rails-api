@@ -36,11 +36,7 @@ class SectionSerializer < ActiveModel::Serializer # Used for requests at the cou
     else
       nil
     end
-  end
-
-  # def video_moments
-  #   video_moments = VideoMoment.joins(:asset).where('assets.entity_id' => object.id, 'assets.entity_type' => 'section', 'assets.definition' => 'content').all
-  # end
+  end  
 
   def subtitles
     asset = Asset.where('entity_id' => object.id, 'entity_type' => 'section', 'definition' => 'subtitles').first
@@ -54,7 +50,7 @@ class SectionSerializer < ActiveModel::Serializer # Used for requests at the cou
   end
 
   def video_snapshot
-    snapshot = StudentVideoSnapshot.joins(:asset).where('assets.entity_id' => object.id, 'assets.entity_type' => 'section', 'assets.definition' => 'content', 'student_video_snapshots.user_id' => scope.id).first
+    snapshot = StudentVideoSnapshot.where('section_id' => object.id, 'user_id' => scope.id).first
   end
 
   private 

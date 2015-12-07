@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :second_description, :slug, :published, :started, :progress, :completed, :duration, :institution, :cover_image, :author, :questions, :domain, :category, :teaser, :video_snapshot, :subtitles
+  attributes :id, :title, :description, :second_description, :slug, :published, :started, :progress, :completed, :duration, :institution, :cover_image, :author, :questions, :domain, :category, :teaser, :subtitles
 
   has_many :chapters
 
@@ -105,11 +105,7 @@ class CourseSerializer < ActiveModel::Serializer
       nil
     end  
 
-  end
-
-  def video_snapshot
-    snapshot = StudentVideoSnapshot.joins(:asset).where('assets.entity_id' => object.id, 'assets.entity_type' => 'course', 'assets.definition' => 'teaser', 'student_video_snapshots.user_id' => scope.id).first
-  end
+  end  
 
   def questions
     questions = Question.where(course_id: object.id).count

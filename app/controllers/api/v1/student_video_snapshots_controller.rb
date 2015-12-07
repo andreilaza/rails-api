@@ -3,8 +3,7 @@ class Api::V1::StudentVideoSnapshotsController < ApplicationController
   respond_to :json
 
   private
-    ### ESTUDENT METHODS ###
-    
+    ### ESTUDENT METHODS ###    
     def estudent_create
       snapshot = StudentVideoSnapshot.new(snapshot_params)
       snapshot.user_id = current_user.id
@@ -35,6 +34,6 @@ class Api::V1::StudentVideoSnapshotsController < ApplicationController
 
     ### GENERAL METHODS ###
     def snapshot_params
-      params.permit(:user_id, :asset_id, :time)
+      params.permit(:user_id, :section_id, :time)
     end
 end
