@@ -44,7 +44,7 @@ class SectionSerializer < ActiveModel::Serializer # Used for requests at the cou
     asset = Asset.where('entity_id' => object.id, 'entity_type' => 'section', 'definition' => 'subtitles').first
     
     if asset
-      asset.path
+      asset
     else
       nil
     end  

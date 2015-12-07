@@ -104,7 +104,7 @@ class CourseSerializer < ActiveModel::Serializer
     asset = Asset.where('entity_id' => object.id, 'entity_type' => 'course', 'definition' => 'subtitles').first
     
     if asset
-      asset.path
+      asset
     else
       nil
     end  
