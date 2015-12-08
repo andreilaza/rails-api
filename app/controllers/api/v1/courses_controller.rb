@@ -301,6 +301,18 @@ class Api::V1::CoursesController < ApplicationController
           students_section.section_id = section.id
 
           students_section.save
+
+          questions = Question.where(section_id: section.id).order(order: :asc).all
+          questions.each do |question|
+            students_question = StudentsQuestion.new()
+
+            students_question.course_id = course.id
+            students_question.user_id = current_user.id
+            students_question.section_id = section.id
+            students_question.question_id = question.id
+            
+            students_question.save
+          end
         end
       end
     end    

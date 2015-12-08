@@ -1,5 +1,5 @@
 class SectionSerializer < ActiveModel::Serializer # Used for requests at the course and chapter level.
-  attributes :id, :title, :description, :slug, :chapter_id, :section_type, :order, :completed, :duration, :content, :subtitles, :video_snapshot, :questions
+  attributes :id, :title, :description, :slug, :chapter_id, :section_type, :order, :completed, :finished, :duration, :content, :subtitles, :video_snapshot, :questions
 
   has_many :video_moments
 
@@ -7,7 +7,7 @@ class SectionSerializer < ActiveModel::Serializer # Used for requests at the cou
     if scope.role == User::ROLES[:estudent]
       keys
     else
-      keys - [:completed]
+      keys - [:completed] - [:finished]
     end
   end
 
@@ -15,6 +15,15 @@ class SectionSerializer < ActiveModel::Serializer # Used for requests at the cou
     students_section = StudentsSection.where(user_id: scope.id, section_id: object.id).first
     if students_section
       students_section.completed
+    else
+      false
+    end
+  end
+
+  def finished
+    students_section = StudentsSection.where(user_id: scope.id, section_id: object.id).first
+    if students_section
+      students_section.finished
     else
       false
     end

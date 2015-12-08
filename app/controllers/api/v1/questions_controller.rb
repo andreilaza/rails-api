@@ -110,9 +110,7 @@ class Api::V1::QuestionsController < ApplicationController
     ### ESTUDENT METHODS ###
     def estudent_update
       correct_answers = Answer.where(:question_id => params[:id], :correct => true).all
-      payload_answers = Answer.where(:question_id => params[:id], :correct => true, :id => params[:answers]).all
-
-      question = Question.find(params[:id])
+      payload_answers = Answer.where(:question_id => params[:id], :correct => true, :id => params[:answers]).all      
 
       ok = false    
 
@@ -120,93 +118,55 @@ class Api::V1::QuestionsController < ApplicationController
         ok = true
       end
 
-      if ok        
-        existing = StudentsQuestion.where(section_id: question.section_id, user_id: current_user.id, question_id: question.id).first
+      student_question = StudentsQuestion.where('question_id' => params[:id], 'user_id' => current_user.id).first
+      
+      if ok
+        student_question.completed = true        
+      else
+        student_question.finished = true
+      end
 
-        if existing
-          students_question = existing
+      student_course = StudentsCourse.where('course_id = ? AND user_id = ?', student_question.course_id, current_user.id).first
+      student_course.touch
+
+      student_question.save
+
+      remaining_questions = StudentsQuestion.where('section_id = ? AND user_id = ? AND finished = 0 AND completed = 0', student_question.section_id, current_user.id).first
+
+      if remaining_questions
+        next_section = Section.find(remaining_questions.section_id)
+      else
+        student_section = StudentsSection.where('section_id = ? AND user_id = ?', student_question.section_id, current_user.id).first
+
+        finished = StudentsQuestion.where('section_id = ? AND user_id = ? AND finished = 1 AND completed = 0', student_question.section_id, current_user.id).count
+
+        if finished
+          student_section.finished = true
         else
-          students_question = StudentsQuestion.new()
+          student_section.completed = true
         end
 
-        students_question.course_id = question.course_id
-        students_question.section_id = question.section_id
-        students_question.question_id = question.id
-        students_question.user_id = current_user.id
-        students_question.completed = true      
+        student_section.save
 
-        questions_count = Question.where(section_id: question.section_id).count
-        students_question_count = StudentsQuestion.where(section_id: question.section_id, user_id: current_user.id).count
+        next_student_section = StudentsSection.where('course_id = ? AND user_id = ? AND finished = 0 AND completed = 0', student_question.course_id, current_user.id).first
 
-        students_question.remaining = questions_count - students_question_count - 1
-
-        students_question.save
-
-        if students_question.remaining == 0
-          # Next Section
-          students_section = StudentsSection.where(user_id: current_user.id, section_id: students_question.section_id, course_id: question.course_id).first
-          students_section.completed = true
-          students_section.save        
-
-          response = next_section(question)        
+        if next_student_section
+          next_section = Section.find(next_student_section.section_id)
         else
-          # Next Question
-          
-          response = next_section(question)        
-        end
-      else
-        response = next_section(question)      
-      end
+          finished = StudentsSection.where('course_id = ? AND user_id = ? AND finished = 1 AND completed = 0', student_question.course_id, current_user.id).count          
+          if finished
+            student_course.finished = true
+            next_section = {'course_finished' => true, 'correct' => ok}
+          else
+            student_course.completed = true
+            next_section = {'course_completed' => true, 'correct' => ok}
+          end
+          students_course.save          
+        end        
+      end      
 
-      # Update Students Course
-      students_section = StudentsSection.where(user_id: current_user.id, section_id: question.section_id, course_id: question.course_id).first
-      if students_section
-        students_course = StudentsCourse.where(course_id: students_section.course_id, user_id: current_user.id).first
-        students_course.touch
-      end
-
-      if !response.has_key?("course_completed")
-        response = {        
-            'correct' => ok,
-            'section' => response        
-        }
-      else
-        response["correct"] = ok
-      end
-
-      render json: response, status: 200, root: false
+      render json: next_section, serializer: CustomSectionSerializer, status: 200, root: false
     end    
-
-    ### GENERAL METHODS ###
-    def next_section(question)
-      current_section = StudentsSection.where(user_id: current_user.id, section_id: question.section_id, course_id: question.course_id).first
-      
-      if current_section && current_section.completed == false
-        next_student_section = current_section
-      else
-        next_student_section = StudentsSection.where(user_id: current_user.id, completed: false, course_id: current_section.course_id).first
-      end
-      
-      if next_student_section
-        next_section = Section.find(next_student_section.section_id)
-      else
-        next_section = nil
-      end
-        
-      if next_section
-        #TO-DO add course progress ??
-        next_section = serialize_section(next_section)
-      else        
-        students_course = StudentsCourse.where(course_id: question.course_id, user_id: current_user.id).first
-        students_course.completed = true
-        students_course.save
-        
-        next_section = {'course_completed' => true}
-        
-      end
-
-      next_section
-    end
     
     def question_params
       params.require(:question).permit(:title, :section_id, :order, :score, :question_type)

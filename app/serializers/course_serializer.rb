@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :second_description, :slug, :favorite, :published, :started, :progress, :completed, :duration, :institution, :cover_image, :author, :questions, :domain, :category, :teaser, :subtitles
+  attributes :id, :title, :description, :second_description, :slug, :favorite, :published, :started, :progress, :completed, :finished, :duration, :institution, :cover_image, :author, :questions, :domain, :category, :teaser, :subtitles
 
   has_many :chapters
 
@@ -7,7 +7,7 @@ class CourseSerializer < ActiveModel::Serializer
     if scope.role == User::ROLES[:estudent]
       keys
     else
-      keys - [:completed] - [:institution] - [:progress] - [:started] - [:author]
+      keys - [:completed] - [:finished] - [:institution] - [:progress] - [:started] - [:author]
     end
   end
 
@@ -16,6 +16,16 @@ class CourseSerializer < ActiveModel::Serializer
 
     if students_course
       students_course.completed
+    else
+      false
+    end
+  end
+
+  def finished
+    students_course = StudentsCourse.where(user_id: scope.id, course_id: object.id).first
+
+    if students_course
+      students_course.finished
     else
       false
     end
