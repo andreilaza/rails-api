@@ -15,7 +15,7 @@ Rails.application.routes.draw do
       resources :domains, :only => [:index, :show, :create, :update, :destroy]
       resources :video_moments, :only => [:show, :update, :destroy]
       resources :question_hints, :only => [:show, :update, :destroy]
-      resources :student_video_snapshots, :only => [:create, :update, :destroy]
+      resources :student_video_snapshots, :only => [:create, :update, :destroy]      
 
       # Course Routes
       get '/courses', to: 'courses#index'
@@ -29,6 +29,8 @@ Rails.application.routes.draw do
       post '/courses/:id/chapters', to: 'courses#add_chapter'
       get '/courses/:id/chapters', to: 'courses#list_chapters'
       get '/courses/:id/video_moments', to: 'courses#list_video_moments'
+      get '/courses/:id/authors', to: 'courses#list_authors'
+      post '/courses/:id/authors', to: 'courses#add_authors'
 
       # Chapter Routes
       get '/chapters', to: 'chapters#index'

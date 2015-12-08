@@ -8,6 +8,9 @@ class Course < ApplicationModel
   has_many :course_institutions
   has_many :institutions, through: :course_institutions
 
+  has_many :author_courses
+  has_many :users, through: :author_courses
+  
   has_many :chapters, dependent: :destroy
 
   has_many :category_courses

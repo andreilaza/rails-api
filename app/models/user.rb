@@ -14,9 +14,11 @@ class User < ApplicationModel
 
   has_many :institution_users
   has_many :institutions, through: :institution_users  
+  
   has_one :user_metadatum
-  has_many :course_institutions
-  has_many :courses, through: :course_institutions
+  
+  has_many :author_courses
+  has_many :courses, through: :author_courses
 
   ROLES = {
     :owner => 0,

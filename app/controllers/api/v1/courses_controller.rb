@@ -29,7 +29,15 @@ class Api::V1::CoursesController < ApplicationController
 
   def assets
     send("#{current_user.role_name}_assets")
-  end  
+  end
+
+  def list_authors
+    send("#{current_user.real_role}_list_authors")
+  end
+
+  def add_authors
+    send("#{current_user.real_role}_add_authors")
+  end
 
   private
     ### AUTHOR METHODS ###
@@ -68,13 +76,19 @@ class Api::V1::CoursesController < ApplicationController
         course_institution.institution_id = current_user.institution_id
         course_institution.user_id = current_user.id
         course_institution.save
+        
+        author_course = AuthorCourse.new
+
+        author_course.user_id = current_user.id
+        author_course.course_id = course.id
+        author_course.save
 
         if params[:category_id]
           category_course = CategoryCourse.new
+
           category_course.category_id = category.id
           category_course.course_id = course.id
-          category_course.domain_id = category.domain_id
-          
+          category_course.domain_id = category.domain_id          
           category_course.save
         end
 
@@ -260,6 +274,49 @@ class Api::V1::CoursesController < ApplicationController
       end
     end
     
+    ### INSTITUTION ADMIN METHODS ###
+    def institution_admin_list_authors
+      authors = User.joins(:institution_users, :institutions).where('institutions.id' => current_user.institution_id).all
+
+      if authors
+        render json: authors, status: 200, root: false
+      else
+        render json: { errors: authors.errors }, status: 404
+      end
+    end
+
+    def institution_admin_add_authors
+      authors = User.uniq.select(:id).joins(:author_courses, :courses).where('courses.id' => params[:id]).all
+
+      ids = []
+
+      authors.each do |author|
+        ids.push(author.id)
+      end
+
+      to_add = params[:authors] - ids
+      to_delete = ids - params[:authors]
+      
+      if to_add
+        to_add.each do |author_id|
+          author = AuthorCourse.new
+          author.course_id = params[:id]
+          author.user_id = author_id
+          author.save
+        end
+      end
+
+      if to_delete
+        to_delete.each do |author_id|
+          author = AuthorCourse.where('user_id' => author_id, 'course_id' => params[:id]).first          
+          author.destroy
+        end
+      end
+
+      institution_admin_list_authors
+
+    end
+
     ### GENERAL METHODS ###
     def course_params
       params.permit(:title, :description, :second_description, :published)

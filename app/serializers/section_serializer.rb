@@ -7,7 +7,7 @@ class SectionSerializer < ActiveModel::Serializer # Used for requests at the cou
     if scope.role == User::ROLES[:estudent]
       keys
     else
-      keys - [:completed] - [:finished]
+      keys - [:completed] - [:finished] - [:video_snapshot]
     end
   end
 

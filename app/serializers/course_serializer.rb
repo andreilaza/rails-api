@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :second_description, :slug, :favorite, :published, :started, :progress, :completed, :finished, :duration, :institution, :cover_image, :author, :questions, :domain, :category, :teaser, :subtitles
+  attributes :id, :title, :description, :second_description, :slug, :favorite, :published, :started, :progress, :completed, :finished, :duration, :institution, :cover_image, :authors, :questions, :domain, :category, :teaser, :subtitles
 
   has_many :chapters
 
@@ -7,7 +7,7 @@ class CourseSerializer < ActiveModel::Serializer
     if scope.role == User::ROLES[:estudent]
       keys
     else
-      keys - [:completed] - [:finished] - [:institution] - [:progress] - [:started] - [:author]
+      keys - [:completed] - [:finished] - [:institution] - [:progress] - [:started] - [:authors]
     end
   end
 
@@ -96,19 +96,24 @@ class CourseSerializer < ActiveModel::Serializer
     end
   end
 
-  def author
-    user = User.select("user_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:user_metadatum, :course_institutions, :courses).where('courses.id' => object.id).first
-    asset = Asset.where('entity_id' => user.id, 'entity_type' => 'user', 'definition' => 'avatar').first
+  def authors
+    users = User.uniq.select("user_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:user_metadatum, :author_courses, :courses).where('courses.id' => object.id).all
+    response = []
+    users.each do |user|
+      asset = Asset.where('entity_id' => user.id, 'entity_type' => 'user', 'definition' => 'avatar').first
 
-    user = user.as_json
+      user = user.as_json
 
-    if asset
-      user['avatar'] = asset.path
-    else
-      user['avatar'] = nil
+      if asset
+        user['avatar'] = asset.path
+      else
+        user['avatar'] = nil
+      end
+
+      response.push(user)
     end
 
-    user
+    response
   end
 
   def teaser
