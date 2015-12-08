@@ -155,9 +155,8 @@ class Api::V1::InstitutionsController < ApplicationController
       end
     end
 
-    def institution_admin_list_users
-      institution = Institution.find(params[:id])
-      users = User.joins(:institution_users, :institutions).where('institutions.id' => institution.id).all      
+    def institution_admin_list_users      
+      users = User.joins(:institution_users, :institutions).where('institutions.id' => params[:id]).all      
 
       render json: users, status: 200, root: false 
     end

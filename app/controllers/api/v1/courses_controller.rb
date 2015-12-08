@@ -276,7 +276,7 @@ class Api::V1::CoursesController < ApplicationController
     
     ### INSTITUTION ADMIN METHODS ###
     def institution_admin_list_authors
-      authors = User.joins(:institution_users, :institutions).where('institutions.id' => current_user.institution_id).all
+      authors = User.uniq.joins(:author_courses, :courses).where('courses.id' => params[:id]).all
 
       if authors
         render json: authors, status: 200, root: false
