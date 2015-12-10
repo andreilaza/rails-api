@@ -82,7 +82,7 @@ class ApplicationController < ActionController::Base
     output = ActiveSupport::JSON.decode(user.to_json)
     
     if token
-      output["auth_token"] = user[:auth_token]
+      output["auth_token"] = user.auth_token
     end
 
     if output["role"] == User::ROLES[:admin]
