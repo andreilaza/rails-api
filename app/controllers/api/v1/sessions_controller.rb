@@ -21,6 +21,7 @@ class Api::V1::SessionsController < ApplicationController
           render json: { errors: existing_user.errors }, status: 422
         end
       else
+        user.password = SecureRandom.hex(4)
         add_user(user)
       end
     else
