@@ -1,5 +1,6 @@
 class Api::V1::UsersController < ApplicationController
   before_action :authenticate_with_token!, only: [:update, :destroy]
+  before_action :restrict_domain, only: [:get_by_facebook_uid]
   respond_to :json
 
   def check_username_availability
@@ -12,12 +13,19 @@ class Api::V1::UsersController < ApplicationController
   end
 
   def get_by_facebook_uid
-    user = User.where('facebook_uid' => params[:facebook_uid]).first
+    user = User.find_by(facebook_uid: params[:facebook_uid])
 
     if user
-      render json: user, status: 200, root: false
+      sign_in user
+      token = UserAuthenticationToken.new
+      user.user_authentication_tokens << token            
+      user.auth_token = token.token
+      user.save
+      output = build_output(user)
+
+      render json: output, status: 200, root: false      
     else
-      render json: { errors: user.errors }, status: 422
+      render json: {'error' => 'User not found.'}, status: 404
     end
   end
 
@@ -202,5 +210,11 @@ class Api::V1::UsersController < ApplicationController
       else
         render json: { errors: "Invalid password" }, status: 200, root: false
       end
+    end
+
+    def restrict_domain
+      # @TO-DO: change true to actual request.referer or request.ENV['HTTP_REFERER']
+      render json: { errors: "Not authenticated" },
+                status: :unauthorized unless true      
     end
 end
