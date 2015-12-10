@@ -8,11 +8,7 @@ class Api::V1::SessionsController < ApplicationController
     user = User.new(user_params)    
     user.role = User::ROLES[:estudent]
 
-    invitation = Invitation.find_by(invitation: params[:invitation])
-    
-    if !invitation || invitation.expires < DateTime.now
-      render json: { errors: 'Invitation expired' }, status: 422
-    elsif user.save
+    if user.save
       if params[:avatar]
         append_asset(user, params[:avatar])
       end
@@ -88,7 +84,7 @@ class Api::V1::SessionsController < ApplicationController
 
   private
     def user_params
-      params.permit(:email, :password, :password_confirmation, :role, :first_name, :last_name, :username)
+      params.permit(:email, :password, :password_confirmation, :role, :first_name, :last_name, :username, :facebook_uid)
     end
 
     def append_asset(user, avatar)

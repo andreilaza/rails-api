@@ -11,6 +11,16 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 
+  def get_by_facebook_uid
+    user = User.where('facebook_uid' => params[:facebook_uid]).first
+
+    if user
+      render json: user, status: 200, root: false
+    else
+      render json: { errors: user.errors }, status: 422
+    end
+  end
+
   def admin_show
     user = User.find(params[:id])
 
@@ -144,11 +154,11 @@ class Api::V1::UsersController < ApplicationController
     end
 
     def user_params
-      params.permit(:email, :password, :password_confirmation, :first_name, :last_name, :role, :username)
+      params.permit(:email, :password, :password_confirmation, :first_name, :last_name, :role, :username, :facebook_uid)
     end
 
     def admin_update_params
-      params.permit(:email, :password, :password_confirmation, :first_name, :last_name, :username)
+      params.permit(:email, :password, :password_confirmation, :first_name, :last_name, :username, :facebook_uid)
     end
 
     def append_asset(user)

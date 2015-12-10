@@ -89,11 +89,12 @@ Rails.application.routes.draw do
 
       # User Routes
       get '/users/current_user', to: 'users#current'
+      get '/users/get_by_facebook_uid', to: 'users#get_by_facebook_uid'
       get '/users/:id', to: 'users#show'
       put '/users/:id', to: 'users#update'
       post '/users/change_password', to: 'users#change_password'
       get '/users/:id/institution', to: 'users#institution'
-      post '/users/check-username', to: 'users#check_username_availability'
+      post '/users/check-username', to: 'users#check_username_availability'      
 
       # Invitation Routes
       post '/invitations', to: 'invitations#create'
