@@ -9,7 +9,7 @@ class Api::V1::SessionsController < ApplicationController
     user.role = User::ROLES[:estudent]
 
     if params[:facebook_uid]
-      existing_user = User.where('email' => params[:email]).first
+      existing_user = User.where('email = ? AND email IS NOT NULL', params[:email]).first
       if existing_user
         existing_user.facebook_uid = params[:facebook_uid]        
         add_token(existing_user)
