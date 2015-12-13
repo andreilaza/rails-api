@@ -22,6 +22,7 @@ class Api::V1::SessionsController < ApplicationController
         end
       else
         user.password = SecureRandom.hex(4)
+        user.email = nil
         add_user(user)
       end
     else
