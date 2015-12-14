@@ -20,8 +20,7 @@ class Api::V1::UsersController < ApplicationController
       token = UserAuthenticationToken.new
       user.user_authentication_tokens << token            
       user.auth_token = token.token
-      user.save
-      output = build_output(user)
+      user.save      
 
       render json: output, status: 200, root: false      
     else
@@ -212,9 +211,8 @@ class Api::V1::UsersController < ApplicationController
       end
     end
 
-    def restrict_domain
-      # @TO-DO: change true to actual request.referer or request.ENV['HTTP_REFERER']
+    def restrict_domain      
       render json: { errors: "Not authenticated" },
-                status: :unauthorized unless true      
+                status: :unauthorized unless request.remote_ip == ENV['WEB_APP_IP']
     end
 end
