@@ -22,8 +22,9 @@ class Api::V1::SessionsController < ApplicationController
         end
       else
         user.password = SecureRandom.hex(4)
-        user.email = nil
-        add_user(user)
+        user.email = nil        
+        
+        add_user(user, true)
       end
     else
       add_user(user)
@@ -93,24 +94,34 @@ class Api::V1::SessionsController < ApplicationController
       user.auth_token = token.token
     end
 
-    def add_user(user)
+    def add_user(user, facebook = false)
       if user.save
         if params[:avatar]
           append_asset(user, params[:avatar])
         end
-
-        # credentials = JSON.load(File.read('secrets.json'))
+        
         set_aws_credentials
 
         s3 = Aws::S3::Client.new
         hex = SecureRandom.hex(4)
-        user_avatar = "users/user_#{hex}"
+        user_avatar = "users/" + user.id.to_s + "_#{hex}"
 
         bucket = Aws::S3::Bucket.new(ENV["AWS_BUCKET"], client: s3)
-        avatar = Aws::S3::Object.new(ENV["AWS_BUCKET"], user_avatar)      
+        avatar = Aws::S3::Object.new(ENV["AWS_BUCKET"], user_avatar)
+
+        avatar_url = 'avatar.png'
+
+        if facebook
+          # RETRIEVE FACEBOOK AVATAR AND POST IT TO S3
+          facebook_avatar_url = 'https://graph.facebook.com/' + params[:facebook_uid].to_s + '/picture?width=720&height=720'
+          
+          image = MiniMagick::Image.open(facebook_avatar_url)
+          image = resize_and_crop_square(image, 400)
+          avatar_url = image.path
+        end
 
         # from an IO object
-        File.open('avatar.png', 'rb') do |file|
+        File.open(avatar_url, 'rb') do |file|
           acl = "public-read"
           avatar.put(body:file, acl: acl)        
           append_asset(user, user_avatar)
