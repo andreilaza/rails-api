@@ -6,11 +6,11 @@ class ApplicationController < ActionController::Base
   # before_filter :set_headers 
   include Authenticable
     
-  def index
+  def index    
     send("#{current_user.role_name}_index")
   end
   
-  def show
+  def show    
     send("#{current_user.role_name}_show")
   end
 

@@ -1,8 +1,8 @@
 class Api::V1::CoursesController < ApplicationController
-  before_action :authenticate_with_token!
+  before_action :authenticate_with_token!, except: [:show, :index]
   respond_to :json
 
-  ### ROUTE METHODS ###
+  ### ROUTE METHODS ###  
   def start
     send("#{current_user.role_name}_start")
   end  

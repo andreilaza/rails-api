@@ -4,10 +4,10 @@ class CourseSerializer < ActiveModel::Serializer
   has_many :chapters
 
   def filter(keys)
-    if scope.role == User::ROLES[:estudent]
+    if scope && scope.role == User::ROLES[:estudent]
       keys
-    else
-      keys - [:completed] - [:finished] - [:institution] - [:progress] - [:started] - [:authors]
+    else      
+        keys - [:favorite] - [:completed] - [:finished] - [:institution] - [:progress] - [:started] - [:authors]      
     end
   end
 

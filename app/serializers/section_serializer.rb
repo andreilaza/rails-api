@@ -4,7 +4,7 @@ class SectionSerializer < ActiveModel::Serializer # Used for requests at the cou
   has_many :video_moments
 
   def filter(keys)
-    if scope.role == User::ROLES[:estudent]
+    if scope && scope.role == User::ROLES[:estudent]
       keys
     else
       keys - [:completed] - [:finished] - [:video_snapshot]

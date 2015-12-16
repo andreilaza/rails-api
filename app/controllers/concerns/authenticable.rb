@@ -29,7 +29,10 @@ module Authenticable
       
       if uat
         uat.destroy
-      end
+      end      
+
+      @current_user = User.new
+      @current_user.role_name = 'estudent'      
     end
         
     @current_user
