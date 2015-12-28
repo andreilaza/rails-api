@@ -20,6 +20,10 @@ development:
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
+  database: "estudent"
+  username: "root"
+  password: "root"
+  host: 127.0.0.1
   <<: *default  
 
 production:
