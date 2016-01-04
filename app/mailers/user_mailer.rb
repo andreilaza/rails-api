@@ -14,6 +14,13 @@ class UserMailer < ApplicationMailer
     @section_title = section_title
 
     mail( :to => ENV["ESTUDENT_EMAIL"],
-    :subject => 'Section Feedback' )
+    :subject => 'Feedback la o sectiune' )
+  end
+
+  def new_course(email, course)    
+    @course = course
+
+    mail( :to => email,
+    :subject => 'Curs nou' )
   end
 end

@@ -1,5 +1,5 @@
 class Api::V1::CoursesController < ApplicationController
-  before_action :authenticate_with_token!, except: [:show, :index]
+  before_action :authenticate_with_token!, except: [:show, :index, :notify]
   respond_to :json
 
   ### ROUTE METHODS ###  
@@ -37,6 +37,23 @@ class Api::V1::CoursesController < ApplicationController
 
   def add_authors
     send("#{current_user.real_role}_add_authors")
+  end
+
+  def notify
+    if params[:email]
+      email = params[:email]
+    else
+      email = current_user.email
+    end
+
+    course = Course.find(params[:id])
+    UserMailer.new_course(email, course).deliver
+
+    if course
+      render json: course, status: 200, root: false
+    else
+      render json: { errors: course.errors }, status: 404
+    end
   end
 
   private

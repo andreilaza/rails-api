@@ -127,7 +127,7 @@ class Api::V1::SessionsController < ApplicationController
           append_asset(user, user_avatar)
         end
         
-        UserMailer.send_confirmation(user).deliver      
+        UserMailer.send_confirmation(user).deliver
 
         add_token(user)
         output = build_output(user)

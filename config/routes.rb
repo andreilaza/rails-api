@@ -31,6 +31,7 @@ Rails.application.routes.draw do
       get '/courses/:id/video_moments', to: 'courses#list_video_moments'
       get '/courses/:id/authors', to: 'courses#list_authors'
       post '/courses/:id/authors', to: 'courses#add_authors'
+      post '/courses/:id/notify', to: 'courses#notify'
 
       # Chapter Routes
       get '/chapters', to: 'chapters#index'
