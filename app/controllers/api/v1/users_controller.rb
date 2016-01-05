@@ -22,7 +22,7 @@ class Api::V1::UsersController < ApplicationController
       user.auth_token = token.token
       user.save      
 
-      render json: output, status: 200, root: false      
+      render json: user, status: 200, root: false      
     else
       render json: {'error' => 'User not found.'}, status: 404
     end
