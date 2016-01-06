@@ -27,6 +27,8 @@ class User < ApplicationModel
 
   has_many :user_authentication_tokens, dependent: :destroy
 
+  has_many :user_settings, dependent: :destroy
+
   ROLES = {
     :owner => 0,
     :admin => 1,

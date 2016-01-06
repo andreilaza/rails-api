@@ -32,7 +32,7 @@ class InstitutionSerializer < ActiveModel::Serializer
   end
 
   def courses
-    courses = Course.joins(:course_institutions, :institutions).where('institutions.id' => object.id, 'courses.published' => true).all
+    courses = Course.joins(:course_institutions, :institutions).where('institutions.id' => object.id, 'courses.status' => Course::STATUS[:published]).all
     courses_response = []
     entry = {}
     courses.each do |course|      

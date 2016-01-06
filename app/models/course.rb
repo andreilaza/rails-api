@@ -17,6 +17,8 @@ class Course < ApplicationModel
   has_many :categories, through: :category_courses
   has_many :domains, through: :category_courses      
 
+  has_many :notifications, as: :entity
+  
   attr_accessor :clean_title
   attr_accessor :category
 
@@ -25,4 +27,10 @@ class Course < ApplicationModel
       :clean_title
     ]
   end
+
+  STATUS = {
+    :unpublished => 0,
+    :upcoming => 1,
+    :published => 2
+  }
 end

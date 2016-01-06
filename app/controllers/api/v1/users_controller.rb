@@ -12,6 +12,15 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 
+  def check_email_availability
+    user = User.where('email' => params[:email]).first
+    if user
+      render json: false, status: 422, root: false
+    else
+      render json: true, status: 200, root: false
+    end
+  end
+
   def get_by_facebook_uid
     user = User.find_by(facebook_uid: params[:facebook_uid])
 
@@ -182,7 +191,7 @@ class Api::V1::UsersController < ApplicationController
       students_course = StudentsCourse.where('completed' => false, 'user_id' => current_user.id).order('updated_at DESC').first
 
       if students_course
-        latest_course = Course.where(id: students_course.course_id, published: true).first
+        latest_course = Course.where(id: students_course.course_id, staus: Course::STATUS[:published]).first
 
         if !latest_course
           latest_course = {}

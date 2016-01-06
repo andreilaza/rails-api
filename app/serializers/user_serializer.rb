@@ -50,7 +50,7 @@ class UserSerializer < ActiveModel::Serializer
   end
 
   def courses
-    courses = Course.joins(:course_institutions, :institutions).where('course_institutions.user_id' => object.id, 'courses.published' => true).all
+    courses = Course.joins(:course_institutions, :institutions).where('course_institutions.user_id' => object.id, 'courses.status' => Course::STATUS[:published]).all
     courses_response = []
     entry = {}
     courses.each do |course|      

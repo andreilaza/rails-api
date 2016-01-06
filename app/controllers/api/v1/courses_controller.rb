@@ -40,14 +40,25 @@ class Api::V1::CoursesController < ApplicationController
   end
 
   def notify
-    if params[:email]
-      email = params[:email]
+
+    if params[:email] && current_user.email.blank? == true
+      guest = GuestNotification.new
+      guest.email = params[:email]
+      guest.course_id = params[:id]
+      guest.save
     else
-      email = current_user.email
+      settings = UserSetting.where(:key => 'course_notification').first
+
+      if !settings
+        settings = UserSetting.new
+        settings.key = 'course_notification'
+        settings.value = true
+        settings.user_id = current_user.id
+        settings.save
+      end
     end
 
-    course = Course.find(params[:id])
-    UserMailer.new_course(email, course).deliver
+    course = Course.find(params[:id])    
 
     if course
       render json: course, status: 200, root: false
@@ -80,6 +91,7 @@ class Api::V1::CoursesController < ApplicationController
       course.friendly_id
       course.slug = nil
       course.clean_title = clean_title(params[:title])
+      course.status = set_status(params[:status])
 
       if params[:category_id]
         category = Category.find(params[:category_id])
@@ -133,7 +145,9 @@ class Api::V1::CoursesController < ApplicationController
       course.friendly_id
       course.slug = nil      
       course.clean_title = clean_title(course.title)
-
+      original_status = course.status
+      course.status = set_status(params[:status])
+      
       if course.update(course_params)
         if params[:cover_image]
           append_asset(course.id, params[:cover_image], 'cover_image', nil)
@@ -146,7 +160,37 @@ class Api::V1::CoursesController < ApplicationController
         if params[:subtitles]
           append_asset(course.id, params[:subtitles], 'subtitles', nil)
         end
+                
+        if course.status == Course::STATUS[:published] && original_status != Course::STATUS[:published]
+          # Create notification
+          notification = Notification.new
+          notification.entity_id = course.id          
+          notification.notification_type = 1
+          notification.message = 'Cursul ' + course.title + ' este acum public.'
+          notification.save
 
+          # Notify users that have clicked Notify Me
+          users = User.joins(:user_settings).where('user_settings.key' => 'course_notification', 'user_settings.value' => true).all
+
+          users.each do |user|
+            user_notification = UserNotification.new
+            user_notification.user_id = user.id
+            user_notification.notification_id = notification.id
+            user_notification.status = 0
+            user_notification.save
+          end
+
+          # Notify guests
+          guests = GuestNotification.where(:course_id => course.id).all
+
+          guests.each do |guest|
+            # Send email to guest.email
+            UserMailer.new_course(guest.email, course).deliver
+            guest.notification_id = notification.id
+            guest.save
+          end
+        end
+        
         if params[:category_id]
           category_course = CategoryCourse.where('course_id' => course.id).first
 
@@ -232,13 +276,13 @@ class Api::V1::CoursesController < ApplicationController
 
     ### ESTUDENT METHODS ###
     def estudent_index
-      courses = Course.where(:published => true).all
+      courses = Course.where(:status => Course::STATUS[:published]).all
       
       render json: courses, status: 200, root: false
     end
 
     def estudent_show
-      course =  Course.where(:published => true).find(params[:id])
+      course =  Course.where(:status => Course::STATUS[:published]).find(params[:id])
       
       if course
         render json: course, status: 200, root: false
@@ -269,7 +313,7 @@ class Api::V1::CoursesController < ApplicationController
     def estudent_start
       course = Course.find(params[:id])
 
-      if course.published
+      if course.status == Course::STATUS[:published]
         create_snapshot(course)      
         render json: course, status: 200, root: false
       else
@@ -336,7 +380,7 @@ class Api::V1::CoursesController < ApplicationController
 
     ### GENERAL METHODS ###
     def course_params
-      params.permit(:title, :description, :second_description, :published)
+      params.permit(:title, :description, :second_description)
     end
 
     def chapter_params
@@ -352,6 +396,20 @@ class Api::V1::CoursesController < ApplicationController
         'metadata'    => metadata
       }
       add_asset(asset)
+    end
+
+    def set_status(status)
+      if status == 'published'
+        return Course::STATUS[:published]
+      end
+
+      if status == 'upcoming'
+        return Course::STATUS[:upcoming]
+      end
+
+      if status == 'unpublished'
+        return Course::STATUS[:unpublished]
+      end
     end
 
     def create_snapshot(course)
