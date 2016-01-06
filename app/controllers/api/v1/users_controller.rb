@@ -6,7 +6,7 @@ class Api::V1::UsersController < ApplicationController
   def check_username_availability
     user = User.where('username' => params[:username]).first
     if user
-      render json: false, status: 422, root: false
+      render json: false, status: 200, root: false
     else
       render json: true, status: 200, root: false
     end
@@ -15,7 +15,7 @@ class Api::V1::UsersController < ApplicationController
   def check_email_availability
     user = User.where('email' => params[:email]).first
     if user
-      render json: false, status: 422, root: false
+      render json: false, status: 200, root: false
     else
       render json: true, status: 200, root: false
     end
