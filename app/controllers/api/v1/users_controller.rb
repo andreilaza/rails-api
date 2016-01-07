@@ -71,6 +71,10 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 
+  def guest_show
+    estudent_show
+  end
+
   def create
     user = User.new(user_params)
 

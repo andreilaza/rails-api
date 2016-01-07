@@ -4,7 +4,7 @@ module Authenticable
   def current_user
     @current_user ||= User.joins(:user_authentication_tokens).where('user_authentication_tokens.token = ? AND user_authentication_tokens.expires_at > ?', request.headers['Authorization'], DateTime.now.beginning_of_day).first
 
-    if @current_user
+    if @current_user.present? && @current_user.id.present?
       if @current_user.role == User::ROLES[:admin]
         @current_user.real_role = 'admin'
         @current_user.role_name = 'admin'
@@ -32,7 +32,8 @@ module Authenticable
       end      
 
       @current_user = User.new
-      @current_user.role_name = 'estudent'      
+      @current_user.role_name = 'guest'      
+      @current_user.role = User::ROLES[:estudent]
     end
         
     @current_user

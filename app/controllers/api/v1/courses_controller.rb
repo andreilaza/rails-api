@@ -335,6 +335,15 @@ class Api::V1::CoursesController < ApplicationController
       end
     end
     
+    ### GUEST METHODS ###
+    def guest_index
+      estudent_index
+    end
+
+    def guest_show
+      estudent_show
+    end
+
     ### INSTITUTION ADMIN METHODS ###
     def institution_admin_list_authors
       authors = User.uniq.joins(:author_courses, :courses).where('courses.id' => params[:id]).all
