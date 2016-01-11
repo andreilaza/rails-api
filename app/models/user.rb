@@ -25,7 +25,12 @@ class User < ApplicationModel
   has_many :author_courses
   has_many :courses, through: :author_courses
 
+  has_many :course_institutions
+  has_many :courses, through: :course_institutions
+
   has_many :user_authentication_tokens, dependent: :destroy
+
+  has_many :user_settings, dependent: :destroy
 
   ROLES = {
     :owner => 0,

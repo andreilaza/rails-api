@@ -87,12 +87,17 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     ### ESTUDENT METHODS ###
-    def estudent_show      
+    def estudent_show
       institution = Institution.find(params[:id])
 
       render json: institution, status: 200, root: false      
     end
 
+    ### GUEST METHODS ###
+    def guest_show
+      estudent_show
+    end
+    
     ### INSTITUTION ADMIN METHODS ###
     def institution_admin_show
       if check_permission

@@ -6,7 +6,17 @@ class Api::V1::UsersController < ApplicationController
   def check_username_availability
     user = User.where('username' => params[:username]).first
     if user
-      render json: {"status" => false}, status: 422, root: false
+
+      render json: false, status: 200, root: false
+    else
+      render json: true, status: 200, root: false
+    end
+  end
+
+  def check_email_availability
+    user = User.where('email' => params[:email]).first
+    if user
+      render json: false, status: 200, root: false
     else
       render json: {"status" => true}, status: 200, root: false
     end
@@ -22,7 +32,7 @@ class Api::V1::UsersController < ApplicationController
       user.auth_token = token.token
       user.save    
 
-      render json: output, status: 200, root: false      
+      render json: user, status: 200, root: false      
     else
       render json: {'error' => 'User not found.'}, status: 404
     end
@@ -60,6 +70,10 @@ class Api::V1::UsersController < ApplicationController
     else
       render json: { errors: user.errors }, status: 422
     end
+  end
+
+  def guest_show
+    estudent_show
   end
 
   def create
@@ -182,7 +196,7 @@ class Api::V1::UsersController < ApplicationController
       students_course = StudentsCourse.where('completed' => false, 'user_id' => current_user.id).order('updated_at DESC').first
 
       if students_course
-        latest_course = Course.where(id: students_course.course_id, published: true).first
+        latest_course = Course.where(id: students_course.course_id, staus: Course::STATUS[:published]).first
 
         if !latest_course
           latest_course = {}

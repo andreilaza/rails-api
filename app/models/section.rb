@@ -14,4 +14,9 @@ class Section < ApplicationModel
   def slug_candidates
     [:clean_title]
   end
+
+  TYPE = {
+    :content => 1,
+    :quiz => 2
+  }
 end

@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :second_description, :slug, :favorite, :published, :started, :progress, :completed, :finished, :duration, :institution, :cover_image, :authors, :questions, :domain, :category, :teaser, :subtitles
+  attributes :id, :title, :description, :second_description, :slug, :favorite, :status, :started, :video_sections, :progress, :completed, :finished, :duration, :institution, :cover_image, :authors, :questions, :domain, :category, :teaser, :subtitles
 
   has_many :chapters
 
@@ -38,6 +38,24 @@ class CourseSerializer < ActiveModel::Serializer
       true
     else
       false
+    end
+  end
+
+  def video_sections
+    sections = Section.where(section_type: Section::TYPE[:content], course_id: object.id).count
+  end
+
+  def status
+    if object.status == Course::STATUS[:published]
+      return 'published'
+    end
+
+    if object.status == Course::STATUS[:upcoming]
+      return 'upcoming'
+    end
+
+    if object.status == Course::STATUS[:unpublished]
+      return 'unpublished'
     end
   end
 

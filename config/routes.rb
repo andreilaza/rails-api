@@ -15,7 +15,9 @@ Rails.application.routes.draw do
       resources :domains, :only => [:index, :show, :create, :update, :destroy]
       resources :video_moments, :only => [:show, :update, :destroy]
       resources :question_hints, :only => [:show, :update, :destroy]
-      resources :student_video_snapshots, :only => [:create, :update, :destroy]      
+      resources :student_video_snapshots, :only => [:create, :update, :destroy]
+      resources :announcements, :only => [:index, :show, :create, :update, :destroy]
+      resources :notifications, :only => [:index, :show, :update]
 
       # Course Routes
       get '/courses', to: 'courses#index'
@@ -31,6 +33,7 @@ Rails.application.routes.draw do
       get '/courses/:id/video_moments', to: 'courses#list_video_moments'
       get '/courses/:id/authors', to: 'courses#list_authors'
       post '/courses/:id/authors', to: 'courses#add_authors'
+      post '/courses/:id/notify', to: 'courses#notify'
 
       # Chapter Routes
       get '/chapters', to: 'chapters#index'
@@ -94,7 +97,8 @@ Rails.application.routes.draw do
       put '/users/:id', to: 'users#update'
       post '/users/change_password', to: 'users#change_password'
       get '/users/:id/institution', to: 'users#institution'
-      post '/users/check-username', to: 'users#check_username_availability'      
+      post '/users/check_username', to: 'users#check_username_availability'
+      post '/users/check_email', to: 'users#check_email_availability'      
 
       # Invitation Routes
       post '/invitations', to: 'invitations#create'

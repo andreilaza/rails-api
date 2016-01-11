@@ -188,6 +188,7 @@ GEM
       binding_of_caller (>= 0.7.2)
       railties (>= 4.0)
       sprockets-rails (>= 2.0, < 4.0)
+    wisper (2.0.0.rc1)
 
 PLATFORMS
   ruby
@@ -215,6 +216,7 @@ DEPENDENCIES
   spring
   uglifier (>= 1.3.0)
   web-console (~> 2.0)
+  wisper (= 2.0.0.rc1)
 
 BUNDLED WITH
    1.10.6
