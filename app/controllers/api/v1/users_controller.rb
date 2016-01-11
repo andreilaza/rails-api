@@ -6,9 +6,9 @@ class Api::V1::UsersController < ApplicationController
   def check_username_availability
     user = User.where('username' => params[:username]).first
     if user
-      render json: false, status: 422, root: false
+      render json: {"status" => false}, status: 422, root: false
     else
-      render json: true, status: 200, root: false
+      render json: {"status" => true}, status: 200, root: false
     end
   end
 
@@ -20,7 +20,7 @@ class Api::V1::UsersController < ApplicationController
       token = UserAuthenticationToken.new
       user.user_authentication_tokens << token            
       user.auth_token = token.token
-      user.save      
+      user.save    
 
       render json: output, status: 200, root: false      
     else

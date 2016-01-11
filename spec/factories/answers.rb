@@ -4,5 +4,4 @@ FactoryGirl.define do
     question_id 1
     correct 1
   end
-
 end
