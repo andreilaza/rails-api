@@ -32,10 +32,11 @@ class InstitutionSerializer < ActiveModel::Serializer
   end
 
   def courses
-    courses = Course.joins(:course_institutions, :institutions).where('institutions.id' => object.id, 'courses.status' => Course::STATUS[:published]).all
+    courses = Course.joins(:course_institution, :institution).where('institutions.id' => object.id, 'courses.status' => Course::STATUS[:published]).all
     courses_response = []
     entry = {}
-    courses.each do |course|      
+    courses.each do |course|
+
       entry = course.as_json
 
       asset = Asset.where('entity_id' => course.id, 'entity_type' => 'course', 'definition' => 'cover_image').first
@@ -55,8 +56,8 @@ class InstitutionSerializer < ActiveModel::Serializer
 
       questions = Question.where(course_id: course.id).count
       entry['questions'] = questions
-
-      user = User.select("user_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:user_metadatum, :course_institutions, :courses).where('courses.id' => course.id).first
+            
+      user = User.select("user_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:user_metadatum, :author_courses, :courses).where('courses.id' => course.id).first
       
       asset = Asset.where('entity_id' => user.id, 'entity_type' => 'user', 'definition' => 'avatar').first
 
@@ -78,7 +79,7 @@ class InstitutionSerializer < ActiveModel::Serializer
   end
 
   def authors
-    authors = User.select("user_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:user_metadatum, :institution_users, :institutions).where('institutions.id' => object.id).all
+    authors = User.select("user_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:user_metadatum, :institution_user, :institution).where('institutions.id' => object.id).all
     authors_response = []
     entry = {}
     authors.each do |author|

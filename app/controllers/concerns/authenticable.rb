@@ -3,7 +3,7 @@ module Authenticable
   # Devise methods overwrites
   def current_user
     @current_user ||= User.joins(:user_authentication_tokens).where('user_authentication_tokens.token = ? AND user_authentication_tokens.expires_at > ?', request.headers['Authorization'], DateTime.now.beginning_of_day).first
-
+    
     if @current_user.present? && @current_user.id.present?
       if @current_user.role == User::ROLES[:admin]
         @current_user.real_role = 'admin'
@@ -11,6 +11,7 @@ module Authenticable
       end
 
       if @current_user.role == User::ROLES[:estudent]
+        @current_user.real_role = 'estudent'
         @current_user.role_name = 'estudent'
       end
 
@@ -22,6 +23,7 @@ module Authenticable
 
       if @current_user.role == User::ROLES[:author]
         add_institution      
+        @current_user.real_role = 'author'
         @current_user.role_name = 'author'
       end
     else

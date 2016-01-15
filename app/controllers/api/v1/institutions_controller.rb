@@ -14,6 +14,26 @@ class Api::V1::InstitutionsController < ApplicationController
   def list_courses
     send("#{current_user.role_name}_list_courses")
   end
+
+  def index
+    send("#{current_user.real_role}_index")
+  end
+
+  def show
+    send("#{current_user.real_role}_show")
+  end
+
+  def create
+    send("#{current_user.real_role}_create")
+  end
+
+  def update
+    send("#{current_user.real_role}_update")
+  end
+
+  def destroy
+    send("#{current_user.real_role}_destroy")
+  end
   
   private
     ### ADMIN METHODS ###   
@@ -62,7 +82,7 @@ class Api::V1::InstitutionsController < ApplicationController
         user = User.create(user_params)
               
         user.role = User::ROLES[:institution_admin]        
-
+        puts user.role
         if !user.save
           render json: { errors: user.errors }, status: 422
         elsif !institution.save
@@ -70,8 +90,7 @@ class Api::V1::InstitutionsController < ApplicationController
         else        
           institution.institution_users.create(:user_id => user.id)
 
-          add_author_metadata(user)
-          user = build_output(user, false)
+          add_author_metadata(user)          
           render json: user, status: 200, root: false
         end
       else
@@ -161,7 +180,7 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     def institution_admin_list_users      
-      users = User.joins(:institution_users, :institutions).where('institutions.id' => params[:id]).all      
+      users = User.joins(:institution_user, :institution).where('institutions.id' => params[:id]).all      
 
       render json: users, status: 200, root: false 
     end

@@ -43,7 +43,7 @@ class Api::V1::CategoriesController < ApplicationController
     ### ESTUDENT METHODS ###
     def estudent_list_courses
       category =  Category.find(params[:id])
-      courses = Course.joins(:category_courses, :categories).where('categories.id' => category.id, 'courses.status' => Course::STATUS[:published]).all
+      courses = Course.joins(:category_course, :category).where('categories.id' => category.id, 'courses.status' => Course::STATUS[:published]).all
       
       render json: courses, status: 200, root: false
     end

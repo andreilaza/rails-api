@@ -18,7 +18,7 @@ class Api::V1::UsersController < ApplicationController
     if user
       render json: false, status: 200, root: false
     else
-      render json: {"status" => true}, status: 200, root: false
+      render json: true, status: 200, root: false
     end
   end
 
@@ -113,7 +113,7 @@ class Api::V1::UsersController < ApplicationController
     render json: current_user, status: 200, root: false
   end
 
-  private
+  private    
     def estudent_update
       user = current_user
 
@@ -129,18 +129,7 @@ class Api::V1::UsersController < ApplicationController
     end
 
     def admin_update
-      user = current_user
-
-      if user.update(user_params)
-
-        if params[:avatar]
-          append_asset(user)
-        end
-
-        render json: user, status: 200, root: false
-      else
-        render json: { errors: user.errors }, status: 422
-      end
+      estudent_update
     end
     
     def author_update
@@ -196,7 +185,7 @@ class Api::V1::UsersController < ApplicationController
       students_course = StudentsCourse.where('completed' => false, 'user_id' => current_user.id).order('updated_at DESC').first
 
       if students_course
-        latest_course = Course.where(id: students_course.course_id, staus: Course::STATUS[:published]).first
+        latest_course = Course.where(id: students_course.course_id, status: Course::STATUS[:published]).first
 
         if !latest_course
           latest_course = {}
@@ -213,13 +202,13 @@ class Api::V1::UsersController < ApplicationController
       user = current_user
       
       if user.valid_password? params[:old_password] || params[:password] == params[:password_confirmation]
-        user.password = params[:password]
-        user.generate_authentication_token!
+        user.password = params[:password]        
+        token = UserAuthenticationToken.new
+        user.user_authentication_tokens << token
+        user.auth_token = token.token
         user.save
 
-        output = build_output(user)
-
-        render json: output.to_json, status: 200, root: false      
+        render json: user, status: 200, root: false      
       else
         render json: { errors: "Invalid password" }, status: 200, root: false
       end

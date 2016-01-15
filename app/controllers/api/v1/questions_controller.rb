@@ -134,14 +134,13 @@ class Api::V1::QuestionsController < ApplicationController
       remaining_questions = StudentsQuestion.where('section_id = ? AND user_id = ? AND finished = 0 AND completed = 0', student_question.section_id, current_user.id).first
 
       if remaining_questions
-        next_section = Section.find(remaining_questions.section_id)
+        next_section = Section.find(remaining_questions.section_id)        
       else
         student_section = StudentsSection.where('section_id = ? AND user_id = ?', student_question.section_id, current_user.id).first
 
-        finished = StudentsQuestion.where('section_id = ? AND user_id = ? AND finished = 1 AND completed = 0', student_question.section_id, current_user.id).count
-
-        if finished
-          student_section.finished = true
+        finished = StudentsQuestion.where('section_id = ? AND user_id = ? AND finished = 1 AND completed = 0', student_question.section_id, current_user.id).count        
+        if finished > 0
+          student_section.finished = true          
         else
           student_section.completed = true
         end
@@ -150,22 +149,27 @@ class Api::V1::QuestionsController < ApplicationController
 
         next_student_section = StudentsSection.where('course_id = ? AND user_id = ? AND finished = 0 AND completed = 0', student_question.course_id, current_user.id).first
 
+        course_response = nil
         if next_student_section
           next_section = Section.find(next_student_section.section_id)
         else
           finished = StudentsSection.where('course_id = ? AND user_id = ? AND finished = 1 AND completed = 0', student_question.course_id, current_user.id).count          
-          if finished
+
+          if finished > 0
             student_course.finished = true
-            next_section = {'course_finished' => true, 'correct' => ok}
+            course_response = {"course_finished" => true, "correct" => ok}
           else
             student_course.completed = true
-            next_section = {'course_completed' => true, 'correct' => ok}
+            course_response = {"course_completed" => true, "correct" => ok}
           end
-          students_course.save          
-        end        
-      end      
-
-      render json: next_section, serializer: CustomSectionSerializer, status: 200, root: false
+          student_course.save
+        end
+      end
+      if course_response
+        render json: course_response, status: 200, root: false
+      else
+        render json: next_section, serializer: CustomSectionSerializer, status: 200, root: false
+      end
     end    
     
     def question_params
@@ -181,7 +185,15 @@ class Api::V1::QuestionsController < ApplicationController
     end
 
     def check_permission(question)
-      # Check if admin has permission to access this course            
+      # Check if admin has permission to access this course
+      puts question.course_id
+      puts current_user.institution_id
+
+      ci = CourseInstitution.all
+      ci.each do |item|
+        puts item.course_id
+        puts item.institution_id
+      end
       course_permission = CourseInstitution.where(course_id: question.course_id, institution_id: current_user.institution_id).first
     end
 

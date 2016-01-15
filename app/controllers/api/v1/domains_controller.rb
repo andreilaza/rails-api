@@ -35,6 +35,7 @@ class Api::V1::DomainsController < ApplicationController
       
       domain.friendly_id
       domain.slug = nil
+      
       domain.clean_title = clean_title(params[:title])
 
       if domain.save        

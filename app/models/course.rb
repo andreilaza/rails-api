@@ -5,16 +5,17 @@ class Course < ApplicationModel
 
   validates :title, presence: true  
 
-  has_many :course_institutions
-  has_many :institutions, through: :course_institutions
+  has_one :course_institution
+  has_one :institution, through: :course_institution
 
   has_many :author_courses
   has_many :users, through: :author_courses
   
   has_many :chapters, dependent: :destroy
 
-  has_many :category_courses
-  has_many :categories, through: :category_courses
+  has_one :category_course
+  has_one :category, through: :category_course
+  
   has_many :domains, through: :category_courses      
 
   has_many :notifications, as: :entity

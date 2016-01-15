@@ -17,8 +17,8 @@ class User < ApplicationModel
   attr_accessor :real_role 
   attr_accessor :auth_token  
 
-  has_many :institution_users
-  has_many :institutions, through: :institution_users  
+  has_one :institution_user
+  has_one :institution, through: :institution_user
   
   has_one :user_metadatum
   

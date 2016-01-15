@@ -1,6 +1,4 @@
 FactoryGirl.define do
-  factory :user_authentication_token do
-    
+  factory :user_authentication_token do      
   end
-
 end

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::V1::AnswersController do
+RSpec.describe Api::V1::AnswersController, type: :controller do
   before(:each) do
     @user = FactoryGirl.create(:user, :author)
     api_authorization_header @user.auth_token 
@@ -14,7 +14,9 @@ describe Api::V1::AnswersController do
 
     it "returns 4 answers from the database" do
       answers_response = json_response
-      expect(answers_response[:answers]).to have(4).items
+      answers_response.each do |answer|
+        expect(answer[:title]).to eql "My Answer"
+      end
     end
 
     it { should respond_with 200 }

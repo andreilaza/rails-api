@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :user_metadatum do
+  factory :user_metadatum do    
     facebook "https://www.facebook.com/estudent"
     twitter nil
     linkedin nil

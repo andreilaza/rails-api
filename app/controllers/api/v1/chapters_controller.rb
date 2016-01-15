@@ -40,7 +40,7 @@ class Api::V1::ChaptersController < ApplicationController
           render json: { errors: chapter.errors }, status: 422
         end
       else
-        render json: { errors: 'Course not found' }, status: 404 
+        render json: { errors: 'Course not found' }, status: 404
       end
     end
 
@@ -95,7 +95,7 @@ class Api::V1::ChaptersController < ApplicationController
     end   
 
     def check_permission(chapter)
-      # Check if author has permission to access this course      
+      # Check if author has permission to access this course
       course_permission = CourseInstitution.where(course_id: chapter.course_id, institution_id: current_user.institution_id).first
     end 
 end

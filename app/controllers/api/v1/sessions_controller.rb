@@ -42,7 +42,7 @@ class Api::V1::SessionsController < ApplicationController
     elsif user.valid_password? user_password
       sign_in user
       token = UserAuthenticationToken.new
-      user.user_authentication_tokens << token            
+      user.user_authentication_tokens << token
       user.auth_token = token.token
       user.save
       output = build_output(user)

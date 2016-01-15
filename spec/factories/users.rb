@@ -1,10 +1,10 @@
 FactoryGirl.define do
-  factory :user do
+  factory :user do    
     email { 'andrei.test@estudent.ro' }
-    password "12345678"
-    password_confirmation "12345678"    
+    password "password"
+    password_confirmation "password"    
     username "username"
-    facebook_uid nil    
+    facebook_uid "facebook_uid"
 
     trait :admin do
       role User::ROLES[:admin]
@@ -25,6 +25,11 @@ FactoryGirl.define do
       first_name "Coralia"
       last_name "Sulea"
       role_name "author"
+      association :user_metadatum
+      after(:create) do |institution_admin|
+        institution_admin.institution = FactoryGirl.create(:institution)
+        FactoryGirl.create(:institution_user, user_id: institution_admin.id, institution_id: institution_admin.institution[:id])
+      end
     end
 
     trait :institution_admin do
@@ -33,9 +38,15 @@ FactoryGirl.define do
       last_name "Sulea"
       role_name "author"
       real_role "institution_admin"
+      association :user_metadatum
+      after(:create) do |institution_admin|
+        institution_admin.institution = FactoryGirl.create(:institution)
+      end  
     end
 
-    trait :guest do
+    after(:create) do |user|
+      uat = FactoryGirl.create(:user_authentication_token, :user => user)
+      user.auth_token = uat.token
     end
   end
 end

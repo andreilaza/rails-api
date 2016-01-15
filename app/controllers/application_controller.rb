@@ -132,18 +132,20 @@ class ApplicationController < ActionController::Base
   end
 
   def clean_title(item)
-    item.gsub! 'ț', 't'
-    item.gsub! 'ă', 'a'
-    item.gsub! 'î', 'i'
-    item.gsub! 'â', 'a'
-    item.gsub! 'ș', 's'
+    if item
+      item.gsub! 'ț', 't'
+      item.gsub! 'ă', 'a'
+      item.gsub! 'î', 'i'
+      item.gsub! 'â', 'a'
+      item.gsub! 'ș', 's'
 
-    item.gsub! 'Ț', 'T'
-    item.gsub! 'Â', 'A'
-    item.gsub! 'Î', 'I'
-    item.gsub! 'Ă', 'A'
-    item.gsub! 'Ș', 'S'
-
+      item.gsub! 'Ț', 'T'
+      item.gsub! 'Â', 'A'
+      item.gsub! 'Î', 'I'
+      item.gsub! 'Ă', 'A'
+      item.gsub! 'Ș', 'S'
+    end
+    
     item
   end
   
