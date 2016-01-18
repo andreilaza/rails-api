@@ -179,6 +179,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       api_authorization_header @user.auth_token      
       @course = FactoryGirl.create(:course)
       @institution = FactoryGirl.create(:institution)      
+      @course_institution = FactoryGirl.create(:course_institution, course_id: @course.id, institution_id: @institution.id)
       @students_course = FactoryGirl.create(:students_course, course_id: @course.id, user_id: @user.id)
       get :latest_course
     end
