@@ -192,12 +192,19 @@ class Api::V1::QuestionsController < ApplicationController
         render json: course_response, status: 200, root: false
       else
         section = CustomSectionSerializer.new(next_section, scope: current_user, root: false)
+        question = Question.find(params[:id])
+        question = QuestionSerializer.new(question, scope: current_user, root: false)
 
         response = {        
-          :correct => ok,
-          :section => section.as_json,
+          :correct => ok,          
           :quiz_snapshot => quiz_snapshot
-        }        
+        }
+
+        if quiz_snapshot == nil
+          response[:question] = question
+        else
+          response[:section] = section          
+        end
         
         render json: response, status: 201, root: false
       end
