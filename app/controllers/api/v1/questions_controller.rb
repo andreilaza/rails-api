@@ -202,7 +202,7 @@ class Api::V1::QuestionsController < ApplicationController
         }
 
         if quiz_snapshot != nil
-          response[:section] = section          
+          response[:section] = section
         end
         
         render json: response, status: 201, root: false

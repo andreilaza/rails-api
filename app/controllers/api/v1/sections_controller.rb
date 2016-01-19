@@ -196,11 +196,8 @@ class Api::V1::SectionsController < ApplicationController
           next_section = {'course_completed' => true}
         end
 
-        # if next_section.is_a?(ActiveRecord::Base)
-        #   next_section = {              
-        #       'section' => serialize_section(next_section)
-        #   }
-        # end
+        video_snapshot = StudentVideoSnapshot.where(section_id: params[:id], user_id: current_user.id).first
+        video_snapshot.destroy
 
         render json: next_section, serializer: CustomSectionSerializer, status: 200, root: false    
       else
