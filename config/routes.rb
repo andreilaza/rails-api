@@ -60,7 +60,7 @@ Rails.application.routes.draw do
       get '/sections/:id/video_moments', to: 'sections#list_video_moments'
       post '/sections/:id/settings', to: 'sections#add_setting'
       get '/sections/:id/settings', to: 'sections#list_settings'
-      post '/sections/:id/retake', to: 'sections#retake'
+      post '/sections/:id/start', to: 'sections#start'
 
       # Delete video
       delete '/delete-assets/:id', to: 'courses#assets'

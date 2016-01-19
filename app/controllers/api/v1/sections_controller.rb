@@ -51,8 +51,8 @@ class Api::V1::SectionsController < ApplicationController
     send("#{current_user.role_name}_list_settings")
   end
 
-  def retake
-    send("#{current_user.role_name}_retake")
+  def start
+    send("#{current_user.role_name}_start")
   end
 
   private
@@ -222,7 +222,7 @@ class Api::V1::SectionsController < ApplicationController
       end
     end
 
-    def estudent_retake
+    def estudent_start
       student_section = StudentsSection.where(user_id: current_user.id, section_id: params[:id]).first
 
       if student_section.finished == true || student_section.completed == true
@@ -246,7 +246,7 @@ class Api::V1::SectionsController < ApplicationController
 
       section = Section.find(params[:id])
 
-      render json: section, status: 201, root: false
+      render json: section, serializer: CustomSectionSerializer, status: 201, root: false
     end
 
     ### GENERAL METHODS ###
