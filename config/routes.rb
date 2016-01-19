@@ -18,6 +18,7 @@ Rails.application.routes.draw do
       resources :student_video_snapshots, :only => [:create, :update, :destroy]
       resources :announcements, :only => [:index, :show, :create, :update, :destroy]
       resources :notifications, :only => [:index, :show, :update]
+      resources :section_settings, :only => [:show, :update, :destroy]
 
       # Course Routes
       get '/courses', to: 'courses#index'
@@ -57,6 +58,9 @@ Rails.application.routes.draw do
       post '/sections/:id/feedback', to: 'sections#feedback'
       post '/sections/:id/video_moments', to: 'sections#add_video_moment'
       get '/sections/:id/video_moments', to: 'sections#list_video_moments'
+      post '/sections/:id/settings', to: 'sections#add_setting'
+      get '/sections/:id/settings', to: 'sections#list_settings'
+      post '/sections/:id/retake', to: 'sections#retake'
 
       # Delete video
       delete '/delete-assets/:id', to: 'courses#assets'

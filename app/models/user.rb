@@ -15,7 +15,9 @@ class User < ApplicationModel
   attr_accessor :course_id
   attr_accessor :role_name
   attr_accessor :real_role 
-  attr_accessor :auth_token  
+  attr_accessor :auth_token
+  attr_accessor :allow_correct_answer
+  attr_accessor :question_id
 
   has_one :institution_user
   has_one :institution, through: :institution_user

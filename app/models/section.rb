@@ -19,4 +19,8 @@ class Section < ApplicationModel
     :content => 1,
     :quiz => 2
   }
+
+  SETTING = {
+    :required_to_pass => 80
+  }
 end

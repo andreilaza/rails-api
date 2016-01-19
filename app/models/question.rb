@@ -6,4 +6,6 @@ class Question < ApplicationModel
 
   has_many :answers, dependent: :destroy
   has_many :question_hints, dependent: :destroy
+
+  attr_accessor :allow_correct_answer
 end

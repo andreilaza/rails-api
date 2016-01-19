@@ -439,8 +439,7 @@ class Api::V1::CoursesController < ApplicationController
           students_section.user_id = current_user.id
           students_section.course_id = course.id
           students_section.chapter_id = chapter.id
-          students_section.section_id = section.id
-
+          students_section.section_id = section.id          
           students_section.save
 
           questions = Question.where(section_id: section.id).order(order: :asc).all
@@ -451,7 +450,8 @@ class Api::V1::CoursesController < ApplicationController
             students_question.user_id = current_user.id
             students_question.section_id = section.id
             students_question.question_id = question.id
-            
+            students_question.score = question.score
+            students_question.try = 1
             students_question.save
           end
         end

@@ -42,6 +42,19 @@ class Api::V1::SectionsController < ApplicationController
   def list_video_moments
     send("#{current_user.role_name}_list_video_moments")
   end
+
+  def add_setting
+    send("#{current_user.role_name}_add_setting")
+  end
+
+  def list_settings
+    send("#{current_user.role_name}_list_settings")
+  end
+
+  def retake
+    send("#{current_user.role_name}_retake")
+  end
+
   private
     ### AUTHOR METHODS ###
     def author_update
@@ -128,6 +141,35 @@ class Api::V1::SectionsController < ApplicationController
       render json: section.video_moments, status: 201, root: false
     end
 
+    def author_add_setting
+      section = Section.find(params[:id])
+      if check_permission(section)        
+        setting = SectionSetting.where(handle: params[:handle]).first
+        if setting
+          setting.value = params[:value]
+        else
+          setting = SectionSetting.new
+          setting.section_id = params[:id]
+          setting.handle = params[:handle]
+          setting.value = params[:value]
+        end
+
+        if setting.save        
+          render json: setting, status: 201, root: false
+        else
+          render json: { errors: setting.errors }, status: 422
+        end
+      else
+        render json: { errors: 'Course not found' }, status: 404 
+      end
+    end
+
+    def author_list_settings
+      sections = SectionSetting.all    
+
+      render json: sections, status: 200, root: false
+    end
+
     ### ESTUDENT METHODS ###
     def estudent_update
       section = Section.find(params[:id])
@@ -178,6 +220,33 @@ class Api::V1::SectionsController < ApplicationController
       else
         render json: { errors: feedback.errors }, status: 422
       end
+    end
+
+    def estudent_retake
+      student_section = StudentsSection.where(user_id: current_user.id, section_id: params[:id]).first
+
+      if student_section.finished == true || student_section.completed == true
+        previous = StudentsQuestion.where(user_id: current_user.id, section_id: params[:id]).first
+        
+        questions = Question.where(section_id: params[:id]).order(order: :asc).all
+        questions.each do |question|
+          students_question = StudentsQuestion.new()
+
+          students_question.course_id = student_section.course_id
+          students_question.user_id = current_user.id
+          students_question.section_id = student_section.section_id
+          students_question.question_id = question.id
+          students_question.score = question.score
+          students_question.try = previous.try + 1
+          students_question.save
+        end        
+
+        student_section.save
+      end
+
+      section = Section.find(params[:id])
+
+      render json: section, status: 201, root: false
     end
 
     ### GENERAL METHODS ###

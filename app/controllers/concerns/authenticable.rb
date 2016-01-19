@@ -37,7 +37,8 @@ module Authenticable
       @current_user.role_name = 'guest'      
       @current_user.role = User::ROLES[:estudent]
     end
-        
+    
+    # @current_user.allow_correct_answer = false 
     @current_user
   end
 
@@ -53,5 +54,10 @@ module Authenticable
   def add_institution
     institution_user = InstitutionUser.where(user_id: @current_user.id).first
     @current_user.institution_id = institution_user.institution_id
-  end   
+  end
+
+  def set_answer_permission(state, question_id)
+    @current_user.allow_correct_answer = state
+    @current_user.question_id = question_id
+  end
 end
