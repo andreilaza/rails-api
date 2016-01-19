@@ -5,9 +5,15 @@ class Api::V1::StudentVideoSnapshotsController < ApplicationController
   private
     ### ESTUDENT METHODS ###    
     def estudent_create
-      snapshot = StudentVideoSnapshot.new(snapshot_params)
-      snapshot.user_id = current_user.id
-
+      snapshot = StudentVideoSnapshot.where(section_id: params[:section_id], user_id: current_user.id).first
+      
+      if snapshot
+        snapshot.time = params[:time]
+      else
+        snapshot = StudentVideoSnapshot.new(snapshot_params)
+        snapshot.user_id = current_user.id  
+      end
+      
       if snapshot.save        
         render json: snapshot, status: 201, root: false
       else
