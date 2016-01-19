@@ -197,12 +197,11 @@ class Api::V1::QuestionsController < ApplicationController
 
         response = {        
           :correct => ok,          
-          :quiz_snapshot => quiz_snapshot
+          :quiz_snapshot => quiz_snapshot,
+          :question => question
         }
 
-        if quiz_snapshot == nil
-          response[:question] = question
-        else
+        if quiz_snapshot != nil
           response[:section] = section          
         end
         
