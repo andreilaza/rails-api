@@ -195,9 +195,11 @@ class Api::V1::SectionsController < ApplicationController
           
           next_section = {'course_completed' => true}
         end
-        
+
         video_snapshot = StudentVideoSnapshot.where(section_id: params[:id], user_id: current_user.id).first
-        video_snapshot.destroy
+        if video_snapshot
+          video_snapshot.destroy
+        end
 
         render json: next_section, serializer: CustomSectionSerializer, status: 200, root: false    
       else
