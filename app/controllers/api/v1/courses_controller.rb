@@ -70,13 +70,13 @@ class Api::V1::CoursesController < ApplicationController
   private
     ### AUTHOR METHODS ###
     def author_index
-      courses = Course.joins(:course_institutions, :institutions).where('institutions.id' => current_user.institution_id).all    
+      courses = Course.joins(:course_institution, :institution).where('institutions.id' => current_user.institution_id).all    
 
       render json: courses, status: 200, root: false
     end
 
     def author_show
-      course =  Course.joins(:course_institutions, :institutions).where('institutions.id' => current_user.institution_id).find(params[:id])      
+      course =  Course.joins(:course_institution, :institution).where('institutions.id' => current_user.institution_id).find(params[:id])      
       
       if course
         render json: course, status: 200, root: false
@@ -140,7 +140,7 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def author_update
-      course = Course.joins(:course_institutions, :institutions).where('institutions.id' => current_user.institution_id).find_by("courses.id = ? OR courses.slug = ?", params[:id], params[:id])
+      course = Course.joins(:course_institution, :institution).where('institutions.id' => current_user.institution_id).find_by("courses.id = ? OR courses.slug = ?", params[:id], params[:id])
       
       course.friendly_id
       course.slug = nil      
