@@ -1,5 +1,5 @@
 class Api::V1::InstitutionsController < ApplicationController
-  before_action :authenticate_with_token!
+  before_action :authenticate_with_token!, except: [:show, :index]
   respond_to :json
 
   ## ROUTE METHODS ## 
@@ -106,6 +106,10 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     ### ESTUDENT METHODS ###
+    def estudent_index
+      admin_index
+    end
+
     def estudent_show
       institution = Institution.find(params[:id])
 
@@ -113,6 +117,10 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     ### GUEST METHODS ###
+    def guest_index
+      admin_index
+    end
+
     def guest_show
       estudent_show
     end

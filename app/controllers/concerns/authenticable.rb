@@ -35,6 +35,7 @@ module Authenticable
 
       @current_user = User.new
       @current_user.role_name = 'guest'      
+      @current_user.real_role = 'guest'
       @current_user.role = User::ROLES[:estudent]
     end
     

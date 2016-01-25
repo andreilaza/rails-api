@@ -59,14 +59,16 @@ class InstitutionSerializer < ActiveModel::Serializer
             
       user = User.select("user_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:user_metadatum, :author_courses, :courses).where('courses.id' => course.id).first
       
-      asset = Asset.where('entity_id' => user.id, 'entity_type' => 'user', 'definition' => 'avatar').first
+      if user
+        asset = Asset.where('entity_id' => user.id, 'entity_type' => 'user', 'definition' => 'avatar').first
 
-      user = user.as_json
+        user = user.as_json
 
-      if asset
-        user['avatar'] = asset.path
-      else
-        user['avatar'] = nil
+        if asset
+          user['avatar'] = asset.path
+        else
+          user['avatar'] = nil
+        end
       end
 
       entry['author'] = user
