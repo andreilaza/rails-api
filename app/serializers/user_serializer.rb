@@ -49,35 +49,14 @@ class UserSerializer < ActiveModel::Serializer
     institution
   end
 
-  def courses
-    courses = Course.joins(:course_institutions, :institutions).where('course_institutions.user_id' => object.id, 'courses.status' => Course::STATUS[:published]).all
-    courses_response = []
-    entry = {}
-    courses.each do |course|      
-      entry = course.as_json
-
-      asset = Asset.where('entity_id' => course.id, 'entity_type' => 'course', 'definition' => 'cover_image').first
-      if asset
-        entry['cover_image'] = asset.path
-      else
-        entry['cover_image'] = nil
-      end
-
-      duration = Section.where(course_id: course.id).sum(:duration)
-      
-      if duration
-        entry['duration'] = duration
-      else
-        entry['duration'] = 0
-      end
-
-      questions = Question.where(course_id: course.id).count
-      entry['questions'] = questions
-
-      courses_response.push(entry)
+  def courses  
+    response = []
+    object.courses.each do |item|
+      course = CourseSerializer.new(item, root: false, scope: scope)
+      response.push(course)
     end
-
-    courses_response
+    response
+  
   end
 
   def role    
