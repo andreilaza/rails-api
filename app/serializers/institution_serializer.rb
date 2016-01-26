@@ -32,52 +32,12 @@ class InstitutionSerializer < ActiveModel::Serializer
   end
 
   def courses
-    courses = Course.joins(:course_institution, :institution).where('institutions.id' => object.id, 'courses.status' => Course::STATUS[:published]).all
-    courses_response = []
-    entry = {}
-    courses.each do |course|
-
-      entry = course.as_json
-
-      asset = Asset.where('entity_id' => course.id, 'entity_type' => 'course', 'definition' => 'cover_image').first
-      if asset
-        entry['cover_image'] = asset.path
-      else
-        entry['cover_image'] = nil
-      end
-
-      duration = Section.where(course_id: course.id).sum(:duration)
-      
-      if duration
-        entry['duration'] = duration
-      else
-        entry['duration'] = 0
-      end
-
-      questions = Question.where(course_id: course.id).count
-      entry['questions'] = questions
-            
-      user = User.select("user_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:user_metadatum, :author_courses, :courses).where('courses.id' => course.id).first
-      
-      if user
-        asset = Asset.where('entity_id' => user.id, 'entity_type' => 'user', 'definition' => 'avatar').first
-
-        user = user.as_json
-
-        if asset
-          user['avatar'] = asset.path
-        else
-          user['avatar'] = nil
-        end
-      end
-
-      entry['author'] = user
-
-      courses_response.push(entry)
+    response = []
+    object.courses.each do |item|
+      course = CourseSerializer.new(item, root: false)
+      response.push(course)
     end
-
-    courses_response
-
+    response
   end
 
   def authors

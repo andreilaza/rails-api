@@ -38,7 +38,7 @@ class Api::V1::InstitutionsController < ApplicationController
   private
     ### ADMIN METHODS ###   
     def admin_index
-      institutions = Institution.all
+      institutions = Institution.all      
 
       if institutions
         render json: institutions, status: 201, root: false
