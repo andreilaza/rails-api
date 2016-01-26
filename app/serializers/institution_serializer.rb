@@ -34,7 +34,7 @@ class InstitutionSerializer < ActiveModel::Serializer
   def courses
     response = []
     object.courses.each do |item|
-      course = CourseSerializer.new(item, root: false)
+      course = CourseSerializer.new(item, root: false, scope: scope)
       response.push(course)
     end
     response

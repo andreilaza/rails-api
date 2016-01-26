@@ -7,7 +7,7 @@ class CourseSerializer < ActiveModel::Serializer
     if scope && scope.role == User::ROLES[:estudent]
       keys
     else      
-        keys - [:favorite] - [:completed] - [:finished] - [:institution] - [:progress] - [:started] - [:authors]      
+        keys - [:favorite] - [:completed] - [:finished] - [:institution] - [:progress] - [:started]
     end
   end
 
