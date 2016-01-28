@@ -9,6 +9,10 @@ class Section < ApplicationModel
   has_many :questions, dependent: :destroy
   has_many :video_moments, dependent: :destroy
 
+  has_many :students_sections
+
+  has_one :student_video_snapshot
+
   attr_accessor :clean_title
 
   def slug_candidates
@@ -16,8 +20,8 @@ class Section < ApplicationModel
   end
 
   TYPE = {
-    :content => 1,
-    :quiz => 2
+    :quiz => 1,
+    :content => 2
   }
 
   SETTING = {

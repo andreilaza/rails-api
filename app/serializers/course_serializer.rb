@@ -5,10 +5,28 @@ class CourseSerializer < ActiveModel::Serializer
 
   def filter(keys)
     if scope && scope.role == User::ROLES[:estudent]
-      keys
+      keys + [:total_video_time] + [:videos_seen] + [:correct_questions] + [:incorrect_questions]
     else      
         keys - [:favorite] - [:completed] - [:finished] - [:institution] - [:progress] - [:started]
     end
+  end
+
+  def total_video_time
+    completed_sections = Section.joins(:students_sections).where("students_sections.user_id = ? AND students_sections.completed = 1 AND sections.section_type = ? AND students_sections.course_id = ?", scope.id, Section::TYPE[:content], object.id).sum(:duration)
+    snapshots = Section.joins(:student_video_snapshot).where("student_video_snapshots.user_id = ? AND sections.course_id = ?", scope.id, object.id).sum(:time)
+    completed_sections + snapshots
+  end
+
+  def videos_seen
+    Section.joins(:students_sections).where("students_sections.user_id = ? AND students_sections.completed = 1 AND sections.section_type = ? AND students_sections.course_id = ?", scope.id, Section::TYPE[:content], object.id).count
+  end
+
+  def correct_questions
+    StudentsQuestion.uniq.where("user_id = ? AND course_id = ? AND completed = 1", scope.id, object.id).count
+  end
+
+  def incorrect_questions
+    StudentsQuestion.uniq.where("user_id = ? AND course_id = ? AND finished = 1 AND completed = 0", scope.id, object.id).count
   end
 
   def completed
