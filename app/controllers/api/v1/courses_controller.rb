@@ -276,13 +276,13 @@ class Api::V1::CoursesController < ApplicationController
 
     ### ESTUDENT METHODS ###
     def estudent_index
-      courses = Course.where(:status => Course::STATUS[:published]).all
+      courses = Course.where("status = ? OR status = ?",Course::STATUS[:published], Course::STATUS[:upcoming]).all
       
       render json: courses, status: 200, root: false
     end
 
     def estudent_show
-      course =  Course.where(:status => Course::STATUS[:published]).find(params[:id])
+      course =  Course.where("status = ? OR status = ?",Course::STATUS[:published], Course::STATUS[:upcoming]).find(params[:id])
       
       if course
         render json: course, status: 200, root: false
