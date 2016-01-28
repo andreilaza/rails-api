@@ -5,9 +5,8 @@
   </head>
   <body>
     <p>Salut,</p>
-    <p>A aparut un curs nou: <%= @course.title %> </p>
-    <p>Poți să accesezi cursul <a href="<%= ENV["BASE_URL"] %>/cursuri/<%= @course.id %>">aici</a>.
+    <p>Cursul <%=@course.title %> este acum disponibil pe platformă. Accesează <a href="<%= ENV["BASE_URL"] %>/cursuri/<%= @course.id %>">acest link</a> sau intră în colecția de <a href="<%= ENV["BASE_URL"] %>/cursuri/<%= @course.id %>">cursuri</a> pentru a-l începe.</p>
     <p>Spor la învățat!</p>
-	<p>Echipa Estudent</p>
+    <p>Echipa Estudent</p>
   </body>
 </html>

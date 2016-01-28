@@ -21,6 +21,6 @@ class UserMailer < ApplicationMailer
     @course = course
 
     mail( :to => email,
-    :subject => 'Curs nou' )
+    :subject => 'Cursul tău este disponibil' )
   end
 end
