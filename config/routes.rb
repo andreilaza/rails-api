@@ -103,6 +103,7 @@ Rails.application.routes.draw do
       get '/users/:id/institution', to: 'users#institution'
       post '/users/check_username', to: 'users#check_username_availability'
       post '/users/check_email', to: 'users#check_email_availability'      
+      get '/users/:id/courses', to: "users#courses"
 
       # Invitation Routes
       post '/invitations', to: 'invitations#create'
@@ -124,7 +125,7 @@ Rails.application.routes.draw do
       get '/categories/:id', to: 'categories#show'
       put '/categories/:id', to: 'categories#update'
       delete '/categories/:id', to: 'categories#destroy'
-      get 'categories/:id/courses', to: 'categories#list_courses'
+      get '/categories/:id/courses', to: 'categories#list_courses'
 
       # Temporary Routes - Deploy scripts
       post 'slugify', to: 'courses#temporary_slugify'

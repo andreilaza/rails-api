@@ -25,7 +25,7 @@ class UserSerializer < ActiveModel::Serializer
 
   def filter(keys)
     if object.role != User::ROLES[:author] && object.role != User::ROLES[:institution_admin]
-      keys - [:facebook] - [:linkedin] - [:twitter] - [:biography] - [:position] - [:website]
+      keys - [:facebook] - [:linkedin] - [:twitter] - [:biography] - [:position] - [:website] + [:total_video_time] + [:videos_seen] + [:correct_questions] + [:incorrect_questions]
     elsif (object.role == User::ROLES[:author] || object.role == User::ROLES[:institution_admin]) && scope.role == User::ROLES[:estudent]
       keys + [:institution] + [:courses] - [:role]
     else
@@ -69,7 +69,25 @@ class UserSerializer < ActiveModel::Serializer
     elsif object.role == User::ROLES[:institution_admin]
       'institution_admin'
     end
-  end  
+  end
+
+  def total_video_time
+    completed_sections = Section.joins(:students_sections).where("students_sections.user_id = ? AND students_sections.completed = 1 AND sections.section_type = ?", object.id, Section::TYPE[:content]).sum(:duration)
+    snapshots = Section.joins(:student_video_snapshot).where("student_video_snapshots.user_id = ?", object.id).sum(:time)
+    completed_sections + snapshots
+  end
+
+  def videos_seen
+    Section.joins(:students_sections).where("students_sections.user_id = ? AND students_sections.completed = 1 AND sections.section_type = ?", object.id, Section::TYPE[:content]).count
+  end
+
+  def correct_questions
+    StudentsQuestion.uniq.where("user_id = ? AND completed = 1", object.id).count
+  end
+
+  def incorrect_questions
+    StudentsQuestion.uniq.where("user_id = ? AND finished = 1 AND completed = 0", object.id).count
+  end
   
   def facebook
     @author_metadata.facebook

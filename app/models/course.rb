@@ -19,6 +19,9 @@ class Course < ApplicationModel
   has_many :domains, through: :category_courses      
 
   has_many :notifications, as: :entity
+
+  has_many :user_favorite_courses
+  has_many :students_courses
   
   attr_accessor :clean_title
   attr_accessor :category
