@@ -77,13 +77,23 @@ class Api::V1::UsersController < ApplicationController
   end
 
   def estudent_courses
-    # favorite_courses = Course.joins(:user_favorite_courses).where("user_favorite_courses.user_id = ?", params[:id]).all
+    favorite_courses = Course.select(:course_id).joins(:user_favorite_courses).where("user_favorite_courses.user_id = ?", params[:id]).all
 
-    # students_courses = Course.joins(:students_courses).where("students_courses.user_id = ?", params[:id]).all
+    students_courses = Course.select(:course_id).joins(:students_courses).where("students_courses.user_id = ?", params[:id]).all
 
-    # courses = favorite_courses + students_courses
+    courses_ids = []
 
-    courses = Course.joins("LEFT JOIN user_favorite_courses ON user_favorite_courses.course_id = courses.id AND user_favorite_courses.user_id = #{params[:id]} LEFT JOIN students_courses ON students_courses.course_id = courses.id AND students_courses.user_id = #{params[:id]}").all
+    favorite_courses.each do |fc|
+      courses_ids.push(fc.course_id)
+    end
+
+    students_courses.each do |sc|
+      courses_ids.push(sc.course_id)
+    end
+
+    courses = Course.uniq.find(courses_ids)
+
+    # courses = Course.joins("INNER JOIN user_favorite_courses ON user_favorite_courses.course_id = courses.id AND user_favorite_courses.user_id = #{params[:id]} INNER JOIN students_courses ON students_courses.course_id = courses.id AND students_courses.user_id = #{params[:id]}").all
 
     if courses
       render json: courses, status: 201, root: false
