@@ -21,7 +21,7 @@ module EstudentApi
   class Application < Rails::Application    
     config.middleware.use Rack::Cors do
       allow do
-        origins '*'
+        origins ENV['WEB_APP_IP']
         resource '*', :headers => :any, :methods => [:get, :post, :options, :put, :delete]
       end
     end
