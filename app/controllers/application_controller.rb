@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
+  before_action :restrict_domain
   protect_from_forgery with: :null_session
   serialization_scope :current_user
   # before_filter :set_headers 
@@ -181,4 +182,9 @@ class ApplicationController < ActionController::Base
     image.resize("#{width}x#{size}")
     image
   end
+
+  def restrict_domain
+      render json: { errors: "Not authenticated" },
+                status: :unauthorized unless request.remote_ip == ENV['WEB_APP_IP']
+    end
 end

@@ -1,6 +1,5 @@
 class Api::V1::UsersController < ApplicationController
-  before_action :authenticate_with_token!, only: [:update, :destroy]
-  before_action :restrict_domain, only: [:get_by_facebook_uid]
+  before_action :authenticate_with_token!, only: [:update, :destroy]  
   respond_to :json
 
   def check_username_availability
@@ -242,10 +241,5 @@ class Api::V1::UsersController < ApplicationController
       else
         render json: { errors: "Invalid password" }, status: 200, root: false
       end
-    end
-
-    def restrict_domain      
-      render json: { errors: "Not authenticated" },
-                status: :unauthorized unless request.remote_ip == ENV['WEB_APP_IP']
-    end
+    end    
 end
