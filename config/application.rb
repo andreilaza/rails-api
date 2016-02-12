@@ -20,9 +20,8 @@ Bundler.require(*Rails.groups)
 module EstudentApi
   class Application < Rails::Application    
     config.middleware.use Rack::Cors do
-      allow do
-        # origins ENV['WEB_APP_IP']
-        origins ENV['WEB_APP_DOMAIN']
+      allow do        
+        origins 'http://' +  ENV['WEB_APP_DOMAIN'], 'http://www.' + ENV['WEB_APP_DOMAIN']
         resource '*', :headers => :any, :methods => [:get, :post, :options, :put, :delete]
       end
     end
