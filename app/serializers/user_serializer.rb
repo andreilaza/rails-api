@@ -1,5 +1,5 @@
 class UserSerializer < ActiveModel::Serializer
-  attributes :id, :email, :role, :first_name, :last_name, :avatar, :facebook, :linkedin, :twitter, :biography, :position, :website, :created_at, :updated_at
+  attributes :id, :email, :username, :role, :first_name, :last_name, :avatar, :facebook_uid, :facebook, :linkedin, :twitter, :biography, :position, :website, :created_at, :updated_at
 
   def initialize(object, options = {})
     @object = object
@@ -25,7 +25,7 @@ class UserSerializer < ActiveModel::Serializer
 
   def filter(keys)
     if object.role != User::ROLES[:author] && object.role != User::ROLES[:institution_admin]
-      keys - [:facebook] - [:linkedin] - [:twitter] - [:biography] - [:position] - [:website]
+      keys - [:facebook] - [:linkedin] - [:twitter] - [:biography] - [:position] - [:website] + [:total_video_time] + [:videos_seen] + [:correct_questions] + [:incorrect_questions]
     elsif (object.role == User::ROLES[:author] || object.role == User::ROLES[:institution_admin]) && scope.role == User::ROLES[:estudent]
       keys + [:institution] + [:courses] - [:role]
     else
@@ -49,35 +49,14 @@ class UserSerializer < ActiveModel::Serializer
     institution
   end
 
-  def courses
-    courses = Course.joins(:course_institutions, :institutions).where('course_institutions.user_id' => object.id, 'courses.published' => true).all
-    courses_response = []
-    entry = {}
-    courses.each do |course|      
-      entry = course.as_json
-
-      asset = Asset.where('entity_id' => course.id, 'entity_type' => 'course', 'definition' => 'cover_image').first
-      if asset
-        entry['cover_image'] = asset.path
-      else
-        entry['cover_image'] = nil
-      end
-
-      duration = Section.where(course_id: course.id).sum(:duration)
-      
-      if duration
-        entry['duration'] = duration
-      else
-        entry['duration'] = 0
-      end
-
-      questions = Question.where(course_id: course.id).count
-      entry['questions'] = questions
-
-      courses_response.push(entry)
+  def courses  
+    response = []
+    object.courses.each do |item|
+      course = CourseSerializer.new(item, root: false, scope: scope)
+      response.push(course)
     end
-
-    courses_response
+    response
+  
   end
 
   def role    
@@ -90,7 +69,25 @@ class UserSerializer < ActiveModel::Serializer
     elsif object.role == User::ROLES[:institution_admin]
       'institution_admin'
     end
-  end  
+  end
+
+  def total_video_time
+    completed_sections = Section.joins(:students_sections).where("students_sections.user_id = ? AND students_sections.completed = 1 AND sections.section_type = ?", object.id, Section::TYPE[:content]).sum(:duration)
+    snapshots = Section.joins(:student_video_snapshot).where("student_video_snapshots.user_id = ?", object.id).sum(:time)
+    completed_sections + snapshots
+  end
+
+  def videos_seen
+    Section.joins(:students_sections).where("students_sections.user_id = ? AND students_sections.completed = 1 AND sections.section_type = ?", object.id, Section::TYPE[:content]).count
+  end
+
+  def correct_questions
+    StudentsQuestion.uniq.where("user_id = ? AND completed = 1", object.id).count
+  end
+
+  def incorrect_questions
+    StudentsQuestion.uniq.where("user_id = ? AND finished = 1 AND completed = 0", object.id).count
+  end
   
   def facebook
     @author_metadata.facebook

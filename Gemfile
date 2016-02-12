@@ -22,6 +22,8 @@ gem 'jquery-rails'
 # bundle exec rake doc:rails generates the API under doc/api.
 gem 'sdoc', '~> 0.4.0', group: :doc
 
+gem 'wisper', '2.0.0.rc1'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
@@ -47,6 +49,8 @@ gem 'aws-sdk-resources'
 gem 'mini_magick'
 
 gem 'mysql2', '~> 0.3.18'
+
+gem 'friendly_id', '~> 5.1.0'
 
 group :development do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

@@ -9,9 +9,16 @@ Rails.application.routes.draw do
     scope module: :v1,
               constraints: ApiConstraints.new(version: 1, default: true) do
       
-      resources :users, :only => [:create, :destroy] # owner
-      resources :sessions, :only => [:create, :destroy] # all
-      resources :institutions, :only => [:index, :show, :create, :update, :destroy] # owner      
+      resources :users, :only => [:create, :destroy]
+      resources :sessions, :only => [:create, :destroy]
+      resources :institutions, :only => [:index, :show, :create, :update, :destroy]
+      resources :domains, :only => [:index, :show, :create, :update, :destroy]
+      resources :video_moments, :only => [:show, :update, :destroy]
+      resources :question_hints, :only => [:show, :update, :destroy]
+      resources :student_video_snapshots, :only => [:create, :update, :destroy]
+      resources :announcements, :only => [:index, :show, :create, :update, :destroy]
+      resources :notifications, :only => [:index, :show, :update]
+      resources :section_settings, :only => [:show, :update, :destroy]
 
       # Course Routes
       get '/courses', to: 'courses#index'
@@ -24,7 +31,11 @@ Rails.application.routes.draw do
       post '/courses/:id/start', to: 'courses#start'
       post '/courses/:id/chapters', to: 'courses#add_chapter'
       get '/courses/:id/chapters', to: 'courses#list_chapters'
-      
+      get '/courses/:id/video_moments', to: 'courses#list_video_moments'
+      get '/courses/:id/authors', to: 'courses#list_authors'
+      post '/courses/:id/authors', to: 'courses#add_authors'
+      post '/courses/:id/notify', to: 'courses#notify'
+
       # Chapter Routes
       get '/chapters', to: 'chapters#index'
       get '/chapters/:id', to: 'chapters#show'
@@ -44,9 +55,15 @@ Rails.application.routes.draw do
 
       post '/sections/:id/questions', to: 'sections#add_question'
       get '/sections/:id/questions', to: 'sections#list_questions'
-      
+      post '/sections/:id/feedback', to: 'sections#feedback'
+      post '/sections/:id/video_moments', to: 'sections#add_video_moment'
+      get '/sections/:id/video_moments', to: 'sections#list_video_moments'
+      post '/sections/:id/settings', to: 'sections#add_setting'
+      get '/sections/:id/settings', to: 'sections#list_settings'
+      post '/sections/:id/start', to: 'sections#start'
+
       # Delete video
-      delete '/content_assets/:id', to: 'sections#content_asset'
+      delete '/delete-assets/:id', to: 'courses#assets'
 
       # Question Routes
       get '/questions', to: 'questions#index'
@@ -57,6 +74,9 @@ Rails.application.routes.draw do
 
       post '/questions/:id/answers', to: 'questions#add_answer'
       get '/questions/:id/answers', to: 'questions#list_answers'
+
+      post '/questions/:id/hints', to: 'questions#add_hint'
+      get '/questions/:id/hints', to: 'questions#list_hints'
 
       # Answer Routes
       get '/answers', to: 'answers#index'
@@ -76,10 +96,14 @@ Rails.application.routes.draw do
 
       # User Routes
       get '/users/current_user', to: 'users#current'
+      get '/users/get_by_facebook_uid', to: 'users#get_by_facebook_uid'
       get '/users/:id', to: 'users#show'
       put '/users/:id', to: 'users#update'
       post '/users/change_password', to: 'users#change_password'
-      get '/users/:id/institution', to: 'users#institution'      
+      get '/users/:id/institution', to: 'users#institution'
+      post '/users/check_username', to: 'users#check_username_availability'
+      post '/users/check_email', to: 'users#check_email_availability'      
+      get '/users/:id/courses', to: "users#courses"
 
       # Invitation Routes
       post '/invitations', to: 'invitations#create'
@@ -91,8 +115,20 @@ Rails.application.routes.draw do
       post '/waiting-list', to: 'waiting_list#create'
 
       # Image Routes
-      post '/images/process_image', to: 'images#process_image'      
+      post '/images/process_image', to: 'images#process_image'
 
+      # Domain Routes
+      post '/domains/:id/categories', to: 'domains#add_category'
+      get '/domains/:id/categories', to: 'domains#list_categories'
+
+      # Category Routes
+      get '/categories/:id', to: 'categories#show'
+      put '/categories/:id', to: 'categories#update'
+      delete '/categories/:id', to: 'categories#destroy'
+      get '/categories/:id/courses', to: 'categories#list_courses'
+
+      # Temporary Routes - Deploy scripts
+      post 'slugify', to: 'courses#temporary_slugify'
     end
   end
 end

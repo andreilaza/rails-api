@@ -1,7 +1,8 @@
 class QuestionSerializer < ActiveModel::Serializer
-  attributes :id, :title, :section_id, :order, :score, :question_type, :completed
+  attributes :id, :title, :section_id, :order, :score, :question_type, :completed, :finished
   
   has_many :answers
+  has_many :question_hints
 
   def filter(keys)
     if scope.role == User::ROLES[:estudent]
@@ -15,6 +16,15 @@ class QuestionSerializer < ActiveModel::Serializer
     students_question = StudentsQuestion.where(user_id: scope.id, question_id: object.id).first
     if students_question
       students_question.completed
+    else
+      false
+    end
+  end
+
+  def finished
+    students_question = StudentsQuestion.where(user_id: scope.id, question_id: object.id).first
+    if students_question
+      students_question.finished
     else
       false
     end

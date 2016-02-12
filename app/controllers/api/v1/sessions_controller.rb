@@ -8,40 +8,28 @@ class Api::V1::SessionsController < ApplicationController
     user = User.new(user_params)    
     user.role = User::ROLES[:estudent]
 
-    invitation = Invitation.find_by(invitation: params[:invitation])
-    
-    if !invitation || invitation.expires < DateTime.now
-      render json: { errors: 'Invitation expired' }, status: 422
-    elsif user.save
-      if params[:avatar]
-        append_asset(user, params[:avatar])
+    if params[:facebook_uid]
+      existing_user = User.where('email = ? AND email IS NOT NULL', params[:email]).first
+      if existing_user
+        existing_user.facebook_uid = params[:facebook_uid]        
+        add_token(existing_user)
+        if existing_user.save
+          output = build_output(existing_user)
+        
+          render json: output, status: 201, root: false
+        else
+          render json: { errors: existing_user.errors }, status: 422
+        end
+      else
+        user.password = SecureRandom.hex(4)
+        user.email = params[:email]       
+        
+        add_user(user, true)
       end
-
-      # credentials = JSON.load(File.read('secrets.json'))
-      set_aws_credentials
-
-      s3 = Aws::S3::Client.new
-      hex = SecureRandom.hex(4)
-      user_avatar = "users/user_#{hex}"
-
-      bucket = Aws::S3::Bucket.new(ENV["AWS_BUCKET"], client: s3)
-      avatar = Aws::S3::Object.new(ENV["AWS_BUCKET"], user_avatar)      
-
-      # from an IO object
-      File.open('avatar.png', 'rb') do |file|
-        acl = "public-read"
-        avatar.put(body:file, acl: acl)        
-        append_asset(user, user_avatar)
-      end
-      
-      UserMailer.send_confirmation(user).deliver      
-      output = build_output(user)
-      
-      render json: output, status: 201, root: false
     else
-      render json: { errors: user.errors }, status: 422
-    end
-  end
+      add_user(user)
+    end        
+  end  
 
   def create
     user_email    = params[:session][:email]
@@ -53,9 +41,10 @@ class Api::V1::SessionsController < ApplicationController
       render json: { errors: "Invalid email or password" }, status: 422
     elsif user.valid_password? user_password
       sign_in user
-      user.generate_authentication_token!
+      token = UserAuthenticationToken.new
+      user.user_authentication_tokens << token
+      user.auth_token = token.token
       user.save
-      
       output = build_output(user)
 
       render json: output, status: 200, root: false
@@ -79,16 +68,14 @@ class Api::V1::SessionsController < ApplicationController
   end
 
   def destroy
-    user = User.find_by(auth_token: params[:id])
-    
-    user.generate_authentication_token!
-    user.save
+    user_authentication_token = UserAuthenticationToken.find_by(token: params[:id])    
+    user_authentication_token.destroy
     head 204
   end
 
   private
     def user_params
-      params.permit(:email, :password, :password_confirmation, :role, :first_name, :last_name)
+      params.permit(:email, :password, :password_confirmation, :role, :first_name, :last_name, :username, :facebook_uid)
     end
 
     def append_asset(user, avatar)
@@ -99,5 +86,55 @@ class Api::V1::SessionsController < ApplicationController
         'definition'  => 'avatar'
       }      
       add_asset(asset)
-    end    
+    end   
+
+    def add_token(user) 
+      token = UserAuthenticationToken.new
+      user.user_authentication_tokens << token            
+      user.auth_token = token.token
+    end
+
+    def add_user(user, facebook = false)
+      if user.save
+        if params[:avatar]
+          append_asset(user, params[:avatar])
+        end
+        
+        set_aws_credentials
+
+        s3 = Aws::S3::Client.new
+        hex = SecureRandom.hex(4)
+        user_avatar = "users/" + user.id.to_s + "_#{hex}"
+
+        bucket = Aws::S3::Bucket.new(ENV["AWS_BUCKET"], client: s3)
+        avatar = Aws::S3::Object.new(ENV["AWS_BUCKET"], user_avatar)
+
+        avatar_url = 'avatar.png'
+
+        if facebook
+          # RETRIEVE FACEBOOK AVATAR AND POST IT TO S3
+          facebook_avatar_url = 'https://graph.facebook.com/' + params[:facebook_uid].to_s + '/picture?width=720&height=720'
+          
+          image = MiniMagick::Image.open(facebook_avatar_url)
+          image = resize_and_crop_square(image, 400)
+          avatar_url = image.path
+        end
+
+        # from an IO object
+        File.open(avatar_url, 'rb') do |file|
+          acl = "public-read"
+          avatar.put(body:file, acl: acl)        
+          append_asset(user, user_avatar)
+        end
+        
+        UserMailer.send_confirmation(user).deliver
+
+        add_token(user)
+        output = build_output(user)
+        
+        render json: output, status: 201, root: false
+      else
+        render json: { errors: user.errors }, status: 422
+      end 
+    end
 end

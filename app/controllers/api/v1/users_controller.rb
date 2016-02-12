@@ -1,6 +1,45 @@
 class Api::V1::UsersController < ApplicationController
-  before_action :authenticate_with_token!, only: [:update, :destroy]
+  before_action :authenticate_with_token!, only: [:update, :destroy]  
   respond_to :json
+
+  def check_username_availability
+    user = User.where('username' => params[:username]).first
+    if user
+
+      render json: false, status: 200, root: false
+    else
+      render json: true, status: 200, root: false
+    end
+  end
+
+  def check_email_availability
+    user = User.where('email' => params[:email]).first
+    if user
+      render json: false, status: 200, root: false
+    else
+      render json: true, status: 200, root: false
+    end
+  end
+
+  def courses
+    send("#{current_user.role_name}_courses")
+  end
+
+  def get_by_facebook_uid
+    user = User.find_by(facebook_uid: params[:facebook_uid])
+
+    if user
+      sign_in user
+      token = UserAuthenticationToken.new
+      user.user_authentication_tokens << token            
+      user.auth_token = token.token
+      user.save    
+
+      render json: user, status: 200, root: false      
+    else
+      render json: {'error' => 'User not found.'}, status: 404
+    end
+  end
 
   def admin_show
     user = User.find(params[:id])
@@ -34,6 +73,36 @@ class Api::V1::UsersController < ApplicationController
     else
       render json: { errors: user.errors }, status: 422
     end
+  end
+
+  def estudent_courses
+    favorite_courses = Course.select(:course_id).joins(:user_favorite_courses).where("user_favorite_courses.user_id = ?", params[:id]).all
+
+    students_courses = Course.select(:course_id).joins(:students_courses).where("students_courses.user_id = ?", params[:id]).all
+
+    courses_ids = []
+
+    favorite_courses.each do |fc|
+      courses_ids.push(fc.course_id)
+    end
+
+    students_courses.each do |sc|
+      courses_ids.push(sc.course_id)
+    end
+
+    courses = Course.uniq.find(courses_ids)
+
+    # courses = Course.joins("INNER JOIN user_favorite_courses ON user_favorite_courses.course_id = courses.id AND user_favorite_courses.user_id = #{params[:id]} INNER JOIN students_courses ON students_courses.course_id = courses.id AND students_courses.user_id = #{params[:id]}").all
+
+    if courses
+      render json: courses, status: 201, root: false
+    else
+      render json: { errors: courses.errors }, status: 422
+    end
+  end
+
+  def guest_show
+    estudent_show
   end
 
   def create
@@ -73,7 +142,7 @@ class Api::V1::UsersController < ApplicationController
     render json: current_user, status: 200, root: false
   end
 
-  private
+  private    
     def estudent_update
       user = current_user
 
@@ -89,18 +158,7 @@ class Api::V1::UsersController < ApplicationController
     end
 
     def admin_update
-      user = current_user
-
-      if user.update(user_params)
-
-        if params[:avatar]
-          append_asset(user)
-        end
-
-        render json: user, status: 200, root: false
-      else
-        render json: { errors: user.errors }, status: 422
-      end
+      estudent_update
     end
     
     def author_update
@@ -135,11 +193,11 @@ class Api::V1::UsersController < ApplicationController
     end
 
     def user_params
-      params.permit(:email, :password, :password_confirmation, :first_name, :last_name, :role)
+      params.permit(:email, :password, :password_confirmation, :first_name, :last_name, :role, :username, :facebook_uid)
     end
 
     def admin_update_params
-      params.permit(:email, :password, :password_confirmation, :first_name, :last_name)
+      params.permit(:email, :password, :password_confirmation, :first_name, :last_name, :username, :facebook_uid)
     end
 
     def append_asset(user)
@@ -156,7 +214,7 @@ class Api::V1::UsersController < ApplicationController
       students_course = StudentsCourse.where('completed' => false, 'user_id' => current_user.id).order('updated_at DESC').first
 
       if students_course
-        latest_course = Course.where(id: students_course.course_id, published: true).first
+        latest_course = Course.where(id: students_course.course_id, status: Course::STATUS[:published]).first
 
         if !latest_course
           latest_course = {}
@@ -173,15 +231,15 @@ class Api::V1::UsersController < ApplicationController
       user = current_user
       
       if user.valid_password? params[:old_password] || params[:password] == params[:password_confirmation]
-        user.password = params[:password]
-        user.generate_authentication_token!
+        user.password = params[:password]        
+        token = UserAuthenticationToken.new
+        user.user_authentication_tokens << token
+        user.auth_token = token.token
         user.save
 
-        output = build_output(user)
-
-        render json: output.to_json, status: 200, root: false      
+        render json: user, status: 200, root: false      
       else
         render json: { errors: "Invalid password" }, status: 200, root: false
       end
-    end
+    end    
 end

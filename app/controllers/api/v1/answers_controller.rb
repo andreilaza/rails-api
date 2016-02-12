@@ -3,10 +3,7 @@ class Api::V1::AnswersController < ApplicationController
   respond_to :json
   
   private
-    def answer_params
-      params.require(:answer).permit(:title, :section_id, :order, :score, :correct, :answer_type)
-    end
-
+    ### AUTHOR METHODS ###
     def author_index
       respond_with Answer.all.to_json
     end
@@ -38,4 +35,9 @@ class Api::V1::AnswersController < ApplicationController
 
       head 204    
     end  
+
+    ### GENERAL METHODS ###
+    def answer_params
+      params.require(:answer).permit(:title, :section_id, :order, :score, :correct, :answer_type)
+    end
 end

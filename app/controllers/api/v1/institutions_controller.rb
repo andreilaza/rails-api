@@ -1,8 +1,8 @@
 class Api::V1::InstitutionsController < ApplicationController
-  before_action :authenticate_with_token!
+  before_action :authenticate_with_token!, except: [:show, :index]
   respond_to :json
 
-  ## Custom Actions ## 
+  ## ROUTE METHODS ## 
   def create_users
     send("#{current_user.real_role}_create_users")
   end
@@ -14,10 +14,31 @@ class Api::V1::InstitutionsController < ApplicationController
   def list_courses
     send("#{current_user.role_name}_list_courses")
   end
+
+  def index
+    send("#{current_user.real_role}_index")
+  end
+
+  def show
+    send("#{current_user.real_role}_show")
+  end
+
+  def create
+    send("#{current_user.real_role}_create")
+  end
+
+  def update
+    send("#{current_user.real_role}_update")
+  end
+
+  def destroy
+    send("#{current_user.real_role}_destroy")
+  end
   
-  private    
+  private
+    ### ADMIN METHODS ###   
     def admin_index
-      institutions = Institution.all
+      institutions = Institution.all      
 
       if institutions
         render json: institutions, status: 201, root: false
@@ -29,10 +50,15 @@ class Api::V1::InstitutionsController < ApplicationController
     def admin_create
       institution = Institution.new(institution_params)    
       
+      institution.friendly_id
+      institution.slug = nil
+      institution.clean_title = clean_title(params[:title])
+
       if institution.save
         if params[:logo]
           append_asset(institution)
-        end
+        end        
+
         render json: institution, status: 201, root: false
       else
         render json: { errors: institution.errors }, status: 422
@@ -56,7 +82,7 @@ class Api::V1::InstitutionsController < ApplicationController
         user = User.create(user_params)
               
         user.role = User::ROLES[:institution_admin]        
-
+        puts user.role
         if !user.save
           render json: { errors: user.errors }, status: 422
         elsif !institution.save
@@ -64,8 +90,7 @@ class Api::V1::InstitutionsController < ApplicationController
         else        
           institution.institution_users.create(:user_id => user.id)
 
-          add_author_metadata(user)
-          user = build_output(user, false)
+          add_author_metadata(user)          
           render json: user, status: 200, root: false
         end
       else
@@ -73,6 +98,34 @@ class Api::V1::InstitutionsController < ApplicationController
       end
     end
 
+    ### AUTHOR METHODS ###
+    def author_list_courses
+      institution = Institution.find(params[:id])
+
+      render json: institution.courses.to_json, status: 200, root: false
+    end
+
+    ### ESTUDENT METHODS ###
+    def estudent_index
+      admin_index
+    end
+
+    def estudent_show
+      institution = Institution.find(params[:id])
+
+      render json: institution, status: 200, root: false      
+    end
+
+    ### GUEST METHODS ###
+    def guest_index
+      admin_index
+    end
+
+    def guest_show
+      estudent_show
+    end
+    
+    ### INSTITUTION ADMIN METHODS ###
     def institution_admin_show
       if check_permission
         institution = Institution.find(params[:id])
@@ -92,10 +145,14 @@ class Api::V1::InstitutionsController < ApplicationController
 
         institution = Institution.find(params[:id])
 
+        institution.friendly_id
+        institution.slug = nil
+        institution.clean_title = clean_title(institution.title)
+
         if institution.update(institution_params)
           if params[:logo]
             append_asset(institution)
-          end
+          end          
           render json: institution, status: 200, root: false
         else
           render json: { errors: institution.errors }, status: 422
@@ -130,8 +187,8 @@ class Api::V1::InstitutionsController < ApplicationController
       end
     end
 
-    def institution_admin_list_users
-      users = User.joins(:institution_users, :institutions).where('institutions.id' => params[:id]).all      
+    def institution_admin_list_users      
+      users = User.joins(:institution_user, :institution).where('institutions.id' => params[:id]).all      
 
       render json: users, status: 200, root: false 
     end
@@ -140,22 +197,7 @@ class Api::V1::InstitutionsController < ApplicationController
       author_list_courses
     end
 
-    def author_list_courses
-      institution = Institution.find(params[:id])
-
-      render json: institution.courses.to_json, status: 200, root: false
-    end
-
-    def estudent_show
-      # if published_courses > 0
-      institution = Institution.find(params[:id])
-
-      render json: institution, status: 200, root: false
-      # else
-        # render json: {'error' => 'Institution not found.'}, status: 404
-      # end
-    end
-
+    ### GENERAL METHODS ###
     def append_asset(institution)
       asset = {
         'entity_id'   => institution[:id],
@@ -171,20 +213,17 @@ class Api::V1::InstitutionsController < ApplicationController
     end
 
     def user_params
-      params.permit(:email, :password, :password_confirmation, :first_name, :last_name, :role)
+      params.permit(:email, :password, :password_confirmation, :first_name, :last_name, :role, :username)
     end
 
     def check_permission
       if current_user.role == User::ROLES[:admin]
         true
       else
-        institution_user = InstitutionUser.where(institution_id: params[:id], user_id: current_user.id)
+        institution = Institution.find(params[:id])
+        institution_user = InstitutionUser.where(institution_id: institution.id, user_id: current_user.id)
         !institution_user.empty?
       end
-    end
-
-    def published_courses
-      published_courses = Course.joins(:course_institutions, :institutions).where('institutions.id' => params[:id], 'courses.published' => true).count
     end    
 
     def permission_error

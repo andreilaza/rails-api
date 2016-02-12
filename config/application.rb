@@ -21,7 +21,7 @@ module EstudentApi
   class Application < Rails::Application    
     config.middleware.use Rack::Cors do
       allow do
-        origins '*'
+        origins ENV['WEB_APP_IP']
         resource '*', :headers => :any, :methods => [:get, :post, :options, :put, :delete]
       end
     end
@@ -57,6 +57,6 @@ module EstudentApi
       YAML.load(File.open(env_file)).each do |key, value|
         ENV[key.to_s] = value
       end if File.exists?(env_file)
-    end
+    end    
   end
 end

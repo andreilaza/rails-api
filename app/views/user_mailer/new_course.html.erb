@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <p>Salut,</p>
+    <p>Cursul <%=@course.title %> este acum disponibil pe platformă. Accesează <a href="<%= ENV["BASE_URL"] %>/cursuri/<%= @course.id %>">acest link</a> sau intră în colecția de <a href="<%= ENV["BASE_URL"] %>/cursuri/<%= @course.id %>">cursuri</a> pentru a-l începe.</p>
+    <p>Spor la învățat!</p>
+    <p>Echipa Estudent</p>
+  </body>
+</html>

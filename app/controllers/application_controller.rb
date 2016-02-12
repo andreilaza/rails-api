@@ -1,16 +1,17 @@
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
+  before_action :restrict_domain
   protect_from_forgery with: :null_session
   serialization_scope :current_user
   # before_filter :set_headers 
-  include Authenticable
-    
-  def index
+  include Authenticable  
+   
+  def index        
     send("#{current_user.role_name}_index")
   end
   
-  def show
+  def show    
     send("#{current_user.role_name}_show")
   end
 
@@ -31,11 +32,31 @@ class ApplicationController < ActionController::Base
     asset = Asset.where(:entity_id => params['entity_id'], :entity_type => params['entity_type'], :definition => params['definition']).first
 
     if asset && asset.entity_type != 'section' && asset.definition != 'content'
+      if asset.entity_type == 'course' && asset.definition == 'teaser'
+        asset = Asset.new(params)
+        asset.save
+      end
+
       asset['path'] = params['path']
+
+      if params['metadata']
+        asset['metadata'] = params['metadata']
+      end
+
       asset.save
-    else      
-      asset = Asset.new(params)
-      asset.save
+    else
+      if asset && asset.definition == 'subtitles'
+        asset['path'] = params['path']
+
+        if params['metadata']
+          asset['metadata'] = params['metadata']
+        end
+
+        asset.save
+      else
+        asset = Asset.new(params)
+        asset.save
+      end      
     end
 
     asset
@@ -62,7 +83,7 @@ class ApplicationController < ActionController::Base
     output = ActiveSupport::JSON.decode(user.to_json)
     
     if token
-      output["auth_token"] = user[:auth_token]
+      output["auth_token"] = user.auth_token
     end
 
     if output["role"] == User::ROLES[:admin]
@@ -103,5 +124,67 @@ class ApplicationController < ActionController::Base
     end    
 
     output.to_json    
+  end  
+
+  def slugify(item)
+    item = clean_title(item)
+
+    item.parameterize
   end
+
+  def clean_title(item)
+    if item
+      item.gsub! 'ț', 't'
+      item.gsub! 'ă', 'a'
+      item.gsub! 'î', 'i'
+      item.gsub! 'â', 'a'
+      item.gsub! 'ș', 's'
+
+      item.gsub! 'Ț', 'T'
+      item.gsub! 'Â', 'A'
+      item.gsub! 'Î', 'I'
+      item.gsub! 'Ă', 'A'
+      item.gsub! 'Ș', 'S'
+    end
+    
+    item
+  end
+  
+  def resize_and_crop_square(image, size)
+    if image.width < image.height   
+      remove = ((image.height - image.width)/2).round
+      image.shave("0x#{remove}") 
+    elsif image.width > image.height 
+      remove = ((image.width - image.height)/2).round
+      image.shave("#{remove}x0")
+    end
+    image.resize("#{size}x#{size}")
+    image
+  end
+
+  def resize_and_crop_widescreen(image, size)
+    width = image.width
+    height = image.height
+    
+    expected_ratio = 16 / 9
+    image_ratio = width / height
+
+    if image_ratio > expected_ratio
+      remove = ((width - 16 * height / 9)/2).round
+      width = width - remove * 2
+      image.shave("#{remove}x0")
+    else
+      remove = ((height - 9 * width / 16)/2).round
+      height = height - remove * 2
+      image.shave("0x#{remove}") 
+    end
+    
+    image.resize("#{width}x#{size}")
+    image
+  end
+
+  def restrict_domain
+      render json: { errors: "Not authenticated" },
+                status: :unauthorized unless request.remote_ip == ENV['WEB_APP_IP']
+    end
 end

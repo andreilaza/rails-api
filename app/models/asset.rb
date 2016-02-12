@@ -1,2 +1,2 @@
-class Asset < ApplicationModel
+class Asset < ApplicationModel  
 end

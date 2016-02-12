@@ -1,0 +1,7 @@
+FactoryGirl.define do
+  factory :author_course do
+    user_id 1
+    course_id 1
+  end
+
+end
