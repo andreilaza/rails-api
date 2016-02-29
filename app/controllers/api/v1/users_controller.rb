@@ -28,7 +28,6 @@ class Api::V1::UsersController < ApplicationController
 
   def facebook_check
     user = User.find_by(facebook_uid: params[:facebook_uid])
-
     if user      
       return_user(user)
     else
@@ -48,8 +47,8 @@ class Api::V1::UsersController < ApplicationController
     user.user_authentication_tokens << token            
     user.auth_token = token.token
     user.save 
-
-    render json: user, status: 200, root: false   
+    output = build_output(user)
+    render json: output, status: 200, root: false   
   end
 
   def admin_show
