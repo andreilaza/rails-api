@@ -314,7 +314,10 @@ class Api::V1::CoursesController < ApplicationController
       course = Course.find(params[:id])
 
       if course.status == Course::STATUS[:published]
-        create_snapshot(course)      
+        existing_snapshot = StudentsCourse.where("course_id" => params[:id], "user_id" => current_user.id).first
+        if !existing_snapshot
+          create_snapshot(course)      
+        end
         render json: course, status: 200, root: false
       else
         render json: { errors: 'Course not found' }, status: 404
