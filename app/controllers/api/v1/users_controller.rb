@@ -26,20 +26,30 @@ class Api::V1::UsersController < ApplicationController
     send("#{current_user.role_name}_courses")
   end
 
-  def get_by_facebook_uid
+  def facebook_check
     user = User.find_by(facebook_uid: params[:facebook_uid])
 
-    if user
-      sign_in user
-      token = UserAuthenticationToken.new
-      user.user_authentication_tokens << token            
-      user.auth_token = token.token
-      user.save    
-
-      render json: user, status: 200, root: false      
+    if user      
+      return_user(user)
     else
-      render json: {'error' => 'User not found.'}, status: 404
+      existing_user = User.find_by(email: params[:email])      
+      if existing_user
+        existing_user.facebook_uid = params[:facebook_uid]
+        return_user(existing_user)
+      else
+        render json: {'error' => 'User not found.'}, status: 404
+      end      
     end
+  end
+
+  def return_user(user)
+    sign_in user
+    token = UserAuthenticationToken.new
+    user.user_authentication_tokens << token            
+    user.auth_token = token.token
+    user.save 
+
+    render json: user, status: 200, root: false   
   end
 
   def admin_show

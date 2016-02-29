@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :null_session
   serialization_scope :current_user
   # before_filter :set_headers 
-  include Authenticable  
+  include Authenticable
    
   def index        
     send("#{current_user.role_name}_index")
