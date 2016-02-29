@@ -96,7 +96,7 @@ Rails.application.routes.draw do
 
       # User Routes
       get '/users/current_user', to: 'users#current'
-      get '/users/get_by_facebook_uid', to: 'users#get_by_facebook_uid'
+      get '/users/facebook_check', to: 'users#facebook_check'
       get '/users/:id', to: 'users#show'
       put '/users/:id', to: 'users#update'
       post '/users/change_password', to: 'users#change_password'
