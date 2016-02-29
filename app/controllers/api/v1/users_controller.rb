@@ -1,6 +1,6 @@
 class Api::V1::UsersController < ApplicationController
   before_action :authenticate_with_token!, only: [:update, :destroy]  
-  before_action :restrict_domain, only: [:get_by_facebook_uid]
+  before_action :restrict_domain, only: [:facebook_check]
   respond_to :json
 
   def check_username_availability
