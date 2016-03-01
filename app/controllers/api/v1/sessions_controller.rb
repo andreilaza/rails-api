@@ -27,7 +27,11 @@ class Api::V1::SessionsController < ApplicationController
         add_user(user, true)
       end
     else
-      add_user(user)
+      if !params[:email]
+        render json: { errors: "Email required" }, status: 422
+      else
+        add_user(user)
+      end
     end        
   end  
 
