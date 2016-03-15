@@ -10,7 +10,7 @@ default: &default
   port: 3306
 
 development:
-  database: "estudent_prod_deploy_test"
+  database: "estudent"
   username: "root"
   password: "root"
   host: 127.0.0.1
