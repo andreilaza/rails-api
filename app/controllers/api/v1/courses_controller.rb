@@ -392,7 +392,7 @@ class Api::V1::CoursesController < ApplicationController
 
     ### GENERAL METHODS ###
     def course_params
-      params.permit(:title, :description, :second_description, :keywords)
+      params.permit(:title, :description, :second_description, :keywords, :meta_description)
     end
 
     def chapter_params

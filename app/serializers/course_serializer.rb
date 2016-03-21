@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :second_description, :keywords, :slug, :favorite, :status, :started, :video_sections, :progress, :completed, :finished, :duration, :institution, :cover_image, :authors, :questions, :domain, :category, :teaser, :subtitles
+  attributes :id, :title, :description, :second_description, :keywords, :meta_description, :slug, :favorite, :status, :started, :video_sections, :progress, :completed, :finished, :duration, :institution, :cover_image, :authors, :questions, :domain, :category, :teaser, :subtitles
 
   has_many :chapters
 
