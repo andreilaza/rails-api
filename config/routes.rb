@@ -19,7 +19,8 @@ Rails.application.routes.draw do
       resources :announcements, :only => [:index, :show, :create, :update, :destroy]
       resources :notifications, :only => [:index, :show, :update]
       resources :section_settings, :only => [:show, :update, :destroy]
-
+      resources :contact, :only => [:create]
+      
       # Course Routes
       get '/courses', to: 'courses#index'
       get '/courses/latest_course', to: 'users#latest_course'
@@ -128,7 +129,7 @@ Rails.application.routes.draw do
       get '/categories/:id/courses', to: 'categories#list_courses'
 
       # Temporary Routes - Deploy scripts
-      post 'slugify', to: 'courses#temporary_slugify'
+      post 'slugify', to: 'courses#temporary_slugify'      
     end
   end
 end
