@@ -22,11 +22,11 @@ class CourseSerializer < ActiveModel::Serializer
   end
 
   def correct_questions
-    StudentsQuestion.uniq(:question_id).where("user_id = ? AND course_id = ? AND completed = 1", scope.id, object.id).count
+    StudentsQuestion.uniq(:question_id).where("user_id = ? AND course_id = ? AND completed = 1", scope.id, object.id).count(:question_id)
   end
 
   def incorrect_questions
-    StudentsQuestion.uniq(:question_id).where("user_id = ? AND course_id = ? AND finished = 1 AND completed = 0", scope.id, object.id).count
+    StudentsQuestion.uniq(:question_id).where("user_id = ? AND course_id = ? AND finished = 1 AND completed = 0", scope.id, object.id).count(:question_id)
   end
 
   def completed
