@@ -82,11 +82,11 @@ class UserSerializer < ActiveModel::Serializer
   end
 
   def correct_questions
-    StudentsQuestion.uniq.where("user_id = ? AND completed = 1", object.id).count
+    StudentsQuestion.uniq(:question_id).where("user_id = ? AND completed = 1", object.id).count(:question_id)
   end
 
   def incorrect_questions
-    StudentsQuestion.uniq.where("user_id = ? AND finished = 1 AND completed = 0", object.id).count
+    StudentsQuestion.uniq(:question_id).where("user_id = ? AND finished = 1 AND completed = 0", object.id).count(:question_id)
   end
   
   def facebook
