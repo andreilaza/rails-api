@@ -64,9 +64,9 @@ class Api::V1::SectionsController < ApplicationController
         section.slug = nil
         section.clean_title = clean_title(section.title)
 
-        if section.update(section_params)
+        if section.update(section_params)          
           if params[:content]            
-            append_asset(section.id, params[:content][:path], params[:content][:metadata], 'content')
+            append_asset(section.id, params[:content].first[:path], params[:content].first[:metadata], 'content')
           end        
 
           if params[:subtitles]
