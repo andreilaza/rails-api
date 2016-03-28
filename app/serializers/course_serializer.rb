@@ -12,7 +12,7 @@ class CourseSerializer < ActiveModel::Serializer
   end
 
   def completed_sections
-    completed_sections = StudentsSection.where("user_id = ? AND completed = 1 AND course_id = ?", scope.id, object.id).count
+    completed_sections = Section.joins(:students_sections).where("students_sections.user_id = ? AND students_sections.completed = 1 AND sections.section_type = ? AND students_sections.course_id = ?", scope.id, Section::TYPE[:quiz], object.id).count
   end
 
   def total_video_time
