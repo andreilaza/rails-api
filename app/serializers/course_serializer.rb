@@ -5,10 +5,14 @@ class CourseSerializer < ActiveModel::Serializer
 
   def filter(keys)
     if scope && scope.role == User::ROLES[:estudent]
-      keys + [:total_video_time] + [:videos_seen] + [:correct_questions] + [:incorrect_questions]
+      keys + [:total_video_time] + [:videos_seen] + [:correct_questions] + [:incorrect_questions] + [:completed_sections]
     else      
         keys - [:favorite] - [:completed] - [:finished] - [:institution] - [:progress] - [:started]
     end
+  end
+
+  def completed_sections
+    completed_sections = StudentsSection.where("user_id = ? AND completed = 1 AND course_id = ?", scope.id, object.id).count
   end
 
   def total_video_time
