@@ -66,7 +66,7 @@ class Api::V1::SectionsController < ApplicationController
 
         if section.update(section_params)          
           if params[:content]            
-            append_asset(section.id, params[:content].first[:path], params[:content].first[:metadata], 'content')
+            append_asset(section.id, params[:content][:path], params[:content][:metadata], 'content')
           end        
 
           if params[:subtitles]
