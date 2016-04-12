@@ -62,7 +62,9 @@ class Api::V1::SectionsController < ApplicationController
       if check_permission(section)
         section.friendly_id
         section.slug = nil
-        section.clean_title = clean_title(section.title)
+        if params[:title]
+          section.clean_title = clean_title(section.title)
+        end
 
         if section.update(section_params)          
           if params[:content]            
