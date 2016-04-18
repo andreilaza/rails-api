@@ -90,7 +90,9 @@ class Api::V1::CoursesController < ApplicationController
 
       course.friendly_id
       course.slug = nil
-      course.clean_title = clean_title(params[:title])
+      if params[:title]
+        course.clean_title = clean_title(params[:title])
+      end
       course.status = set_status(params[:status])
 
       if params[:category_id]
@@ -144,7 +146,9 @@ class Api::V1::CoursesController < ApplicationController
       
       course.friendly_id
       course.slug = nil      
-      course.clean_title = clean_title(course.title)
+      if params[:title]
+        course.clean_title = clean_title(course.title)
+      end
       original_status = course.status
       course.status = set_status(params[:status])
       
