@@ -158,7 +158,18 @@ class Api::V1::CoursesController < ApplicationController
         end
 
         if params[:teaser]
-          append_asset(course.id, params[:teaser][:path], 'teaser', params[:teaser][:metadata])
+
+          if params[:teaser].kind_of?(Array)
+            path = params[:teaser].first[:path]
+            metadata = params[:teaser].first[:metadata]
+          else
+            path = params[:teaser][:path]
+            metadata = params[:teaser][:metadata]
+          end
+          teaser = Asset.where('entity_id' => course.id, 'entity_type' => 'course', 'definition' => 'teaser', 'path' => path).first        
+          if !teaser
+            append_asset(course.id, path, 'teaser', metadata)
+          end
         end
 
         if params[:subtitles]
@@ -175,7 +186,7 @@ class Api::V1::CoursesController < ApplicationController
 
           # Notify users that have clicked Notify Me
           users = User.joins(:user_settings).where('user_settings.key' => 'course_notification', 'user_settings.value' => true).all
-
+          # @TO-DO: send email to users when course is published.
           users.each do |user|
             user_notification = UserNotification.new
             user_notification.user_id = user.id
