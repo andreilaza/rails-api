@@ -188,25 +188,27 @@ class Api::V1::QuestionsController < ApplicationController
           student_course.save
         end
       end
+      
+      section = CustomSectionSerializer.new(next_section, scope: current_user, root: false)
+      question = Question.find(params[:id])
+      question = QuestionSerializer.new(question, scope: current_user, root: false)
+
+      response = {        
+        :correct => ok,          
+        :quiz_snapshot => quiz_snapshot,
+        :question => question
+      }
+
       if course_response
-        render json: course_response, status: 200, root: false
+        response << course_response
       else
-        section = CustomSectionSerializer.new(next_section, scope: current_user, root: false)
-        question = Question.find(params[:id])
-        question = QuestionSerializer.new(question, scope: current_user, root: false)
 
-        response = {        
-          :correct => ok,          
-          :quiz_snapshot => quiz_snapshot,
-          :question => question
-        }
-
-        if quiz_snapshot != nil
-          response[:section] = section
-        end
-        
-        render json: response, status: 201, root: false
+      if quiz_snapshot != nil
+        response[:section] = section
       end
+      
+      render json: response, status: 201, root: false
+    
     end    
     
     def estudent_list_answers
