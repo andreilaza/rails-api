@@ -137,7 +137,7 @@ class Api::V1::QuestionsController < ApplicationController
       student_course.touch      
 
       remaining_questions = StudentsQuestion.where('section_id = ? AND user_id = ? AND finished = 0 AND completed = 0 AND try = ?', student_question.section_id, current_user.id, student_question.try).first
-
+      response = {}
       if remaining_questions
         next_section = Section.find(remaining_questions.section_id)        
       else
@@ -171,7 +171,7 @@ class Api::V1::QuestionsController < ApplicationController
         quiz_snapshot.save
 
         next_student_section = StudentsSection.where('course_id = ? AND user_id = ? AND finished = 0 AND completed = 0', student_question.course_id, current_user.id).first
-        response = {}
+        
         course_response = nil
         if next_student_section
           next_section = Section.find(next_student_section.section_id)
@@ -199,7 +199,7 @@ class Api::V1::QuestionsController < ApplicationController
       section = CustomSectionSerializer.new(next_section, scope: current_user, root: false)
       question = Question.find(params[:id])
       question = QuestionSerializer.new(question, scope: current_user, root: false)
-    
+      
       response[:correct] = ok        
       response[:quiz_snapshot] = quiz_snapshot
       response[:question] = question              
