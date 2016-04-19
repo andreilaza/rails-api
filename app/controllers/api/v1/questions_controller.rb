@@ -171,7 +171,7 @@ class Api::V1::QuestionsController < ApplicationController
         quiz_snapshot.save
 
         next_student_section = StudentsSection.where('course_id = ? AND user_id = ? AND finished = 0 AND completed = 0', student_question.course_id, current_user.id).first
-
+        response = {}
         course_response = nil
         if next_student_section
           next_section = Section.find(next_student_section.section_id)
