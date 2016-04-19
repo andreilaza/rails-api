@@ -180,10 +180,17 @@ class Api::V1::QuestionsController < ApplicationController
 
           if finished > 0
             student_course.finished = true
-            course_response = {"course_finished" => true, "correct" => ok}
+            response =  {
+              :course_finished => true,
+              :correct => ok
+            }
+            
           else
             student_course.completed = true
-            course_response = {"course_completed" => true, "correct" => ok}
+            response =  {
+              :course_completed => true,
+              :correct => ok
+            }
           end
           student_course.save
         end
@@ -192,16 +199,10 @@ class Api::V1::QuestionsController < ApplicationController
       section = CustomSectionSerializer.new(next_section, scope: current_user, root: false)
       question = Question.find(params[:id])
       question = QuestionSerializer.new(question, scope: current_user, root: false)
-
-      response = {        
-        :correct => ok,          
-        :quiz_snapshot => quiz_snapshot,
-        :question => question
-      }
-
-      if course_response
-        response << course_response
-      else
+    
+      response[:correct] = ok        
+      response[:quiz_snapshot] = quiz_snapshot
+      response[:question] = question              
 
       if quiz_snapshot != nil
         response[:section] = section
