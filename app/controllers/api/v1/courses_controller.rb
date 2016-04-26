@@ -261,7 +261,10 @@ class Api::V1::CoursesController < ApplicationController
 
         chapter.friendly_id
         chapter.slug = nil
-        chapter.clean_title = clean_title(params[:title])
+
+        if params[:title]
+          chapter.clean_title = clean_title(params[:title])
+        end
 
         if chapter.save          
           render json: chapter, status: 201, root: false

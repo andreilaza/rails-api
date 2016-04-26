@@ -52,7 +52,9 @@ class Api::V1::InstitutionsController < ApplicationController
       
       institution.friendly_id
       institution.slug = nil
-      institution.clean_title = clean_title(params[:title])
+      if params[:title]
+        institution.clean_title = clean_title(params[:title])
+      end
 
       if institution.save
         if params[:logo]
@@ -147,7 +149,9 @@ class Api::V1::InstitutionsController < ApplicationController
 
         institution.friendly_id
         institution.slug = nil
-        institution.clean_title = clean_title(institution.title)
+        if params[:title]
+          institution.clean_title = clean_title(institution.title)
+        end
 
         if institution.update(institution_params)
           if params[:logo]

@@ -32,7 +32,9 @@ class Api::V1::ChaptersController < ApplicationController
       if check_permission(chapter)
         chapter.friendly_id
         chapter.slug = nil      
-        chapter.clean_title = clean_title(chapter.title)
+        if params[:title]
+          chapter.clean_title = clean_title(chapter.title)
+        end
           
         if chapter.update(chapter_params)          
           render json: chapter, status: 200, root: false

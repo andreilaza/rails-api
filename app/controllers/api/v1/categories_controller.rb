@@ -23,8 +23,10 @@ class Api::V1::CategoriesController < ApplicationController
       category =  Category.find(params[:id])
 
       category.friendly_id
-      category.slug = nil      
-      category.clean_title = clean_title(category.title)
+      category.slug = nil
+      if params[:title]    
+        category.clean_title = clean_title(category.title)
+      end
 
       if category.update(category_params)        
         render json: category, status: 200, root: false
