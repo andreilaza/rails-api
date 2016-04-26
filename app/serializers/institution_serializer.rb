@@ -35,7 +35,9 @@ class InstitutionSerializer < ActiveModel::Serializer
     response = []
     object.courses.each do |item|
       course = CourseSerializer.new(item, root: false, scope: scope)
-      response.push(course)
+      if course.status == 'published'
+        response.push(course)
+      end
     end
     response
   end
