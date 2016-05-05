@@ -146,11 +146,11 @@ class Api::V1::InstitutionsController < ApplicationController
       if check_permission
 
         institution = Institution.find(params[:id])
-
-        institution.friendly_id
-        institution.slug = nil
+        
         if params[:title]
-          institution.clean_title = clean_title(institution.title)
+          institution.friendly_id
+          institution.slug = nil
+          institution.clean_title = clean_title(params[:title])
         end
 
         if institution.update(institution_params)

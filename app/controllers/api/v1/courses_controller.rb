@@ -87,10 +87,10 @@ class Api::V1::CoursesController < ApplicationController
 
     def author_create
       course = Course.new(course_params)      
-
-      course.friendly_id
-      course.slug = nil
+      
       if params[:title]
+        course.friendly_id
+        course.slug = nil
         course.clean_title = clean_title(params[:title])
       end
       course.status = set_status(params[:status])
@@ -143,16 +143,18 @@ class Api::V1::CoursesController < ApplicationController
 
     def author_update
       course = Course.joins(:course_institution, :institution).where('institutions.id' => current_user.institution_id).find_by("courses.id = ? OR courses.slug = ?", params[:id], params[:id])
-      
-      course.friendly_id
-      course.slug = nil      
+                
       if params[:title]
-        course.clean_title = clean_title(course.title)
+        course.friendly_id
+        course.slug = nil
+        course.clean_title = clean_title(params[:title])
       end
+
       original_status = course.status
       course.status = set_status(params[:status])
       
       if course.update(course_params)
+
         if params[:cover_image]
           append_asset(course.id, params[:cover_image], 'cover_image', nil)
         end

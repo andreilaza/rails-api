@@ -21,11 +21,11 @@ class Api::V1::CategoriesController < ApplicationController
     ### ADMIN METHODS ###
     def admin_update
       category =  Category.find(params[:id])
-
-      category.friendly_id
-      category.slug = nil
+      
       if params[:title]    
-        category.clean_title = clean_title(category.title)
+        category.friendly_id
+        category.slug = nil
+        category.clean_title = clean_title(params[:title])
       end
 
       if category.update(category_params)        

@@ -29,11 +29,11 @@ class Api::V1::ChaptersController < ApplicationController
     ### AUTHOR METHODS ###
     def author_update    
       chapter = Chapter.find(params[:id])
-      if check_permission(chapter)
-        chapter.friendly_id
-        chapter.slug = nil      
+      if check_permission(chapter)        
         if params[:title]
-          chapter.clean_title = clean_title(chapter.title)
+          chapter.friendly_id
+          chapter.slug = nil      
+          chapter.clean_title = clean_title(params[:title])
         end
           
         if chapter.update(chapter_params)          

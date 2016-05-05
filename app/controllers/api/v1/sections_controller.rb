@@ -59,11 +59,11 @@ class Api::V1::SectionsController < ApplicationController
     ### AUTHOR METHODS ###
     def author_update
       section = Section.find(params[:id])
-      if check_permission(section)
-        section.friendly_id
-        section.slug = nil
+      if check_permission(section)        
         if params[:title]
-          section.clean_title = clean_title(section.title)
+          section.friendly_id
+          section.slug = nil
+          section.clean_title = clean_title(params[:title])
         end
 
         if section.update(section_params)          

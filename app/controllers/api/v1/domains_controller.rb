@@ -48,9 +48,11 @@ class Api::V1::DomainsController < ApplicationController
     def admin_update
       domain =  Domain.find(params[:id])
 
-      domain.friendly_id
-      domain.slug = nil
-      domain.clean_title = clean_title(domain.title)
+      if params[:title]
+        domain.friendly_id
+        domain.slug = nil
+        domain.clean_title = clean_title(params[:title])
+      end
 
       if domain.update(domain_params)        
         render json: domain, status: 200, root: false
