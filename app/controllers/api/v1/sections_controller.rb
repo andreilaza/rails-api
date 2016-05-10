@@ -63,7 +63,8 @@ class Api::V1::SectionsController < ApplicationController
         if params[:title]
           section.friendly_id
           section.slug = nil
-          section.clean_title = clean_title(params[:title])
+          title = params[:title].dup
+          section.clean_title = clean_title(title)
         end
 
         if section.update(section_params)          

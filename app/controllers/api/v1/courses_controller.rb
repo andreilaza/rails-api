@@ -91,7 +91,8 @@ class Api::V1::CoursesController < ApplicationController
       if params[:title]
         course.friendly_id
         course.slug = nil
-        course.clean_title = clean_title(params[:title])
+        title = params[:title].dup
+        course.clean_title = clean_title(title)
       end
       course.status = set_status(params[:status])
 
@@ -146,8 +147,9 @@ class Api::V1::CoursesController < ApplicationController
                 
       if params[:title]
         course.friendly_id
-        course.slug = nil
-        course.clean_title = clean_title(params[:title])
+        course.slug = nil    
+        title = params[:title].dup
+        course.clean_title = clean_title(title)        
       end
 
       original_status = course.status
@@ -265,7 +267,8 @@ class Api::V1::CoursesController < ApplicationController
         chapter.slug = nil
 
         if params[:title]
-          chapter.clean_title = clean_title(params[:title])
+          title = params[:title].dup
+          chapter.clean_title = clean_title(title)
         end
 
         if chapter.save          

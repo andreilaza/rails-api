@@ -33,7 +33,8 @@ class Api::V1::ChaptersController < ApplicationController
         if params[:title]
           chapter.friendly_id
           chapter.slug = nil      
-          chapter.clean_title = clean_title(params[:title])
+          title = params[:title].dup
+          chapter.clean_title = clean_title(title)
         end
           
         if chapter.update(chapter_params)          
@@ -69,7 +70,8 @@ class Api::V1::ChaptersController < ApplicationController
 
         section.friendly_id
         section.slug = nil
-        section.clean_title = clean_title(params[:title])
+        title = params[:title].dup
+        section.clean_title = clean_title(title)
 
         if section.save          
           render json: section, status: 201, root: false

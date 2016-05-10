@@ -35,8 +35,8 @@ class Api::V1::DomainsController < ApplicationController
       
       domain.friendly_id
       domain.slug = nil
-      
-      domain.clean_title = clean_title(params[:title])
+      title = params[:title].dup
+      domain.clean_title = clean_title(title)
 
       if domain.save        
         render json: domain, status: 201, root: false
@@ -51,7 +51,8 @@ class Api::V1::DomainsController < ApplicationController
       if params[:title]
         domain.friendly_id
         domain.slug = nil
-        domain.clean_title = clean_title(params[:title])
+        title = params[:title].dup
+        domain.clean_title = clean_title(title)
       end
 
       if domain.update(domain_params)        
@@ -75,7 +76,8 @@ class Api::V1::DomainsController < ApplicationController
       
       category.friendly_id
       category.slug = nil
-      category.clean_title = clean_title(params[:title])
+      title = params[:title].dup
+      category.clean_title = clean_title(title)
 
       if category.save        
         render json: category, status: 201, root: false

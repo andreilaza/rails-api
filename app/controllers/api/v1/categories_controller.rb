@@ -25,7 +25,8 @@ class Api::V1::CategoriesController < ApplicationController
       if params[:title]    
         category.friendly_id
         category.slug = nil
-        category.clean_title = clean_title(params[:title])
+        title = params[:title].dup
+        category.clean_title = clean_title(title)
       end
 
       if category.update(category_params)        
