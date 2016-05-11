@@ -36,6 +36,7 @@ Rails.application.routes.draw do
       get '/courses/:id/authors', to: 'courses#list_authors'
       post '/courses/:id/authors', to: 'courses#add_authors'
       post '/courses/:id/notify', to: 'courses#notify'
+      post '/courses/:id/preview', to: 'courses#preview'
 
       # Chapter Routes
       get '/chapters', to: 'chapters#index'

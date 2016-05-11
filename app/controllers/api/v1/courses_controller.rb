@@ -31,6 +31,10 @@ class Api::V1::CoursesController < ApplicationController
     send("#{current_user.role_name}_assets")
   end
 
+  def preview
+    send("#{current_user.role_name}_preview")
+  end
+
   def list_authors
     send("#{current_user.real_role}_list_authors")
   end
@@ -155,6 +159,10 @@ class Api::V1::CoursesController < ApplicationController
       original_status = course.status
       course.status = set_status(params[:status])
       
+      if params[:status] == 'published' && original_status != Course::STATUS[:published]
+        course.was_published = true
+      end
+
       if course.update(course_params)
 
         if params[:cover_image]
@@ -239,6 +247,22 @@ class Api::V1::CoursesController < ApplicationController
 
       head 204    
     end    
+
+    def author_preview
+      course = Course.find(params[:id])
+
+      if !course.was_published
+        StudentsQuestion.destroy_all(course_id: course.id)
+        StudentsSection.destroy_all(course_id: course.id)
+        StudentsCourse.destroy_all(course_id: course.id)
+      end
+
+      if course
+        render json: course, status: 200, root: false
+      else
+        render json: { errors: course.errors }, status: 404
+      end
+    end
 
     def author_assets
       asset = Asset.find(params[:id])
