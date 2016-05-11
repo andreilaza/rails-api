@@ -360,15 +360,15 @@ class Api::V1::CoursesController < ApplicationController
     def estudent_start
       course = Course.find(params[:id])
 
-      if course.status == Course::STATUS[:published]
-        existing_snapshot = StudentsCourse.where("course_id" => params[:id], "user_id" => current_user.id).first
-        if !existing_snapshot
-          create_snapshot(course)      
-        end
-        render json: course, status: 200, root: false
-      else
-        render json: { errors: 'Course not found' }, status: 404
-      end    
+      # if course.status == Course::STATUS[:published]
+      existing_snapshot = StudentsCourse.where("course_id" => params[:id], "user_id" => current_user.id).first
+      if !existing_snapshot
+        create_snapshot(course)
+      end
+      render json: course, status: 200, root: false
+      # else
+      #   render json: { errors: 'Course not found' }, status: 404
+      # end    
     end
 
     def estudent_reset
