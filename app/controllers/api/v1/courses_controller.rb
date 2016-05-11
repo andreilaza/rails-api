@@ -248,22 +248,6 @@ class Api::V1::CoursesController < ApplicationController
       head 204    
     end    
 
-    def author_preview
-      course = Course.find(params[:id])
-
-      if !course.was_published
-        StudentsQuestion.destroy_all(course_id: course.id)
-        StudentsSection.destroy_all(course_id: course.id)
-        StudentsCourse.destroy_all(course_id: course.id)
-      end
-
-      if course
-        render json: course, status: 200, root: false
-      else
-        render json: { errors: course.errors }, status: 404
-      end
-    end
-
     def author_assets
       asset = Asset.find(params[:id])
       asset.destroy
@@ -378,6 +362,22 @@ class Api::V1::CoursesController < ApplicationController
       StudentsSection.destroy_all(user_id: current_user.id, course_id: course.id)
       StudentsCourse.destroy_all(user_id: current_user.id, course_id: course.id)
       
+      if course
+        render json: course, status: 200, root: false
+      else
+        render json: { errors: course.errors }, status: 404
+      end
+    end
+    
+    def estudent_preview
+      course = Course.find(params[:id])
+
+      if !course.was_published
+        StudentsQuestion.destroy_all(course_id: course.id)
+        StudentsSection.destroy_all(course_id: course.id)
+        StudentsCourse.destroy_all(course_id: course.id)
+      end
+
       if course
         render json: course, status: 200, root: false
       else
