@@ -313,7 +313,7 @@ class Api::V1::CoursesController < ApplicationController
     end
 
     def estudent_show
-      course =  Course.where("status = ? OR status = ?",Course::STATUS[:published], Course::STATUS[:upcoming]).find(params[:id])
+      course =  Course.find(params[:id])
       
       if course
         render json: course, status: 200, root: false
@@ -384,7 +384,7 @@ class Api::V1::CoursesController < ApplicationController
         render json: { errors: course.errors }, status: 404
       end
     end
-    
+
     ### GUEST METHODS ###
     def guest_index
       estudent_index
