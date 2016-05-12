@@ -13,12 +13,17 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 
-  def check_email_availability
-    user = User.where('email' => params[:email]).first
-    if user
-      render json: false, status: 200, root: false
+  def check_email_availability 
+    if current_user.role_name == 'guest'
+      user = User.where('email' => params[:email]).first
     else
-      render json: true, status: 200, root: false
+      user = User.where('email = ? AND email != ?', params[:email], current_user.email).first
+    end
+
+    if user
+      render json: {"response" => true}, status: 200, root: false
+    else
+      render json: {"response" => false}, status: 404, root: false
     end
   end
 
