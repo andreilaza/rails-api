@@ -21,9 +21,9 @@ class Api::V1::UsersController < ApplicationController
     end
 
     if user
-      render json: {"response" => true}, status: 200, root: false
+      render json: false, status: 200, root: false
     else
-      render json: {"response" => false}, status: 404, root: false
+      render json: true, status: 200, root: false
     end
   end
 
