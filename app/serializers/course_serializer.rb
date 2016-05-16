@@ -1,5 +1,5 @@
 class CourseSerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :second_description, :bibliography, :keywords, :meta_description, :slug, :favorite, :status, :started, :video_sections, :practice_sections, :progress, :completed, :finished, :duration, :institution, :cover_image, :authors, :questions, :domain, :category, :teaser, :subtitles, :was_published
+  attributes :id, :title, :description, :second_description, :bibliography, :keywords, :meta_description, :slug, :favorite, :status, :started, :video_sections, :practice_sections, :progress, :completed, :finished, :duration, :institution, :cover_image, :authors, :questions, :domain, :category, :teaser, :subtitles, :was_published, :dependency
 
   has_many :chapters
 
@@ -185,5 +185,18 @@ class CourseSerializer < ActiveModel::Serializer
 
   def domain
     domain = Domain.joins(:category_courses, :courses).where('courses.id' => object.id).first
+  end
+
+  def dependency
+    course = Course.find(object.dependency_id)
+    course = course.as_json
+    completed = StudentsCourse.where(:course_id => course[:id], :user_id => scope.id).first
+    
+    if completed
+      course[:completed] = completed.completed
+    else
+      course[:completed] = false
+    end
+    course
   end
 end
