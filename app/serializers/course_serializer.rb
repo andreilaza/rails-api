@@ -188,7 +188,7 @@ class CourseSerializer < ActiveModel::Serializer
   end
 
   def dependency
-    course = Course.where(object.dependency_id).first
+    course = Course.where(:id => object.dependency_id).first
     course = course.as_json
 
     if course
@@ -201,7 +201,7 @@ class CourseSerializer < ActiveModel::Serializer
       end
       course
     else
-      []
+      nil
     end
   end
 end

@@ -163,6 +163,10 @@ class Api::V1::CoursesController < ApplicationController
         course.was_published = true
       end
 
+      if params[:dependency_id].nil?
+        course.dependency_id = 0
+      end
+
       if course.update(course_params)
 
         if params[:cover_image]
