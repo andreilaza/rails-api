@@ -188,15 +188,20 @@ class CourseSerializer < ActiveModel::Serializer
   end
 
   def dependency
-    course = Course.find(object.dependency_id)
+    course = Course.where(object.dependency_id).first
     course = course.as_json
-    completed = StudentsCourse.where(:course_id => course[:id], :user_id => scope.id).first
-    
-    if completed
-      course[:completed] = completed.completed
+
+    if course
+      completed = StudentsCourse.where(:course_id => course[:id], :user_id => scope.id).first
+      
+      if completed
+        course[:completed] = completed.completed
+      else
+        course[:completed] = false
+      end
+      course
     else
-      course[:completed] = false
+      []
     end
-    course
   end
 end
