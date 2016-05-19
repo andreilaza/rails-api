@@ -143,6 +143,7 @@ class Api::V1::QuestionsController < ApplicationController
       else
         student_section = StudentsSection.where('section_id = ? AND user_id = ?', student_question.section_id, current_user.id).first
 
+        # --- Can be ignored for now, logic does not exist on frontend
         total_score = StudentsQuestion.where('section_id = ? AND user_id = ? AND try = ?', student_question.section_id, current_user.id, student_question.try).sum(:score)
         student_score = StudentsQuestion.where('section_id = ? AND user_id = ? AND completed = 1 AND try = ?', student_question.section_id, current_user.id, student_question.try).sum(:score)
         
@@ -159,7 +160,8 @@ class Api::V1::QuestionsController < ApplicationController
         else
           student_section.completed = true
         end
-
+        # ----
+        
         student_section.save
 
         # save student snapshot

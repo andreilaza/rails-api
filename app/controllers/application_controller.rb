@@ -17,7 +17,7 @@ class ApplicationController < ActionController::Base
   def create
     send("#{current_user.role_name}_create")
   end
-
+  
   def update
     send("#{current_user.role_name}_update")
   end
