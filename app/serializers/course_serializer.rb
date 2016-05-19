@@ -189,29 +189,25 @@ class CourseSerializer < ActiveModel::Serializer
 
   def dependency
     course = Course.where(:id => object.dependency_id).first
-    course = course.as_json
-
-    users = User.uniq.select("user_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:user_metadatum, :author_courses, :courses).where('courses.id' => object.dependency_id).all
-    authors = []
-    users.each do |user|
-      asset = Asset.where('entity_id' => user.id, 'entity_type' => 'user', 'definition' => 'avatar').first
-
-      user = user.as_json
-
-      if asset
-        user['avatar'] = asset.path
-      else
-        user['avatar'] = nil
-      end
-
-      authors.push(user)
-    end
-
-    authors
-
-    course[:authors] = authors
+    course = course.as_json    
 
     if course
+      users = User.uniq.select("user_metadata.*, users.id as id, users.first_name, users.last_name, users.email").joins(:user_metadatum, :author_courses, :courses).where('courses.id' => object.dependency_id).all
+      authors = []
+      users.each do |user|
+        asset = Asset.where('entity_id' => user.id, 'entity_type' => 'user', 'definition' => 'avatar').first
+
+        user = user.as_json
+
+        if asset
+          user['avatar'] = asset.path
+        else
+          user['avatar'] = nil
+        end
+
+        authors.push(user)
+      end    
+      course[:authors] = authors
       completed = StudentsCourse.where(:course_id => course[:id], :user_id => scope.id).first
       
       if completed
