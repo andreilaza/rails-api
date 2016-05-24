@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "support@estudent.ro"
+  default from: "ajutor@estudent.ro"
   # layout 'mailer'
 end
