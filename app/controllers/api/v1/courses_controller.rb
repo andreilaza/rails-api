@@ -210,13 +210,13 @@ class Api::V1::CoursesController < ApplicationController
             user_notification.status = 0
             user_notification.save
           end
+          recipients = []
 
           # Notify guests
           guests = GuestNotification.where(:course_id => course.id).all
 
-          guests.each do |guest|
-            # Send email to guest.email
-            UserMailer.new_course(guest.email, course).deliver
+          guests.each do |guest|                        
+            UserMailer.new_course(guest.email, course).deliver            
             guest.notification_id = notification.id
             guest.save
           end

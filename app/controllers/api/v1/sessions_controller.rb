@@ -64,7 +64,7 @@ class Api::V1::SessionsController < ApplicationController
       new_password = SecureRandom.hex(4)
       user.password = new_password
       user.save
-      PasswordMailer.reset_password(user_params[:email], new_password).deliver
+      PasswordMailer.reset_password(user, new_password).deliver
       head 201
     else
       render json: { errors: "Invalid email" }, status: 422

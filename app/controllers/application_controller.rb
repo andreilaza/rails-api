@@ -1,3 +1,5 @@
+require 'sendgrid-ruby'
+
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.  
@@ -124,6 +126,10 @@ class ApplicationController < ActionController::Base
 
     output.to_json    
   end  
+
+  def create_email_client
+    client = SendGrid::Client.new(api_key: ENV["SENDGRID_SECRET_KEY"])
+  end
 
   def slugify(item)
     item = clean_title(item)
